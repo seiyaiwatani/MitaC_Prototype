@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f0f4ff;
+  --fg: #1a1a2e;
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --nav-h: 56px;
+  --header-h: 48px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', Arial, sans-serif;
+  margin: 0;
+  overflow: hidden;
+  height: 100dvh;
+}
+
+/* メインコンテナ: ナビ分だけ引いた高さ */
+.app-container {
+  height: calc(100dvh - var(--nav-h));
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ページ全体：ヘッダー＋コンテンツで縦いっぱい */
+.page-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.page-header {
+  height: var(--header-h);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+}
+
+.page-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+
+/* 内側だけスクロール可能にしたいとき */
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* カード */
+.card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+}
+
+/* RepoCaカード */
+.repoca-card {
+  background: white;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.repoca-card:hover  { border-color: var(--primary); }
+.repoca-card.selected {
+  border-color: var(--primary);
+  background: #eef2ff;
+}
+.repoca-card.slot-empty {
+  border-style: dashed;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ボタン */
+.btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  border: none;
+}
+.btn:hover { opacity: 0.88; }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-ghost { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-danger { background: var(--danger); color: white; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* XPバー */
+.xp-bar {
+  height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #7c3aed);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* バッジチップ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip-indigo { background: #eef2ff; color: #4f46e5; }
+.chip-green  { background: #dcfce7; color: #166534; }
+.chip-yellow { background: #fef9c3; color: #92400e; }
+.chip-red    { background: #fee2e2; color: #991b1b; }
+.chip-gray   { background: #f3f4f6; color: #4b5563; }
+
+/* ナビ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: white;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 10px;
+  color: #9ca3af;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-radius: 8px;
+  margin: 4px 2px;
+}
+.nav-item.active, .nav-item:hover { color: var(--primary); background: #eef2ff; }
+
+/* 分割レイアウト（報告画面等） */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 100%;
+  overflow: hidden;
+  padding: 8px;
+}
+.split-col {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.split-col-header {
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.split-col-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* 管理者サイドバー */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+.admin-sidebar {
+  background: #1e1b4b;
+  padding: 12px 8px;
+  overflow-y: auto;
+}
+.admin-content {
+  overflow-y: auto;
+  padding: 12px;
+}
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #a5b4fc;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.admin-nav-item:hover, .admin-nav-item.active {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+/* ステータスバッジ */
+.status-ok  { color: #10b981; font-weight: 700; font-size: 12px; }
+.status-ng  { color: #ef4444; font-weight: 700; font-size: 12px; }
