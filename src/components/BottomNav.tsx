@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import styles from "./BottomNav.module.scss";
 
 const navItems = [
-  { href: "/", label: "ホーム", icon: "🏠" },
-  { href: "/repoca", label: "RepoCa", icon: "🃏" },
-  { href: "/report", label: "報告", icon: "📋" },
+  { href: "/",       label: "ホーム",    icon: "🏠" },
+  { href: "/repoca", label: "RepoCa",   icon: "🃏" },
+  { href: "/report", label: "報告",      icon: "📋" },
   { href: "/mypage", label: "マイページ", icon: "⚔️" },
-  { href: "/admin", label: "管理", icon: "🔧" },
+  { href: "/admin",  label: "管理",      icon: "🔧" },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="max-w-md mx-auto flex justify-around py-2 px-2">
+    <nav className={styles.bottom_nav}>
+      <div className={styles.bottom_nav_inner}>
         {navItems.map((item) => {
           const isActive = item.href === "/"
             ? pathname === "/"
@@ -25,10 +26,10 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`nav-item ${isActive ? "active" : ""}`}
+              className={`${styles.bottom_nav_item} ${isActive ? styles["bottom_nav_item--active"] : ""}`}
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className="mt-0.5">{item.label}</span>
+              <span className={styles.bottom_nav_icon}>{item.icon}</span>
+              <span className={styles.bottom_nav_label}>{item.label}</span>
             </Link>
           );
         })}

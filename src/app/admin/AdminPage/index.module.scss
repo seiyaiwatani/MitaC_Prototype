@@ -1,0 +1,277 @@
+// ============================================================
+// AdminPage
+// ============================================================
+
+// ── プロジェクト一覧 ──
+.admin_search_row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.admin_search_input {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.admin_proj_list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin_proj_card {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin_proj_card_left {}
+
+.admin_proj_card_title_row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin_proj_card_dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.admin_proj_card_name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.admin_proj_card_meta {
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 3px;
+  margin-left: 16px;
+}
+
+.admin_proj_card_actions {
+  display: flex;
+  gap: 6px;
+}
+
+// ── 工数管理/日 ──
+.admin_daily_title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.admin_legend {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.admin_legend_item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+}
+
+.admin_legend_dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.admin_legend_label {
+  color: #4b5563;
+}
+
+.admin_bar_list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin_bar_row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin_bar_row_name {
+  width: 60px;
+  font-size: 11px;
+  color: #374151;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.admin_bar_row_track {
+  flex: 1;
+  height: 22px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.admin_bar_row_seg {
+  // width, height, background, border-right are set inline (data-driven)
+}
+
+.admin_bar_row_total {
+  font-size: 10px;
+  color: #6b7280;
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.admin_bar_row_status {
+  font-size: 10px;
+  font-weight: 700;
+  width: 36px;
+  flex-shrink: 0;
+
+  &--reported { color: #10b981; }
+  &--pending  { color: #ef4444; }
+}
+
+.admin_x_axis {
+  margin-top: 8px;
+  padding-left: 68px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #9ca3af;
+}
+
+// ── 工数管理/月 ──
+.admin_monthly_title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.admin_monthly_table {
+  border-collapse: collapse;
+  font-size: 10px;
+  width: 100%;
+}
+
+.admin_monthly_table_th {
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #374151;
+}
+
+.admin_monthly_table_th_day {
+  padding: 4px 1px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-weight: 600;
+  min-width: 18px;
+}
+
+.admin_monthly_table_th_total {
+  padding: 4px 6px;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #374151;
+}
+
+.admin_monthly_table_td_name {
+  padding: 5px 6px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.admin_monthly_table_td_day {
+  padding: 4px 1px;
+  text-align: center;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.admin_monthly_table_dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+.admin_monthly_table_td_total {
+  padding: 5px 6px;
+  text-align: right;
+  font-weight: 700;
+  color: #4f46e5;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+// ── プロジェクト作成 ──
+.admin_new_proj_title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.admin_new_proj_card {
+  padding: 14px;
+  max-width: 380px;
+}
+
+.admin_new_proj_field {
+  margin-bottom: 10px;
+}
+
+.admin_new_proj_label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.admin_new_proj_input {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.admin_new_proj_textarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.admin_new_proj_footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@media (max-width: 768px) {
+  .admin_bar_list {
+    overflow-x: auto;
+  }
+
+  .admin_monthly_table {
+    font-size: 8px;
+  }
+}

@@ -1,0 +1,351 @@
+// ============================================================
+// AdminPage
+// ============================================================
+
+.AdminPage_header {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  background: #1e1b4b;
+  color: white;
+}
+
+.AdminPage_logo {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.AdminPage_xpSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.AdminPage_xpLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.AdminPage_xpTrack {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.AdminPage_xpFill {
+  height: 100%;
+  background: #a5b4fc;
+  border-radius: 3px;
+}
+
+.AdminPage_avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.AdminPage_avatarHint {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.AdminPage_avatarIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.AdminPage_avatarInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.AdminPage_avatarName {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.AdminPage_avatarRole {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+// ── プロジェクト一覧 ──
+.AdminPage_searchRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.AdminPage_searchInput {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.AdminPage_projList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.AdminPage_projCard {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.AdminPage_projCard_left {}
+
+.AdminPage_projCard_titleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.AdminPage_projCard_dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.AdminPage_projCard_name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.AdminPage_projCard_meta {
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 3px;
+  margin-left: 16px;
+}
+
+.AdminPage_projCard_actions {
+  display: flex;
+  gap: 6px;
+}
+
+// ── 工数管理/日 ──
+.AdminPage_dailyTitle {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.AdminPage_legend {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.AdminPage_legend_item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+}
+
+.AdminPage_legend_dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.AdminPage_legend_label {
+  color: #4b5563;
+}
+
+.AdminPage_barList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.AdminPage_barRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.AdminPage_barRow_name {
+  width: 60px;
+  font-size: 11px;
+  color: #374151;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.AdminPage_barRow_track {
+  flex: 1;
+  height: 22px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.AdminPage_barRow_seg {
+  // height / border-right はインライン（データ由来）
+}
+
+.AdminPage_barRow_total {
+  font-size: 10px;
+  color: #6b7280;
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.AdminPage_barRow_status {
+  font-size: 10px;
+  font-weight: 700;
+  width: 36px;
+  flex-shrink: 0;
+
+  &--reported  { color: #10b981; }
+  &--pending   { color: #ef4444; }
+}
+
+.AdminPage_xAxis {
+  margin-top: 8px;
+  padding-left: 68px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #9ca3af;
+}
+
+// ── 工数管理/月 ──
+.AdminPage_monthlyTitle {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.AdminPage_monthlyTable {
+  border-collapse: collapse;
+  font-size: 10px;
+  width: 100%;
+}
+
+.AdminPage_monthlyTable_th {
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #374151;
+}
+
+.AdminPage_monthlyTable_thDay {
+  padding: 4px 1px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-weight: 600;
+  min-width: 18px;
+}
+
+.AdminPage_monthlyTable_thTotal {
+  padding: 4px 6px;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 700;
+  color: #374151;
+}
+
+.AdminPage_monthlyTable_tdName {
+  padding: 5px 6px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.AdminPage_monthlyTable_tdDay {
+  padding: 4px 1px;
+  text-align: center;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.AdminPage_monthlyTable_dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+.AdminPage_monthlyTable_tdTotal {
+  padding: 5px 6px;
+  text-align: right;
+  font-weight: 700;
+  color: #4f46e5;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+// ── プロジェクト作成 ──
+.AdminPage_newProjTitle {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.AdminPage_newProjCard {
+  padding: 14px;
+  max-width: 380px;
+}
+
+.AdminPage_newProjField {
+  margin-bottom: 10px;
+}
+
+.AdminPage_newProjLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.AdminPage_newProjInput {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.AdminPage_newProjTextarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.AdminPage_newProjFooter {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}

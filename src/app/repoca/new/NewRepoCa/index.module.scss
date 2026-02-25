@@ -1,0 +1,143 @@
+// ============================================================
+// NewRepoCa
+// ============================================================
+
+// ── フォーム ──
+.new_repoca_form_body {
+  flex-direction: column;
+}
+
+.new_repoca_form_scroll {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.new_repoca_field_label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.new_repoca_required {
+  color: #ef4444;
+}
+
+.new_repoca_select {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.new_repoca_task_type_row {
+  display: flex;
+  gap: 6px;
+}
+
+.new_repoca_task_type_btn {
+  flex: 1;
+  padding: 7px 4px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &--active { background: #4f46e5; color: white; }
+  &--idle   { background: #f3f4f6; color: #374151; }
+}
+
+.new_repoca_label_row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.new_repoca_label_btn {
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &--active { background: #6366f1; color: white; }
+  &--idle   { background: #f3f4f6; color: #374151; }
+}
+
+.new_repoca_scope_row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.new_repoca_scope_btn {
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  // background and opacity are set dynamically via inline style
+}
+
+.new_repoca_textarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  resize: none;
+}
+
+.new_repoca_char_count {
+  text-align: right;
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.new_repoca_favorite_btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.new_repoca_favorite_btn_icon {
+  font-size: 22px;
+}
+
+.new_repoca_favorite_btn_label {
+  font-size: 12px;
+  font-weight: 600;
+
+  &--active   { color: #d97706; }
+  &--inactive { color: #6b7280; }
+}
+
+// ── フッター ──
+.new_repoca_footer {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  background: white;
+}
+
+@media (max-width: 768px) {
+  .new_repoca_form_scroll {
+    padding: 10px;
+  }
+}

@@ -11,7 +11,7 @@
   --card-bg: #ffffff;
   --border: #e5e7eb;
   --nav-h: 56px;
-  --header-h: 48px;
+  --header-h: 56px;
 }
 
 * { box-sizing: border-box; }
@@ -29,7 +29,7 @@ body {
 .app-container {
   height: calc(100dvh - var(--nav-h));
   overflow: hidden;
-  max-width: 900px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
@@ -39,6 +39,8 @@ body {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  gap: 8px;
+  padding-bottom: 10px;
 }
 
 .page-header {
@@ -150,7 +152,7 @@ body {
   border-top: 1px solid var(--border);
   display: flex;
   align-items: stretch;
-  max-width: 900px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 .nav-item {
@@ -206,7 +208,7 @@ body {
 /* 管理者サイドバー */
 .admin-layout {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 220px 1fr;
   height: 100%;
   overflow: hidden;
 }

@@ -1,0 +1,281 @@
+// ============================================================
+// Home
+// ============================================================
+
+.Home_header {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: white;
+}
+
+.Home_logo {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.Home_xpSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.Home_xpLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.Home_xpTrack {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.Home_xpFill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+  // width は動的なのでインラインで設定
+}
+
+.Home_avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.Home_avatarHint {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.Home_avatarIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.Home_avatarInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.Home_avatarName {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.Home_avatarLevel {
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+// ── body ──
+.Home_body {
+  padding: 10px;
+  gap: 10px;
+}
+
+// ── 左カラム (タスク) ──
+.Home_taskColumn {
+  flex: 1.3;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #1e1b4b, #312e81);
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
+  gap: 6px;
+}
+
+.Home_taskTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.Home_taskCard {
+  padding: 9px;
+  margin-bottom: 6px;
+}
+
+.Home_taskCard_tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+
+.Home_taskCard_chipProj {
+  font-size: 10px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Home_taskCard_chipScope {
+  font-size: 10px;
+}
+
+.Home_taskCard_content {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.Home_taskCard_footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  align-items: center;
+}
+
+.Home_taskCard_type {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.Home_taskCard_check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  flex-shrink: 0;
+
+  &--done {
+    border: 2px solid #10b981;
+    background: #10b981;
+  }
+
+  &--undone {
+    border: 2px solid #d1d5db;
+    background: white;
+  }
+}
+
+// ── 右カラム (報告ステータス) ──
+.Home_statusColumn {
+  flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #1e1b4b, #312e81);
+  border-radius: 10px;
+  padding: 10px;
+  gap: 6px;
+}
+
+.Home_statusTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.Home_statusItem {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.Home_statusItem_label {
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.Home_statusItem_badge {
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+
+  &--done {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.15);
+  }
+
+  &--pending {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+  }
+}
+
+.Home_completedRow {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.Home_completedRow_label {
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.Home_completedRow_count {
+  font-weight: 700;
+  font-size: 16px;
+  color: #a5b4fc;
+}
+
+.Home_repocaLink {
+  margin-top: auto;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+// ── フッター ──
+.Home_footer {
+  flex-shrink: 0;
+  padding: 14px 16px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}

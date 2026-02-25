@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { currentUser } from "@/lib/mock-data";
+import styles from "./OvertimeReport.module.scss";
 
 export default function OvertimeReport() {
   const router = useRouter();
@@ -24,63 +25,44 @@ export default function OvertimeReport() {
 
   return (
     <div className="page-root">
-      {/* ヘッダー */}
-      <header style={{
-        height: 56, flexShrink: 0,
-        display: "flex", alignItems: "center",
-        padding: "0 16px", gap: 12,
-        background: "linear-gradient(90deg,#1e1b4b,#312e81)", color: "white",
-      }}>
-        <span style={{ fontWeight: 800, fontSize: 16, flexShrink: 0 }}>Mita=C</span>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.75)" }}>
+      <header className={styles.OvertimeReport_header}>
+        <span className={styles.OvertimeReport_logo}>Mita=C</span>
+        <div className={styles.OvertimeReport_xpSection}>
+          <div className={styles.OvertimeReport_xpLabels}>
             <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
           </div>
-          <div style={{ height: 6, background: "rgba(255,255,255,0.25)", borderRadius: 3, overflow: "hidden" }}>
-            <div style={{ width: `${xpPct}%`, height: "100%", background: "rgba(255,255,255,0.9)", borderRadius: 3 }} />
+          <div className={styles.OvertimeReport_xpTrack}>
+            <div className={styles.OvertimeReport_xpFill} style={{ width: `${xpPct}%` }} />
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-          <span style={{ fontSize: 10, opacity: 0.7 }}>アバター→</span>
-          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>⚔️</div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontWeight: 700, fontSize: 12 }}>{currentUser.name}</span>
-            <span style={{ fontSize: 10, opacity: 0.75 }}>Lv.{currentUser.level}</span>
+        <div className={styles.OvertimeReport_avatarSection}>
+          <span className={styles.OvertimeReport_avatarHint}>アバター→</span>
+          <div className={styles.OvertimeReport_avatarIcon}>⚔️</div>
+          <div className={styles.OvertimeReport_avatarInfo}>
+            <span className={styles.OvertimeReport_avatarName}>{currentUser.name}</span>
+            <span className={styles.OvertimeReport_avatarLevel}>Lv.{currentUser.level}</span>
           </div>
         </div>
       </header>
 
-      {/* ボディ */}
-      <div className="page-body" style={{ flexDirection: "column", padding: 12, gap: 10 }}>
+      <div className={`page-body ${styles.OvertimeReport_body}`}>
 
         {/* 残業有無 */}
-        <div className="card" style={{ padding: 14, flexShrink: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: "#374151", marginBottom: 10 }}>残業はありますか？</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div className={`card ${styles.OvertimeReport_toggleCard}`}>
+          <div className={styles.OvertimeReport_toggleCard_title}>残業はありますか？</div>
+          <div className={styles.OvertimeReport_toggleGrid}>
             <button
               onClick={() => setHasOvertime(true)}
-              style={{
-                padding: "16px 8px", borderRadius: 10, border: `2px solid ${hasOvertime === true ? "#4f46e5" : "#e5e7eb"}`,
-                background: hasOvertime === true ? "#4f46e5" : "#f9fafb",
-                color: hasOvertime === true ? "white" : "#374151",
-                cursor: "pointer", fontWeight: 700, fontSize: 13,
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-              }}
+              className={`${styles.OvertimeReport_toggleBtn} ${hasOvertime === true ? styles["OvertimeReport_toggleBtn--yes"] : styles["OvertimeReport_toggleBtn--yes-idle"]}`}
             >
-              <span style={{ fontSize: 28 }}>🌙</span>
+              <span className={styles.OvertimeReport_toggleBtn_emoji}>🌙</span>
               残業あり
             </button>
             <button
               onClick={() => setHasOvertime(false)}
-              style={{
-                padding: "16px 8px", borderRadius: 10, border: `2px solid ${hasOvertime === false ? "#10b981" : "#e5e7eb"}`,
-                background: hasOvertime === false ? "#10b981" : "#f9fafb",
-                color: hasOvertime === false ? "white" : "#374151",
-                cursor: "pointer", fontWeight: 700, fontSize: 13,
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-              }}
+              className={`${styles.OvertimeReport_toggleBtn} ${hasOvertime === false ? styles["OvertimeReport_toggleBtn--no"] : styles["OvertimeReport_toggleBtn--no-idle"]}`}
             >
-              <span style={{ fontSize: 28 }}>✅</span>
+              <span className={styles.OvertimeReport_toggleBtn_emoji}>✅</span>
               残業なし
             </button>
           </div>
@@ -88,35 +70,35 @@ export default function OvertimeReport() {
 
         {/* 残業詳細 */}
         {hasOvertime === true && (
-          <div className="card" style={{ padding: 14, flexShrink: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: "#374151" }}>残業詳細</div>
+          <div className={`card ${styles.OvertimeReport_detailCard}`}>
+            <div className={styles.OvertimeReport_detailCard_title}>残業詳細</div>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>残業時間</label>
-              <div style={{ display: "flex", gap: 8 }}>
+              <label className={styles.OvertimeReport_fieldLabel}>残業時間</label>
+              <div className={styles.OvertimeReport_timeRow}>
                 <select
+                  className={styles.OvertimeReport_timeSelect}
                   value={hours}
                   onChange={(e) => setHours(Number(e.target.value))}
-                  style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }}
                 >
                   {[0, 1, 2, 3, 4, 5].map((h) => <option key={h} value={h}>{h}時間</option>)}
                 </select>
                 <select
+                  className={styles.OvertimeReport_timeSelect}
                   value={minutes}
                   onChange={(e) => setMinutes(Number(e.target.value))}
-                  style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }}
                 >
                   {[0, 15, 30, 45].map((m) => <option key={m} value={m}>{m}分</option>)}
                 </select>
               </div>
             </div>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>残業内容</label>
+              <label className={styles.OvertimeReport_fieldLabel}>残業内容</label>
               <textarea
+                className={styles.OvertimeReport_textarea}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="残業で行う作業内容を入力してください..."
                 rows={3}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12, resize: "none" }}
               />
             </div>
           </div>
@@ -124,22 +106,19 @@ export default function OvertimeReport() {
 
         {/* 定時退社メッセージ */}
         {hasOvertime === false && (
-          <div style={{
-            display: "flex", alignItems: "center", gap: 12, padding: 14, borderRadius: 10,
-            background: "#ecfdf5", border: "2px solid #10b981", flexShrink: 0,
-          }}>
-            <span style={{ fontSize: 32 }}>🎉</span>
+          <div className={styles.OvertimeReport_noOvertimeMsg}>
+            <span className={styles.OvertimeReport_noOvertimeMsg_emoji}>🎉</span>
             <div>
-              <p style={{ fontWeight: 700, color: "#065f46", margin: 0, fontSize: 13 }}>お疲れ様でした！</p>
-              <p style={{ fontSize: 11, color: "#047857", margin: "2px 0 0" }}>
+              <p className={styles.OvertimeReport_noOvertimeMsg_title}>お疲れ様でした！</p>
+              <p className={styles.OvertimeReport_noOvertimeMsg_sub}>
                 定時退社でミッションボーナスの対象です
               </p>
             </div>
           </div>
         )}
 
-        {/* ボタン（下部固定） */}
-        <div style={{ marginTop: "auto", display: "flex", gap: 8, flexShrink: 0 }}>
+        {/* フッター */}
+        <div className={styles.OvertimeReport_footer}>
           <Link href="/" style={{ flex: 1 }}>
             <button className="btn btn-ghost" style={{ width: "100%" }}>キャンセル</button>
           </Link>
