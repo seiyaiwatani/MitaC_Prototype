@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { currentUser } from "@/lib/mock-data";
 
 export default function OvertimeReport() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function OvertimeReport() {
   const [hours,   setHours]   = useState(1);
   const [minutes, setMinutes] = useState(0);
   const [content, setContent] = useState("");
+  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
 
   const handleSubmit = () => {
     if (hasOvertime === null) return;
@@ -24,12 +26,28 @@ export default function OvertimeReport() {
     <div className="page-root">
       {/* ヘッダー */}
       <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center", padding: "0 16px", gap: 8,
+        height: 56, flexShrink: 0,
+        display: "flex", alignItems: "center",
+        padding: "0 16px", gap: 12,
         background: "linear-gradient(90deg,#1e1b4b,#312e81)", color: "white",
       }}>
-        <Link href="/" style={{ color: "white", textDecoration: "none", fontSize: 22 }}>←</Link>
-        <span style={{ fontWeight: 700, fontSize: 15 }}>🌙 残業報告</span>
+        <span style={{ fontWeight: 800, fontSize: 16, flexShrink: 0 }}>Mita=C</span>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.75)" }}>
+            <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
+          </div>
+          <div style={{ height: 6, background: "rgba(255,255,255,0.25)", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ width: `${xpPct}%`, height: "100%", background: "rgba(255,255,255,0.9)", borderRadius: 3 }} />
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <span style={{ fontSize: 10, opacity: 0.7 }}>アバター→</span>
+          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>⚔️</div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>{currentUser.name}</span>
+            <span style={{ fontSize: 10, opacity: 0.75 }}>Lv.{currentUser.level}</span>
+          </div>
+        </div>
       </header>
 
       {/* ボディ */}

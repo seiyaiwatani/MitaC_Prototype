@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { repoCas, projects } from "@/lib/mock-data";
+import { repoCas, projects, currentUser } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 
 const SCOPE_COLOR: Record<string, string> = {
@@ -21,6 +21,7 @@ const FILTERS = [
 export default function RepoCaList() {
   const [filter, setFilter] = useState<"all" | "favorite" | "incomplete" | "completed">("all");
   const [search, setSearch] = useState("");
+  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
 
   const filtered = repoCas.filter((rc) => {
     const proj = projects.find((p) => p.id === rc.projectId);
@@ -44,14 +45,14 @@ export default function RepoCaList() {
 
   return (
     <div className="page-root">
-      {/* ヘッダー */}
+      {/* ヘッダー：ロゴ | 検索 | XPバー | アバター */}
       <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
+        height: 56, flexShrink: 0,
+        display: "flex", alignItems: "center", padding: "0 12px", gap: 10,
         background: "linear-gradient(90deg,#10b981,#059669)", color: "white",
       }}>
-        <span style={{ fontWeight: 800, fontSize: 15 }}>🃏 RepoCa</span>
-        {/* 検索 */}
+        <span style={{ fontWeight: 800, fontSize: 16, flexShrink: 0 }}>Mita=C</span>
+        {/* 検索バー */}
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 6,
           background: "rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 10px",
@@ -64,9 +65,23 @@ export default function RepoCaList() {
             style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 12 }}
           />
         </div>
+        {/* XPバー */}
+        <div style={{ width: 100, flexShrink: 0, display: "flex", flexDirection: "column", gap: 2 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(255,255,255,0.8)" }}>
+            <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
+          </div>
+          <div style={{ height: 5, background: "rgba(255,255,255,0.3)", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ width: `${xpPct}%`, height: "100%", background: "rgba(255,255,255,0.95)", borderRadius: 3 }} />
+          </div>
+        </div>
+        {/* アバター */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+          <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>⚔️</div>
+          <span style={{ fontSize: 11, fontWeight: 700 }}>{currentUser.name}</span>
+        </div>
         <Link href="/repoca/new" style={{
           background: "white", color: "#059669", borderRadius: 20,
-          padding: "4px 12px", fontSize: 11, fontWeight: 700, textDecoration: "none",
+          padding: "4px 12px", fontSize: 11, fontWeight: 700, textDecoration: "none", flexShrink: 0,
         }}>
           + 作成
         </Link>

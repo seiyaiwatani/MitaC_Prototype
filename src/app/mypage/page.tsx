@@ -10,6 +10,12 @@ const AVATARS = [
   { id: "knight",  icon: "🛡️", name: "騎士" },
 ];
 
+const NOTICES = [
+  "◇ 新機能追加！バッジシートが追加されました",
+  "◇ 1月10日にメンテナンスを実施します",
+  "◇ 今月のTOPユーザーに特別ボーナスをプレゼント",
+];
+
 export default function MyPage() {
   const [avatar, setAvatar] = useState(currentUser.avatar);
   const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
@@ -17,7 +23,6 @@ export default function MyPage() {
   const lockedBadges   = badges.filter((b) => !b.acquired);
   const currentAvatarIcon = AVATARS.find((a) => a.id === avatar)?.icon ?? "⚔️";
 
-  // ミッションをタイプ別に
   const missionGroups = [
     { type: "daily",     label: "デイリー", icon: "📅" },
     { type: "monthly",   label: "マンスリー", icon: "📆" },
@@ -26,19 +31,70 @@ export default function MyPage() {
 
   return (
     <div className="page-root">
-      {/* ヘッダー */}
+      {/* ヘッダー：ロゴ | XPバー | アバター情報 */}
       <header style={{
-        height: 48, flexShrink: 0,
+        height: 56, flexShrink: 0,
         display: "flex", alignItems: "center",
-        padding: "0 16px",
+        padding: "0 16px", gap: 12,
         background: "linear-gradient(90deg,#7c3aed,#db2777)",
-        color: "white", gap: 8,
+        color: "white",
       }}>
-        <span style={{ fontWeight: 800, fontSize: 15 }}>⚔️ マイページ</span>
-        <span style={{ marginLeft: "auto", background: "rgba(255,255,255,0.2)", padding: "2px 10px", borderRadius: 99, fontSize: 12 }}>
-          💰 {currentUser.currency.toLocaleString()}
-        </span>
+        <span style={{ fontWeight: 800, fontSize: 16, flexShrink: 0 }}>Mita=C</span>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.75)" }}>
+            <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
+          </div>
+          <div style={{ height: 6, background: "rgba(255,255,255,0.25)", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ width: `${xpPct}%`, height: "100%", background: "rgba(255,255,255,0.9)", borderRadius: 3 }} />
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <span style={{ fontSize: 10, opacity: 0.7 }}>アバター→</span>
+          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>
+            {currentAvatarIcon}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>{currentUser.name}</span>
+            <span style={{ fontSize: 10, opacity: 0.75 }}>Lv.{currentUser.level}</span>
+          </div>
+        </div>
       </header>
+
+      {/* お知らせバー */}
+      <div style={{
+        flexShrink: 0,
+        background: "#f5f5f5",
+        borderBottom: "1px solid #e5e7eb",
+        padding: "5px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        overflow: "hidden",
+      }}>
+        <div style={{
+          background: "#b7b7b7",
+          color: "white",
+          fontSize: 10,
+          fontWeight: 700,
+          padding: "2px 8px",
+          borderRadius: 4,
+          flexShrink: 0,
+        }}>
+          お知らせ
+        </div>
+        <div style={{
+          display: "flex",
+          gap: 24,
+          overflow: "hidden",
+          fontSize: 11,
+          color: "#374151",
+          whiteSpace: "nowrap",
+        }}>
+          {NOTICES.map((notice, i) => (
+            <span key={i}>{notice}</span>
+          ))}
+        </div>
+      </div>
 
       {/* メイン（スクロールなし） */}
       <div className="page-body" style={{ padding: 8, gap: 8, overflow: "hidden" }}>
@@ -70,6 +126,11 @@ export default function MyPage() {
               </div>
               <div className="xp-bar"><div className="xp-bar-fill" style={{ width: `${xpPct}%` }} /></div>
             </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
+              <div style={{ background: "rgba(255,255,255,0.2)", color: "white", fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600 }}>
+                💰 {currentUser.currency.toLocaleString()}
+              </div>
+            </div>
           </div>
 
           {/* アバター選択 */}
@@ -81,14 +142,15 @@ export default function MyPage() {
                   key={a.id}
                   onClick={() => setAvatar(a.id)}
                   style={{
-                    padding: "8px 4px", borderRadius: 8, border: `2px solid ${avatar === a.id ? "#4f46e5" : "#e5e7eb"}`,
-                    background: avatar === a.id ? "#eef2ff" : "white",
+                    padding: "8px 4px", borderRadius: 8,
+                    border: `2px solid ${avatar === a.id ? "#7c3aed" : "#e5e7eb"}`,
+                    background: avatar === a.id ? "#f5f3ff" : "white",
                     cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
                     fontSize: 20,
                   }}
                 >
                   {a.icon}
-                  <span style={{ fontSize: 9, color: avatar === a.id ? "#4f46e5" : "#6b7280", fontWeight: 600 }}>{a.name}</span>
+                  <span style={{ fontSize: 9, color: avatar === a.id ? "#7c3aed" : "#6b7280", fontWeight: 600 }}>{a.name}</span>
                 </button>
               ))}
             </div>
@@ -97,11 +159,9 @@ export default function MyPage() {
           {/* 工数報告（今月） */}
           <div className="card" style={{ padding: 10, flex: 1 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>今月の工数報告</div>
-            <div style={{ fontSize: 11 }}>
-              <button className="btn btn-ghost" style={{ width: "100%", padding: "6px", fontSize: 11 }}>
-                工数確認
-              </button>
-            </div>
+            <button className="btn btn-ghost" style={{ width: "100%", padding: "6px", fontSize: 11 }}>
+              工数確認
+            </button>
           </div>
         </div>
 
@@ -166,7 +226,7 @@ export default function MyPage() {
                                 width: `${Math.min(pct, 100)}%`, height: "100%", borderRadius: 3,
                                 background: done
                                   ? "linear-gradient(90deg,#f59e0b,#d97706)"
-                                  : "linear-gradient(90deg,#10b981,#059669)",
+                                  : "linear-gradient(90deg,#7c3aed,#db2777)",
                               }} />
                             </div>
                             <span style={{ fontSize: 9, color: "#9ca3af", whiteSpace: "nowrap" }}>{m.progress}/{m.goal}</span>
