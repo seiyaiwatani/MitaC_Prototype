@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { repoCas, projects, currentUser } from "@/lib/mock-data";
-import styles from "./EndReport.module.scss";
+import { repoCas, projects } from "@/lib/mock-data";
+import PageHeader from "@/components/PageHeader";
+import styles from "./index.module.scss";
 
 const DURATIONS = [0, 15, 30, 45, 60, 90, 120, 150, 180, 240];
 
@@ -23,17 +24,16 @@ const fmt = (min: number) => {
 export default function EndReport() {
   const router = useRouter();
   const todayIds = ["rc1", "rc2", "rc3"];
-  const [durations, setDurations]     = useState<Record<string, number>>({ rc1: 120, rc2: 90, rc3: 60 });
-  const [completed, setCompleted]     = useState<Record<string, boolean>>({ rc1: false, rc2: false, rc3: true });
-  const [extraIds,  setExtraIds]      = useState<string[]>([]);
+  const [durations, setDurations]       = useState<Record<string, number>>({ rc1: 120, rc2: 90, rc3: 60 });
+  const [completed, setCompleted]       = useState<Record<string, boolean>>({ rc1: false, rc2: false, rc3: true });
+  const [extraIds,  setExtraIds]        = useState<string[]>([]);
   const [showAddPanel, setShowAddPanel] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm]   = useState(false);
 
-  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const allSelectedIds = [...todayIds, ...extraIds];
-  const available = repoCas.filter((r) => !allSelectedIds.includes(r.id));
-  const totalMin  = allSelectedIds.reduce((s, id) => s + (durations[id] ?? 0), 0);
-  const totalXp   = allSelectedIds.reduce((s, id) => {
+  const available      = repoCas.filter((r) => !allSelectedIds.includes(r.id));
+  const totalMin       = allSelectedIds.reduce((s, id) => s + (durations[id] ?? 0), 0);
+  const totalXp        = allSelectedIds.reduce((s, id) => {
     const rc = repoCas.find((r) => r.id === id);
     return s + (rc?.xp ?? 0) + (completed[id] ? 10 : 0);
   }, 0);
@@ -43,59 +43,37 @@ export default function EndReport() {
   const addExtra = (id: string) =>
     setExtraIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
-  const Header = () => (
-    <header className={styles.EndReport_header}>
-      <span className={styles.EndReport_logo}>Mita=C</span>
-      <div className={styles.EndReport_xpSection}>
-        <div className={styles.EndReport_xpLabels}>
-          <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
-        </div>
-        <div className={styles.EndReport_xpTrack}>
-          <div className={styles.EndReport_xpFill} style={{ width: `${xpPct}%` }} />
-        </div>
-      </div>
-      <div className={styles.EndReport_avatarSection}>
-        <span className={styles.EndReport_avatarHint}>アバター→</span>
-        <div className={styles.EndReport_avatarIcon}>⚔️</div>
-        <div className={styles.EndReport_avatarInfo}>
-          <span className={styles.EndReport_avatarName}>{currentUser.name}</span>
-          <span className={styles.EndReport_avatarLevel}>Lv.{currentUser.level}</span>
-        </div>
-      </div>
-    </header>
-  );
-
   /* ── 確認画面 ── */
   if (showConfirm) {
     return (
       <div className="page-root">
-        <Header />
-        <div className={`page-body ${styles.EndReport_confirmBody}`}>
-          <div className={styles.EndReport_confirmTitle}>🌇 終業報告 — 確認</div>
-          <div className={`card ${styles.EndReport_statusCard}`}>
-            <div className={styles.EndReport_statusCard_title}>確認ステータス</div>
+        <PageHeader background="linear-gradient(90deg,#f59e0b,#d97706)" />
+        <div className={`page-body ${styles.end_report_confirm_body}`}>
+          <div className={styles.end_report_confirm_title}>🌇 終業報告 — 確認</div>
+          <div className={`card ${styles.end_report_status_card}`}>
+            <div className={styles.end_report_status_card_title}>確認ステータス</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {[{ label: "始業報告", ok: true }, { label: "終業報告", ok: true }, { label: "残業報告", ok: false }].map((r) => (
-                <div key={r.label} className={styles.EndReport_statusRow}>
+                <div key={r.label} className={styles.end_report_status_row}>
                   <span>{r.label}</span>
                   <span className={r.ok ? "status-ok" : "status-ng"}>{r.ok ? "確認済" : "未確認"}</span>
                 </div>
               ))}
-              <div className={styles.EndReport_summaryRow}>
+              <div className={styles.end_report_summary_row}>
                 <span>完了タスク</span>
-                <span className={styles.EndReport_summaryValue}>{Object.values(completed).filter(Boolean).length}/{allSelectedIds.length}</span>
+                <span className={styles.end_report_summary_value}>{Object.values(completed).filter(Boolean).length}/{allSelectedIds.length}</span>
               </div>
-              <div className={styles.EndReport_summaryRow}>
+              <div className={styles.end_report_summary_row}>
                 <span>総工数</span>
-                <span className={styles.EndReport_summaryValue}>{fmt(totalMin)}</span>
+                <span className={styles.end_report_summary_value}>{fmt(totalMin)}</span>
               </div>
-              <div className={styles.EndReport_summaryRow}>
+              <div className={styles.end_report_summary_row}>
                 <span>獲得XP</span>
-                <span className={styles.EndReport_xpValue}>+{totalXp} XP</span>
+                <span className={styles.end_report_xp_value}>+{totalXp} XP</span>
               </div>
             </div>
           </div>
-          <div className={styles.EndReport_confirmFooter}>
+          <div className={styles.end_report_confirm_footer}>
             <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>戻る</button>
             <button
               className="btn"
@@ -113,21 +91,21 @@ export default function EndReport() {
   /* ── メイン画面 ── */
   return (
     <div className="page-root">
-      <Header />
+      <PageHeader background="linear-gradient(90deg,#f59e0b,#d97706)" />
 
-      <div className={`page-body ${styles.EndReport_body}`}>
+      <div className={`page-body ${styles.end_report_body}`}>
 
         {/* 左・メインエリア */}
-        <div className={styles.EndReport_chartArea}>
-          <div className={styles.EndReport_chartTitle}>
+        <div className={styles.end_report_chart_area}>
+          <div className={styles.end_report_chart_title}>
             🌇 本日の工数 — {fmt(totalMin)}
           </div>
 
-          <div className={styles.EndReport_legend}>
+          <div className={styles.end_report_legend}>
             {Object.entries(SCOPE_COLOR).map(([scope, color]) => (
-              <div key={scope} className={styles.EndReport_legend_item}>
-                <div className={styles.EndReport_legend_dot} style={{ background: color }} />
-                <span className={styles.EndReport_legend_label}>{scope}</span>
+              <div key={scope} className={styles.end_report_legend_item}>
+                <div className={styles.end_report_legend_dot} style={{ background: color }} />
+                <span className={styles.end_report_legend_label}>{scope}</span>
               </div>
             ))}
           </div>
@@ -144,10 +122,10 @@ export default function EndReport() {
                 const color = SCOPE_COLOR[rc.implScope] ?? "#757575";
 
                 return (
-                  <div key={id} className={styles.EndReport_barItem}>
-                    <div className={styles.EndReport_barItem_header}>
+                  <div key={id} className={styles.end_report_bar_item}>
+                    <div className={styles.end_report_bar_item_header}>
                       <button
-                        className={styles.EndReport_barItem_check}
+                        className={styles.end_report_bar_item_check}
                         style={{
                           border: `2px solid ${done ? "#10b981" : "#d1d5db"}`,
                           background: done ? "#10b981" : "white",
@@ -156,28 +134,28 @@ export default function EndReport() {
                       >
                         {done ? "✓" : ""}
                       </button>
-                      <span className={`chip chip-indigo ${styles.EndReport_barItem_projChip}`}>
+                      <span className={`chip chip-indigo ${styles.end_report_bar_item_proj_chip}`}>
                         {proj?.name}
                       </span>
-                      <span className={styles.EndReport_barItem_taskName}>{rc.content}</span>
-                      {done && <span className={styles.EndReport_barItem_bonus}>+10XP</span>}
+                      <span className={styles.end_report_bar_item_task_name}>{rc.content}</span>
+                      {done && <span className={styles.end_report_bar_item_bonus}>+10XP</span>}
                     </div>
 
-                    <div className={styles.EndReport_barRow}>
-                      <div className={styles.EndReport_barRow_label}>
+                    <div className={styles.end_report_bar_row}>
+                      <div className={styles.end_report_bar_row_label}>
                         {dur === 0 ? "0分" : fmt(dur)}
                       </div>
-                      <div className={styles.EndReport_barRow_track}>
+                      <div className={styles.end_report_bar_row_track}>
                         <div
-                          className={styles.EndReport_barRow_fill}
+                          className={styles.end_report_bar_row_fill}
                           style={{ width: `${barPct}%`, background: color }}
                         />
                         {[25, 50, 75].map((pct) => (
-                          <div key={pct} className={styles.EndReport_barRow_grid} style={{ left: `${pct}%` }} />
+                          <div key={pct} className={styles.end_report_bar_row_grid} style={{ left: `${pct}%` }} />
                         ))}
                       </div>
                       <select
-                        className={styles.EndReport_barRow_select}
+                        className={styles.end_report_bar_row_select}
                         value={durations[id] ?? 0}
                         onChange={(e) => setDurations((p) => ({ ...p, [id]: Number(e.target.value) }))}
                       >
@@ -190,17 +168,17 @@ export default function EndReport() {
             </div>
           </div>
 
-          <div className={styles.EndReport_xAxis}>
+          <div className={styles.end_report_x_axis}>
             <span>0h</span><span>2h</span><span>4h</span><span>6h</span><span>8h</span>
           </div>
         </div>
 
         {/* 右パネル: 追加可能RepoCa */}
         {showAddPanel && (
-          <div className={styles.EndReport_addPanel}>
-            <div className={styles.EndReport_addPanel_header}>
+          <div className={styles.end_report_add_panel}>
+            <div className={styles.end_report_add_panel_header}>
               <span>RepoCaを追加</span>
-              <button className={styles.EndReport_addPanel_close} onClick={() => setShowAddPanel(false)}>✕</button>
+              <button className={styles.end_report_add_panel_close} onClick={() => setShowAddPanel(false)}>✕</button>
             </div>
             <div className="scroll-y" style={{ flex: 1, padding: 8 }}>
               {available.map((rc) => {
@@ -215,8 +193,8 @@ export default function EndReport() {
                   >
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span className={`chip chip-indigo ${styles.EndReport_addPanel_itemProj}`}>{proj?.name}</span>
-                        <p className={styles.EndReport_addPanel_itemContent}>{rc.content}</p>
+                        <span className={`chip chip-indigo ${styles.end_report_add_panel_item_proj}`}>{proj?.name}</span>
+                        <p className={styles.end_report_add_panel_item_content}>{rc.content}</p>
                       </div>
                       <span style={{ fontSize: 14, marginLeft: 6 }}>{isExtra ? "✅" : "⬜"}</span>
                     </div>
@@ -229,7 +207,7 @@ export default function EndReport() {
       </div>
 
       {/* フッター */}
-      <div className={styles.EndReport_footer}>
+      <div className={styles.end_report_footer}>
         <button
           className="btn btn-ghost"
           style={{ fontSize: 12, padding: "7px 14px" }}
@@ -237,7 +215,7 @@ export default function EndReport() {
         >
           + RepoCaを追加
         </button>
-        <div className={styles.EndReport_footer_spacer} />
+        <div className={styles.end_report_footer_spacer} />
         <Link href="/">
           <button className="btn btn-ghost" style={{ fontSize: 12 }}>戻る</button>
         </Link>

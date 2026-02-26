@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { repoCas, projects, currentUser } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
-import styles from "./RepoCaList.module.scss";
+import styles from "./index.module.scss";
 
 const SCOPE_COLOR: Record<string, string> = {
   フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
@@ -13,10 +13,10 @@ const SCOPE_COLOR: Record<string, string> = {
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌" };
 
 const FILTERS = [
-  { key: "all",       label: "すべて" },
-  { key: "favorite",  label: "⭐ お気に入り" },
+  { key: "all",        label: "すべて" },
+  { key: "favorite",   label: "⭐ お気に入り" },
   { key: "incomplete", label: "未完了" },
-  { key: "completed", label: "✓ 完了" },
+  { key: "completed",  label: "✓ 完了" },
 ] as const;
 
 export default function RepoCaList() {
@@ -32,8 +32,8 @@ export default function RepoCaList() {
       (proj?.name ?? "").includes(search);
     const matchFilter =
       filter === "all" ||
-      (filter === "favorite"  && rc.isFavorite) ||
-      (filter === "completed" && rc.isCompleted) ||
+      (filter === "favorite"   && rc.isFavorite) ||
+      (filter === "completed"  && rc.isCompleted) ||
       (filter === "incomplete" && !rc.isCompleted);
     return matchSearch && matchFilter;
   });
@@ -46,52 +46,53 @@ export default function RepoCaList() {
 
   return (
     <div className="page-root">
-      <header className={styles.RepoCaList_header}>
-        <span className={styles.RepoCaList_logo}>Mita=C</span>
-        <div className={styles.RepoCaList_search}>
-          <span className={styles.RepoCaList_search_icon}>🔍</span>
+      {/* RepoCaListは独自ヘッダー（検索バー付き） */}
+      <header className={styles.repoca_list_header}>
+        <span className={styles.repoca_list_logo}>Mita=C</span>
+        <div className={styles.repoca_list_search}>
+          <span className={styles.repoca_list_search_icon}>🔍</span>
           <input
-            className={styles.RepoCaList_search_input}
+            className={styles.repoca_list_search_input}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="検索..."
           />
         </div>
-        <div className={styles.RepoCaList_xpSection}>
-          <div className={styles.RepoCaList_xpLabels}>
+        <div className={styles.repoca_list_xp_section}>
+          <div className={styles.repoca_list_xp_labels}>
             <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
           </div>
-          <div className={styles.RepoCaList_xpTrack}>
-            <div className={styles.RepoCaList_xpFill} style={{ width: `${xpPct}%` }} />
+          <div className={styles.repoca_list_xp_track}>
+            <div className={styles.repoca_list_xp_fill} style={{ width: `${xpPct}%` }} />
           </div>
         </div>
-        <div className={styles.RepoCaList_avatarSection}>
-          <div className={styles.RepoCaList_avatarIcon}>⚔️</div>
-          <span className={styles.RepoCaList_avatarName}>{currentUser.name}</span>
+        <div className={styles.repoca_list_avatar_section}>
+          <div className={styles.repoca_list_avatar_icon}>⚔️</div>
+          <span className={styles.repoca_list_avatar_name}>{currentUser.name}</span>
         </div>
-        <Link href="/repoca/new" className={styles.RepoCaList_createBtn}>+ 作成</Link>
+        <Link href="/repoca/new" className={styles.repoca_list_create_btn}>+ 作成</Link>
       </header>
 
-      <div className={`page-body ${styles.RepoCaList_body}`}>
+      <div className={`page-body ${styles.repoca_list_body}`}>
 
         {/* 統計 */}
-        <div className={styles.RepoCaList_statsRow}>
+        <div className={styles.repoca_list_stats_row}>
           {stats.map((s) => (
-            <div key={s.label} className={`card ${styles.RepoCaList_statCard}`}>
-              <div className={styles.RepoCaList_statCard_icon}>{s.icon}</div>
-              <div className={styles.RepoCaList_statCard_value}>{s.value}</div>
-              <div className={styles.RepoCaList_statCard_label}>{s.label}</div>
+            <div key={s.label} className={`card ${styles.repoca_list_stat_card}`}>
+              <div className={styles.repoca_list_stat_card_icon}>{s.icon}</div>
+              <div className={styles.repoca_list_stat_card_value}>{s.value}</div>
+              <div className={styles.repoca_list_stat_card_label}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* フィルター */}
-        <div className={styles.RepoCaList_filters}>
+        <div className={styles.repoca_list_filters}>
           {FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`${styles.RepoCaList_filterBtn} ${filter === f.key ? styles["RepoCaList_filterBtn--active"] : styles["RepoCaList_filterBtn--idle"]}`}
+              className={`${styles.repoca_list_filter_btn} ${filter === f.key ? styles["repoca_list_filter_btn--active"] : styles["repoca_list_filter_btn--idle"]}`}
             >
               {f.label}
             </button>
@@ -101,9 +102,9 @@ export default function RepoCaList() {
         {/* カードリスト */}
         <div className="scroll-y" style={{ flex: 1 }}>
           {filtered.length === 0 ? (
-            <div className={styles.RepoCaList_empty}>
-              <div className={styles.RepoCaList_empty_icon}>🃏</div>
-              <p className={styles.RepoCaList_empty_text}>RepoCaが見つかりませんでした</p>
+            <div className={styles.repoca_list_empty}>
+              <div className={styles.repoca_list_empty_icon}>🃏</div>
+              <p className={styles.repoca_list_empty_text}>RepoCaが見つかりませんでした</p>
             </div>
           ) : (
             filtered.map((rc) => <RepoCaCard key={rc.id} rc={rc} />)
@@ -117,23 +118,23 @@ export default function RepoCaList() {
 function RepoCaCard({ rc }: { rc: RepoCa }) {
   const proj = projects.find((p) => p.id === rc.projectId);
   return (
-    <div className={`card ${styles.RepoCaCard_root}`}>
-      <div className={`${styles.RepoCaCard_check} ${rc.isCompleted ? styles["RepoCaCard_check--done"] : styles["RepoCaCard_check--undone"]}`}>
+    <div className={`card ${styles.repoca_card_root}`}>
+      <div className={`${styles.repoca_card_check} ${rc.isCompleted ? styles["repoca_card_check--done"] : styles["repoca_card_check--undone"]}`}>
         {rc.isCompleted ? "✓" : ""}
       </div>
-      <div className={styles.RepoCaCard_body}>
-        <div className={styles.RepoCaCard_tags}>
-          <span className={styles.RepoCaCard_taskIcon}>{TASK_ICON[rc.taskType]}</span>
-          <span className={`chip chip-indigo ${styles.RepoCaCard_projChip}`}>{proj?.name}</span>
+      <div className={styles.repoca_card_body}>
+        <div className={styles.repoca_card_tags}>
+          <span className={styles.repoca_card_task_icon}>{TASK_ICON[rc.taskType]}</span>
+          <span className={`chip chip-indigo ${styles.repoca_card_proj_chip}`}>{proj?.name}</span>
           <span className="chip" style={{ fontSize: 10, background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
             {rc.implScope}
           </span>
           {rc.isFavorite && <span style={{ fontSize: 10 }}>⭐</span>}
         </div>
-        <p className={styles.RepoCaCard_content}>{rc.content}</p>
-        <div className={styles.RepoCaCard_footer}>
+        <p className={styles.repoca_card_content}>{rc.content}</p>
+        <div className={styles.repoca_card_footer}>
           <span className="chip chip-gray" style={{ fontSize: 9 }}>{rc.label}</span>
-          <span className={styles.RepoCaCard_xp}>+{rc.xp} XP</span>
+          <span className={styles.repoca_card_xp}>+{rc.xp} XP</span>
         </div>
       </div>
     </div>

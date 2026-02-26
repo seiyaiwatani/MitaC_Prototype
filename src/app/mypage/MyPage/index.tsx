@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { currentUser, badges, missions } from "@/lib/mock-data";
-import styles from "./MyPage.module.scss";
+import PageHeader from "@/components/PageHeader";
+import styles from "./index.module.scss";
 
 const AVATARS = [
   { id: "warrior", icon: "⚔️", name: "戦士" },
@@ -32,71 +33,56 @@ export default function MyPage() {
 
   return (
     <div className="page-root">
-      <header className={styles.MyPage_header}>
-        <span className={styles.MyPage_logo}>Mita=C</span>
-        <div className={styles.MyPage_xpSection}>
-          <div className={styles.MyPage_xpLabels}>
-            <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
-          </div>
-          <div className={styles.MyPage_xpTrack}>
-            <div className={styles.MyPage_xpFill} style={{ width: `${xpPct}%` }} />
-          </div>
-        </div>
-        <div className={styles.MyPage_avatarSection}>
-          <span className={styles.MyPage_avatarHint}>アバター→</span>
-          <div className={styles.MyPage_avatarIcon}>{currentAvatarIcon}</div>
-          <div className={styles.MyPage_avatarInfo}>
-            <span className={styles.MyPage_avatarName}>{currentUser.name}</span>
-            <span className={styles.MyPage_avatarLevel}>Lv.{currentUser.level}</span>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        background="linear-gradient(90deg,#7c3aed,#db2777)"
+        avatarIcon={currentAvatarIcon}
+      />
 
       {/* お知らせバー */}
-      <div className={styles.MyPage_notice}>
-        <div className={styles.MyPage_notice_badge}>お知らせ</div>
-        <div className={styles.MyPage_notice_list}>
+      <div className={styles.my_page_notice}>
+        <div className={styles.my_page_notice_badge}>お知らせ</div>
+        <div className={styles.my_page_notice_list}>
           {NOTICES.map((notice, i) => (
             <span key={i}>{notice}</span>
           ))}
         </div>
       </div>
 
-      <div className={`page-body ${styles.MyPage_body}`}>
+      <div className={`page-body ${styles.my_page_body}`}>
 
         {/* 左カラム */}
-        <div className={styles.MyPage_leftCol}>
+        <div className={styles.my_page_left_col}>
 
           {/* フィジカルカード */}
-          <div className={`card ${styles.MyPage_characterCard}`}>
-            <div className={styles.MyPage_characterCard_avatar}>{currentAvatarIcon}</div>
-            <div className={styles.MyPage_characterCard_name}>{currentUser.name}</div>
-            <span className={styles.MyPage_characterCard_level}>Lv.{currentUser.level}</span>
-            <div className={styles.MyPage_characterCard_xpRow}>
-              <div className={styles.MyPage_characterCard_xpLabels}>
+          <div className={`card ${styles.my_page_character_card}`}>
+            <div className={styles.my_page_character_card_avatar}>{currentAvatarIcon}</div>
+            <div className={styles.my_page_character_card_name}>{currentUser.name}</div>
+            <span className={styles.my_page_character_card_level}>Lv.{currentUser.level}</span>
+            <div className={styles.my_page_character_card_xp_row}>
+              <div className={styles.my_page_character_card_xp_labels}>
                 <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
               </div>
               <div className="xp-bar"><div className="xp-bar-fill" style={{ width: `${xpPct}%` }} /></div>
             </div>
             <div>
-              <span className={styles.MyPage_characterCard_currency}>
+              <span className={styles.my_page_character_card_currency}>
                 💰 {currentUser.currency.toLocaleString()}
               </span>
             </div>
           </div>
 
           {/* アバター選択 */}
-          <div className={`card ${styles.MyPage_avatarCard}`}>
-            <div className={styles.MyPage_avatarCard_label}>アバター</div>
-            <div className={styles.MyPage_avatarGrid}>
+          <div className={`card ${styles.my_page_avatar_card}`}>
+            <div className={styles.my_page_avatar_card_label}>アバター</div>
+            <div className={styles.my_page_avatar_grid}>
               {AVATARS.map((a) => (
                 <button
                   key={a.id}
                   onClick={() => setAvatar(a.id)}
-                  className={`${styles.MyPage_avatarBtn} ${avatar === a.id ? styles["MyPage_avatarBtn--active"] : styles["MyPage_avatarBtn--idle"]}`}
+                  className={`${styles.my_page_avatar_btn} ${avatar === a.id ? styles["my_page_avatar_btn--active"] : styles["my_page_avatar_btn--idle"]}`}
                 >
                   {a.icon}
-                  <span className={`${styles.MyPage_avatarBtn_label} ${avatar === a.id ? styles["MyPage_avatarBtn_label--active"] : styles["MyPage_avatarBtn_label--idle"]}`}>
+                  <span className={`${styles.my_page_avatar_btn_label} ${avatar === a.id ? styles["my_page_avatar_btn_label--active"] : styles["my_page_avatar_btn_label--idle"]}`}>
                     {a.name}
                   </span>
                 </button>
@@ -105,8 +91,8 @@ export default function MyPage() {
           </div>
 
           {/* 工数報告 */}
-          <div className={`card ${styles.MyPage_workhourCard}`}>
-            <div className={styles.MyPage_workhourCard_label}>今月の工数報告</div>
+          <div className={`card ${styles.my_page_workhour_card}`}>
+            <div className={styles.my_page_workhour_card_label}>今月の工数報告</div>
             <button className="btn btn-ghost" style={{ width: "100%", padding: "6px", fontSize: 11 }}>
               工数確認
             </button>
@@ -114,23 +100,23 @@ export default function MyPage() {
         </div>
 
         {/* 右カラム */}
-        <div className={styles.MyPage_rightCol}>
+        <div className={styles.my_page_right_col}>
 
           {/* バッジ */}
-          <div className={`card ${styles.MyPage_badgeCard}`}>
-            <div className={styles.MyPage_badgeCard_title}>
+          <div className={`card ${styles.my_page_badge_card}`}>
+            <div className={styles.my_page_badge_card_title}>
               🏅 バッジ ({acquiredBadges.length}/{badges.length})
             </div>
-            <div className={styles.MyPage_badgeList}>
+            <div className={styles.my_page_badge_list}>
               {acquiredBadges.map((b) => (
                 <div key={b.id} title={`${b.name}: ${b.description}`}
-                  className={`${styles.MyPage_badge} ${styles["MyPage_badge--acquired"]}`}>
+                  className={`${styles.my_page_badge} ${styles["my_page_badge--acquired"]}`}>
                   {b.icon}
                 </div>
               ))}
               {lockedBadges.map((b) => (
                 <div key={b.id} title={b.description}
-                  className={`${styles.MyPage_badge} ${styles["MyPage_badge--locked"]}`}>
+                  className={`${styles.my_page_badge} ${styles["my_page_badge--locked"]}`}>
                   {b.icon}
                 </div>
               ))}
@@ -138,27 +124,27 @@ export default function MyPage() {
           </div>
 
           {/* ミッション */}
-          <div className={styles.MyPage_missionGrid}>
+          <div className={styles.my_page_mission_grid}>
             {missionGroups.map(({ type, label, icon }) => {
               const items = missions.filter((m) => m.type === type);
               return (
-                <div key={type} className={`card ${styles.MyPage_missionCol}`}>
-                  <div className={styles.MyPage_missionCol_title}>{icon} {label}ミッション</div>
+                <div key={type} className={`card ${styles.my_page_mission_col}`}>
+                  <div className={styles.my_page_mission_col_title}>{icon} {label}ミッション</div>
                   <div className="scroll-y" style={{ flex: 1 }}>
                     {items.map((m) => {
                       const pct = Math.round((m.progress / m.goal) * 100);
                       const done = pct >= 100;
                       return (
-                        <div key={m.id} className={styles.MyPage_mission}>
-                          <div className={styles.MyPage_mission_header}>
-                            <span className={styles.MyPage_mission_title}>{m.title}</span>
+                        <div key={m.id} className={styles.my_page_mission}>
+                          <div className={styles.my_page_mission_header}>
+                            <span className={styles.my_page_mission_title}>{m.title}</span>
                             <span className="chip chip-yellow" style={{ fontSize: 9 }}>+{m.reward}💰</span>
                           </div>
-                          <p className={styles.MyPage_mission_desc}>{m.description}</p>
-                          <div className={styles.MyPage_mission_barRow}>
-                            <div className={styles.MyPage_mission_track}>
+                          <p className={styles.my_page_mission_desc}>{m.description}</p>
+                          <div className={styles.my_page_mission_bar_row}>
+                            <div className={styles.my_page_mission_track}>
                               <div
-                                className={styles.MyPage_mission_fill}
+                                className={styles.my_page_mission_fill}
                                 style={{
                                   width: `${Math.min(pct, 100)}%`,
                                   background: done
@@ -167,10 +153,10 @@ export default function MyPage() {
                                 }}
                               />
                             </div>
-                            <span className={styles.MyPage_mission_count}>{m.progress}/{m.goal}</span>
+                            <span className={styles.my_page_mission_count}>{m.progress}/{m.goal}</span>
                           </div>
                           {done && (
-                            <div className={styles.MyPage_mission_bonus}>達成ボーナス！</div>
+                            <div className={styles.my_page_mission_bonus}>達成ボーナス！</div>
                           )}
                         </div>
                       );

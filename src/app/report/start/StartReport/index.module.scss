@@ -1,0 +1,206 @@
+// ============================================================
+// StartReport
+// ============================================================
+
+// ── 選択画面 ──
+.start_report_body {
+  padding: 0;
+  gap: 0;
+}
+
+.start_report_left_col {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.start_report_left_col_header {
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.start_report_left_col_footer {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  background: white;
+}
+
+.start_report_right_col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.start_report_right_col_header {
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.start_report_right_col_new_link {
+  font-size: 11px;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.start_report_favorite_label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+// ── 確認画面 ──
+.start_report_confirm_body {
+  padding: 12px;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.start_report_confirm_title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1e1b4b;
+}
+
+.start_report_status_card {
+  padding: 12px;
+}
+
+.start_report_status_card_title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.start_report_status_row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.start_report_summary_row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.start_report_summary_value {
+  font-weight: 700;
+}
+
+.start_report_xp_value {
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.start_report_selected_card {
+  padding: 12px;
+}
+
+.start_report_selected_card_title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.start_report_selected_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.start_report_selected_item_check {
+  color: #4f46e5;
+}
+
+.start_report_selected_item_content {
+  font-size: 12px;
+  color: #374151;
+}
+
+.start_report_confirm_footer {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+// ── RepoCaItem ──
+.start_report_repoca_item_tags {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+
+.start_report_repoca_item_proj_chip {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.start_report_repoca_item_footer {
+  display: flex;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.start_report_repoca_item_meta {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.start_report_repoca_item_xp {
+  font-size: 10px;
+  color: #4f46e5;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.start_report_repoca_item_check {
+  font-size: 16px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .start_report_body {
+    flex-direction: column;
+  }
+
+  .start_report_left_col {
+    flex: none;
+    border-right: none;
+    border-bottom: 2px solid #e5e7eb;
+    max-height: 45%;
+  }
+
+  .start_report_right_col {
+    flex: 1;
+  }
+}

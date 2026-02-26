@@ -1,5 +1,6 @@
 import Link from "next/link";
-import styles from "./ReportIndex.module.scss";
+import PageHeader from "@/components/PageHeader";
+import styles from "./index.module.scss";
 
 const REPORTS = [
   {
@@ -31,32 +32,28 @@ const REPORTS = [
 export default function ReportIndex() {
   return (
     <div className="page-root">
-      <header className={styles.ReportIndex_header}>
-        <span className={styles.ReportIndex_logo}>Mita=C</span>
-        <span className={styles.ReportIndex_pageTitle}>📋 報告</span>
-        <p className={styles.ReportIndex_subtitle}>今日の報告を選択してください</p>
-      </header>
+      <PageHeader background="linear-gradient(90deg,#4f46e5,#7c3aed)" />
 
-      <div className={`page-body scroll-y ${styles.ReportIndex_body}`}>
+      <div className={`page-body scroll-y ${styles.report_index_body}`}>
         {REPORTS.map((item) => (
           <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
-            <div className={`card ${styles.ReportIndex_card}`}>
+            <div className={`card ${styles.report_index_card}`}>
               <div
-                className={styles.ReportIndex_card_icon}
+                className={styles.report_index_card_icon}
                 style={{ background: `${item.color}20` }}
               >
                 {item.icon}
               </div>
-              <div className={styles.ReportIndex_card_info}>
-                <div className={styles.ReportIndex_card_titleRow}>
-                  <span className={styles.ReportIndex_card_title}>{item.title}</span>
+              <div className={styles.report_index_card_info}>
+                <div className={styles.report_index_card_title_row}>
+                  <span className={styles.report_index_card_title}>{item.title}</span>
                   {item.done && (
-                    <span className={styles.ReportIndex_card_done}>提出済み</span>
+                    <span className={styles.report_index_card_done}>提出済み</span>
                   )}
                 </div>
-                <p className={styles.ReportIndex_card_desc}>{item.desc}</p>
+                <p className={styles.report_index_card_desc}>{item.desc}</p>
               </div>
-              <span className={styles.ReportIndex_card_arrow}>›</span>
+              <span className={styles.report_index_card_arrow}>›</span>
             </div>
           </Link>
         ))}

@@ -1,0 +1,106 @@
+// ============================================================
+// PageHeader (shared)
+// ============================================================
+
+.page_header {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  color: white;
+}
+
+.page_header_logo {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.page_header_xp_section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page_header_xp_labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.page_header_xp_track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.page_header_xp_fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+  // width is set dynamically via inline style
+}
+
+.page_header_avatar_section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.page_header_avatar_hint {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.page_header_avatar_icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.page_header_avatar_info {
+  display: flex;
+  flex-direction: column;
+}
+
+.page_header_avatar_name {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.page_header_avatar_sub {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.page_header_xp_badge {
+  background: rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 3px 12px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .page_header_xp_section {
+    display: none;
+  }
+
+  .page_header_avatar_hint {
+    display: none;
+  }
+}

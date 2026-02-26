@@ -1,0 +1,198 @@
+// ============================================================
+// Home
+// ============================================================
+
+.home_body {
+  padding: 10px;
+  gap: 10px;
+}
+
+// ── 左カラム (タスク) ──
+.home_task_column {
+  flex: 1.3;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #1e1b4b, #312e81);
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
+  gap: 6px;
+}
+
+.home_task_title {
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.home_task_card {
+  padding: 9px;
+  margin-bottom: 6px;
+}
+
+.home_task_card_tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+
+.home_task_card_chip_proj {
+  font-size: 10px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home_task_card_chip_scope {
+  font-size: 10px;
+}
+
+.home_task_card_content {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.home_task_card_footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  align-items: center;
+}
+
+.home_task_card_type {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.home_task_card_check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  flex-shrink: 0;
+
+  &--done   { border: 2px solid #10b981; background: #10b981; }
+  &--undone { border: 2px solid #d1d5db; background: white; }
+}
+
+// ── 右カラム (報告ステータス) ──
+.home_status_column {
+  flex: 0.9;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #1e1b4b, #312e81);
+  border-radius: 10px;
+  padding: 10px;
+  gap: 6px;
+}
+
+.home_status_title {
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.home_status_item {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.home_status_item_label {
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.home_status_item_badge {
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+
+  &--done    { color: #4ade80; background: rgba(74, 222, 128, 0.15); }
+  &--pending { color: #f87171; background: rgba(248, 113, 113, 0.15); }
+}
+
+.home_completed_row {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home_completed_row_label {
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.home_completed_row_count {
+  font-weight: 700;
+  font-size: 16px;
+  color: #a5b4fc;
+}
+
+.home_repoca_link {
+  margin-top: auto;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+}
+
+// ── フッター ──
+.home_footer {
+  flex-shrink: 0;
+  padding: 14px 16px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .home_body {
+    flex-direction: column;
+    overflow-y: auto;
+    gap: 8px;
+  }
+
+  .home_task_column,
+  .home_status_column {
+    flex: none;
+  }
+
+  .home_footer {
+    flex-wrap: wrap;
+  }
+}

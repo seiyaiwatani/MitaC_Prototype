@@ -1,0 +1,71 @@
+// ============================================================
+// ReportIndex
+// ============================================================
+
+.report_index_body {
+  flex-direction: column;
+  padding: 16px;
+  gap: 10px;
+}
+
+.report_index_card {
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: inherit;
+}
+
+.report_index_card_icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.report_index_card_info {
+  flex: 1;
+}
+
+.report_index_card_title_row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.report_index_card_title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.report_index_card_done {
+  font-size: 11px;
+  background: #dcfce7;
+  color: #166534;
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-weight: 700;
+}
+
+.report_index_card_desc {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.report_index_card_arrow {
+  color: #9ca3af;
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .report_index_body {
+    padding: 10px;
+  }
+}

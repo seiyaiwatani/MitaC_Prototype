@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { repoCas, projects, currentUser } from "@/lib/mock-data";
+import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
-import styles from "./StartReport.module.scss";
+import PageHeader from "@/components/PageHeader";
+import styles from "./index.module.scss";
 
 const SCOPE_COLOR: Record<string, string> = {
   フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
@@ -17,7 +18,6 @@ export default function StartReport() {
   const [selected, setSelected] = useState<string[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const favorites  = repoCas.filter((r) => r.isFavorite);
   const others     = repoCas.filter((r) => !r.isFavorite);
   const allCards   = [...favorites, ...others];
@@ -27,28 +27,6 @@ export default function StartReport() {
     setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   const getProj = (pid: string) => projects.find((p) => p.id === pid);
-
-  const Header = () => (
-    <header className={styles.StartReport_header}>
-      <span className={styles.StartReport_logo}>Mita=C</span>
-      <div className={styles.StartReport_xpSection}>
-        <div className={styles.StartReport_xpLabels}>
-          <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
-        </div>
-        <div className={styles.StartReport_xpTrack}>
-          <div className={styles.StartReport_xpFill} style={{ width: `${xpPct}%` }} />
-        </div>
-      </div>
-      <div className={styles.StartReport_avatarSection}>
-        <span className={styles.StartReport_avatarHint}>アバター→</span>
-        <div className={styles.StartReport_avatarIcon}>⚔️</div>
-        <div className={styles.StartReport_avatarInfo}>
-          <span className={styles.StartReport_avatarName}>{currentUser.name}</span>
-          <span className={styles.StartReport_avatarLevel}>Lv.{currentUser.level}</span>
-        </div>
-      </div>
-    </header>
-  );
 
   const RepoCaItem = ({ rc, mini = false }: { rc: RepoCa; mini?: boolean }) => {
     const isSelected = selected.includes(rc.id);
@@ -60,8 +38,8 @@ export default function StartReport() {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className={styles.StartReport_repocaItem_tags}>
-              <span className={`chip chip-indigo ${styles.StartReport_repocaItem_projChip}`}>
+            <div className={styles.start_report_repoca_item_tags}>
+              <span className={`chip chip-indigo ${styles.start_report_repoca_item_proj_chip}`}>
                 {getProj(rc.projectId)?.name}
               </span>
               <span className="chip" style={{ background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
@@ -72,15 +50,15 @@ export default function StartReport() {
               {rc.content}
             </p>
             {!mini && (
-              <div className={styles.StartReport_repocaItem_footer}>
-                <span className={styles.StartReport_repocaItem_meta}>{rc.taskType}</span>
-                <span className={styles.StartReport_repocaItem_meta}>{rc.label}</span>
-                {rc.isFavorite && <span className={styles.StartReport_repocaItem_meta}>⭐</span>}
-                <span className={styles.StartReport_repocaItem_xp}>+{rc.xp}XP</span>
+              <div className={styles.start_report_repoca_item_footer}>
+                <span className={styles.start_report_repoca_item_meta}>{rc.taskType}</span>
+                <span className={styles.start_report_repoca_item_meta}>{rc.label}</span>
+                {rc.isFavorite && <span className={styles.start_report_repoca_item_meta}>⭐</span>}
+                <span className={styles.start_report_repoca_item_xp}>+{rc.xp}XP</span>
               </div>
             )}
           </div>
-          <span className={styles.StartReport_repocaItem_check}>
+          <span className={styles.start_report_repoca_item_check}>
             {isSelected ? "✅" : "⬜"}
           </span>
         </div>
@@ -92,36 +70,36 @@ export default function StartReport() {
   if (showConfirm) {
     return (
       <div className="page-root">
-        <Header />
-        <div className={`page-body ${styles.StartReport_confirmBody}`}>
-          <div className={styles.StartReport_confirmTitle}>🌅 始業報告 — 確認</div>
+        <PageHeader background="linear-gradient(90deg,#4f46e5,#7c3aed)" />
+        <div className={`page-body ${styles.start_report_confirm_body}`}>
+          <div className={styles.start_report_confirm_title}>🌅 始業報告 — 確認</div>
 
-          <div className={`card ${styles.StartReport_statusCard}`}>
-            <div className={styles.StartReport_statusCard_title}>確認ステータス</div>
+          <div className={`card ${styles.start_report_status_card}`}>
+            <div className={styles.start_report_status_card_title}>確認ステータス</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {[
                 { label: "始業報告", ok: true },
                 { label: "終業報告", ok: false },
                 { label: "残業報告", ok: false },
               ].map((row) => (
-                <div key={row.label} className={styles.StartReport_statusRow}>
+                <div key={row.label} className={styles.start_report_status_row}>
                   <span>{row.label}</span>
                   <span className={row.ok ? "status-ok" : "status-ng"}>{row.ok ? "確認済" : "未確認"}</span>
                 </div>
               ))}
-              <div className={styles.StartReport_summaryRow}>
+              <div className={styles.start_report_summary_row}>
                 <span>完了タスク</span>
-                <span className={styles.StartReport_summaryValue}>0/{selected.length}</span>
+                <span className={styles.start_report_summary_value}>0/{selected.length}</span>
               </div>
-              <div className={styles.StartReport_summaryRow}>
+              <div className={styles.start_report_summary_row}>
                 <span>獲得XP（予定）</span>
-                <span className={styles.StartReport_xpValue}>+{totalXp} XP</span>
+                <span className={styles.start_report_xp_value}>+{totalXp} XP</span>
               </div>
             </div>
           </div>
 
-          <div className={`card ${styles.StartReport_selectedCard}`}>
-            <div className={styles.StartReport_selectedCard_title}>
+          <div className={`card ${styles.start_report_selected_card}`}>
+            <div className={styles.start_report_selected_card_title}>
               選択済み RepoCa（{selected.length}枚）
             </div>
             {selected.map((id) => {
@@ -129,16 +107,16 @@ export default function StartReport() {
               if (!rc) return null;
               const proj = getProj(rc.projectId);
               return (
-                <div key={id} className={styles.StartReport_selectedItem}>
-                  <span className={styles.StartReport_selectedItem_check}>✓</span>
+                <div key={id} className={styles.start_report_selected_item}>
+                  <span className={styles.start_report_selected_item_check}>✓</span>
                   <span className="chip chip-indigo" style={{ fontSize: 10 }}>{proj?.name}</span>
-                  <span className={styles.StartReport_selectedItem_content}>{rc.content}</span>
+                  <span className={styles.start_report_selected_item_content}>{rc.content}</span>
                 </div>
               );
             })}
           </div>
 
-          <div className={styles.StartReport_confirmFooter}>
+          <div className={styles.start_report_confirm_footer}>
             <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>戻る</button>
             <button
               className="btn btn-primary"
@@ -156,13 +134,13 @@ export default function StartReport() {
   /* ── 選択画面（2カラム）── */
   return (
     <div className="page-root">
-      <Header />
+      <PageHeader background="linear-gradient(90deg,#4f46e5,#7c3aed)" />
 
-      <div className={`page-body ${styles.StartReport_body}`}>
+      <div className={`page-body ${styles.start_report_body}`}>
 
         {/* 左列: 追加したRepoCa一覧 */}
-        <div className={styles.StartReport_leftCol}>
-          <div className={styles.StartReport_leftCol_header}>
+        <div className={styles.start_report_left_col}>
+          <div className={styles.start_report_left_col_header}>
             <span>追加したRepoCa一覧</span>
             <span className="chip chip-indigo">{selected.length}枚</span>
           </div>
@@ -181,7 +159,7 @@ export default function StartReport() {
             </div>
           </div>
 
-          <div className={styles.StartReport_leftCol_footer}>
+          <div className={styles.start_report_left_col_footer}>
             <Link href="/" style={{ flex: 1 }}>
               <button className="btn btn-ghost" style={{ width: "100%" }}>戻る</button>
             </Link>
@@ -197,14 +175,14 @@ export default function StartReport() {
         </div>
 
         {/* 右列: RepoCaデッキ */}
-        <div className={styles.StartReport_rightCol}>
-          <div className={styles.StartReport_rightCol_header}>
+        <div className={styles.start_report_right_col}>
+          <div className={styles.start_report_right_col_header}>
             <span>未完了のRepoCa</span>
-            <Link href="/repoca/new" className={styles.StartReport_rightCol_newLink}>+ 新規</Link>
+            <Link href="/repoca/new" className={styles.start_report_right_col_new_link}>+ 新規</Link>
           </div>
           <div className="scroll-y" style={{ flex: 1, padding: 8 }}>
             {favorites.length > 0 && (
-              <div className={styles.StartReport_favoriteLabel}>⭐ お気に入り</div>
+              <div className={styles.start_report_favorite_label}>⭐ お気に入り</div>
             )}
             {allCards.map((rc) => (
               <RepoCaItem key={rc.id} rc={rc} />

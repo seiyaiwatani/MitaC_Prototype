@@ -1,0 +1,280 @@
+// ============================================================
+// EndReport
+// ============================================================
+
+// ── メイン ──
+.end_report_body {
+  padding: 10px;
+  gap: 10px;
+}
+
+.end_report_chart_area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.end_report_chart_title {
+  font-weight: 700;
+  font-size: 13px;
+  color: #1e1b4b;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.end_report_legend {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.end_report_legend_item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.end_report_legend_dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.end_report_legend_label {
+  color: #4b5563;
+}
+
+.end_report_bar_item {
+  margin-bottom: 14px;
+}
+
+.end_report_bar_item_header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.end_report_bar_item_check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  color: white;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+}
+
+.end_report_bar_item_proj_chip {
+  font-size: 10px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.end_report_bar_item_task_name {
+  font-size: 11px;
+  color: #374151;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.end_report_bar_item_bonus {
+  font-size: 10px;
+  color: #f59e0b;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.end_report_bar_row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.end_report_bar_row_label {
+  width: 36px;
+  font-size: 10px;
+  color: #6b7280;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.end_report_bar_row_track {
+  flex: 1;
+  height: 20px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.end_report_bar_row_fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.end_report_bar_row_grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.end_report_bar_row_select {
+  font-size: 11px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 4px;
+  background: white;
+  flex-shrink: 0;
+}
+
+.end_report_x_axis {
+  flex-shrink: 0;
+  padding-left: 44px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+// ── 追加パネル ──
+.end_report_add_panel {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.end_report_add_panel_header {
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.end_report_add_panel_close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.end_report_add_panel_item_proj {
+  font-size: 10px;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-flex;
+  margin-bottom: 3px;
+}
+
+.end_report_add_panel_item_content {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+// ── フッター ──
+.end_report_footer {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 8px;
+  background: white;
+}
+
+.end_report_footer_spacer {
+  flex: 1;
+}
+
+// ── 確認画面 ──
+.end_report_confirm_body {
+  padding: 12px;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.end_report_confirm_title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #92400e;
+}
+
+.end_report_status_card {
+  padding: 12px;
+}
+
+.end_report_status_card_title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.end_report_status_row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.end_report_summary_row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.end_report_summary_value {
+  font-weight: 700;
+}
+
+.end_report_xp_value {
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.end_report_confirm_footer {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+@media (max-width: 768px) {
+  .end_report_body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .end_report_add_panel {
+    width: 100%;
+    flex-shrink: 0;
+  }
+}
