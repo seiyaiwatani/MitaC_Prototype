@@ -1,5 +1,5 @@
-export type TaskType = "開発" | "MTG" | "その他";
-export type TaskLabel = "新規作成" | "修正" | "調査" | "レビュー";
+export type TaskType = "開発" | "実装" | "MTG" | "デイリースクラム" | "その他";
+export type TaskLabel = "新規作成" | "修正" | "調査" | "レビュー" | "その他";
 export type ImplScope = "フロント" | "バック" | "インフラ" | "フルスタック" | "その他";
 export type ReportType = "始業" | "終業" | "残業";
 
@@ -7,6 +7,9 @@ export interface Project {
   id: string;
   name: string;
   teamId: string;
+  color: string;   // bg color for PJ group
+  textColor: string;
+  icon: string;
 }
 
 export interface RepoCa {
@@ -60,7 +63,7 @@ export interface DailyReport {
   userId: string;
   date: string;
   type: ReportType;
-  repoCas: string[]; // RepoCa IDs
+  repoCas: string[];
   submittedAt: string;
   overtime?: boolean;
   overtimeHours?: number;

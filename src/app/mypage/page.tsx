@@ -1,188 +1,164 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { currentUser, badges, missions } from "@/lib/mock-data";
+import { HiArrowLeft, HiChevronRight, HiChevronUp, HiChevronDown } from "react-icons/hi";
+import {
+  SiNextdotjs, SiSass, SiPhp, SiWordpress, SiAmazonwebservices,
+  SiTypescript, SiReact, SiDocker, SiPostgresql, SiGraphql, SiTerraform,
+} from "react-icons/si";
+import { FaJava } from "react-icons/fa";
+import type { IconType } from "react-icons";
 
-const AVATARS = [
-  { id: "warrior", icon: "⚔️", name: "戦士" },
-  { id: "mage",    icon: "🧙", name: "魔法使い" },
-  { id: "archer",  icon: "🏹", name: "弓使い" },
-  { id: "knight",  icon: "🛡️", name: "騎士" },
-];
+const BADGE_ICON_MAP: Record<string, { Icon: IconType; color: string }> = {
+  "Next":       { Icon: SiNextdotjs,          color: "#000000" },
+  "SCSS":       { Icon: SiSass,               color: "#cc6699" },
+  "Java":       { Icon: FaJava,               color: "#f89820" },
+  "PHP":        { Icon: SiPhp,                color: "#8892be" },
+  "WordPress":  { Icon: SiWordpress,          color: "#21759b" },
+  "AWS":        { Icon: SiAmazonwebservices,  color: "#ff9900" },
+  "TypeScript": { Icon: SiTypescript,         color: "#3178c6" },
+  "React":      { Icon: SiReact,              color: "#61dafb" },
+  "Docker":     { Icon: SiDocker,             color: "#2496ed" },
+  "PostgreSQL": { Icon: SiPostgresql,         color: "#336791" },
+  "GraphQL":    { Icon: SiGraphql,            color: "#e10098" },
+  "Terraform":  { Icon: SiTerraform,          color: "#7b42bc" },
+};
+
+const COLS = 6;
 
 export default function MyPage() {
-  const [avatar, setAvatar] = useState(currentUser.avatar);
-  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
-  const acquiredBadges = badges.filter((b) => b.acquired);
-  const lockedBadges   = badges.filter((b) => !b.acquired);
-  const currentAvatarIcon = AVATARS.find((a) => a.id === avatar)?.icon ?? "⚔️";
+  const [showAll, setShowAll] = useState(false);
 
-  // ミッションをタイプ別に
-  const missionGroups = [
-    { type: "daily",     label: "デイリー", icon: "📅" },
-    { type: "monthly",   label: "マンスリー", icon: "📆" },
-    { type: "unlimited", label: "無期限",    icon: "♾️" },
-  ] as const;
+  const acquiredCount = badges.filter((b) => b.acquired).length;
+  const visibleBadges = showAll ? badges : badges.slice(0, COLS * 3);
+  const missionDone   = missions.filter((m) => m.completed).length;
 
   return (
     <div className="page-root">
-      {/* ヘッダー */}
-      <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center",
-        padding: "0 16px",
-        background: "linear-gradient(90deg,#7c3aed,#db2777)",
-        color: "white", gap: 8,
-      }}>
-        <span style={{ fontWeight: 800, fontSize: 15 }}>⚔️ マイページ</span>
-        <span style={{ marginLeft: "auto", background: "rgba(255,255,255,0.2)", padding: "2px 10px", borderRadius: 99, fontSize: 12 }}>
-          💰 {currentUser.currency.toLocaleString()}
+      {/* サブヘッダー */}
+      <div className="page-subheader">
+        <Link href="/" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+          <HiArrowLeft style={{ width: 20, height: 20 }} />
+        </Link>
+        <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>バッジ</span>
+        <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 600, color: "#6b7280" }}>
+          合計取得数: {acquiredCount}個
         </span>
-      </header>
+      </div>
 
-      {/* メイン（スクロールなし） */}
-      <div className="page-body" style={{ padding: 8, gap: 8, overflow: "hidden" }}>
+      {/* ボディ */}
+      <div className="page-body" style={{ flexDirection: "column", padding: 10, gap: 10, overflowY: "auto" }}>
 
-        {/* 左カラム: キャラクターカード＋アバター選択 */}
-        <div style={{ width: 200, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-
-          {/* フィジカルカード */}
-          <div className="card" style={{
-            background: "linear-gradient(160deg,#312e81,#4c1d95)",
-            border: "none", padding: 14,
-            display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+        {/* バッジグリッド */}
+        <div className="card" style={{ padding: 12, flexShrink: 0 }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+            gap: 8,
           }}>
-            <div style={{
-              width: 72, height: 72, borderRadius: "50%",
-              background: "linear-gradient(135deg,#6366f1,#a855f7)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 38, border: "3px solid rgba(255,255,255,0.4)",
-            }}>
-              {currentAvatarIcon}
-            </div>
-            <div style={{ color: "white", fontWeight: 700, fontSize: 13 }}>{currentUser.name}</div>
-            <span style={{ background: "rgba(255,255,255,0.2)", color: "white", padding: "1px 10px", borderRadius: 99, fontSize: 11, fontWeight: 700 }}>
-              Lv.{currentUser.level}
-            </span>
-            <div style={{ width: "100%" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(255,255,255,0.7)", marginBottom: 2 }}>
-                <span>XP</span><span>{currentUser.xp}/{currentUser.xpToNext}</span>
-              </div>
-              <div className="xp-bar"><div className="xp-bar-fill" style={{ width: `${xpPct}%` }} /></div>
-            </div>
-          </div>
-
-          {/* アバター選択 */}
-          <div className="card" style={{ padding: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>アバター</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
-              {AVATARS.map((a) => (
-                <button
-                  key={a.id}
-                  onClick={() => setAvatar(a.id)}
+            {visibleBadges.map((b) => {
+              const iconInfo = BADGE_ICON_MAP[b.name];
+              return (
+                <div
+                  key={b.id}
+                  title={`${b.name}: ${b.description}`}
                   style={{
-                    padding: "8px 4px", borderRadius: 8, border: `2px solid ${avatar === a.id ? "#4f46e5" : "#e5e7eb"}`,
-                    background: avatar === a.id ? "#eef2ff" : "white",
-                    cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-                    fontSize: 20,
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                    cursor: "pointer",
                   }}
                 >
-                  {a.icon}
-                  <span style={{ fontSize: 9, color: avatar === a.id ? "#4f46e5" : "#6b7280", fontWeight: 600 }}>{a.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 工数報告（今月） */}
-          <div className="card" style={{ padding: 10, flex: 1 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>今月の工数報告</div>
-            <div style={{ fontSize: 11 }}>
-              <button className="btn btn-ghost" style={{ width: "100%", padding: "6px", fontSize: 11 }}>
-                工数確認
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 右カラム: バッジ＋ミッション */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, overflow: "hidden" }}>
-
-          {/* バッジエリア */}
-          <div className="card" style={{ padding: 10, flexShrink: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>
-              🏅 バッジ ({acquiredBadges.length}/{badges.length})
-            </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {acquiredBadges.map((b) => (
-                <div key={b.id} title={`${b.name}: ${b.description}`}
-                  style={{
-                    width: 36, height: 36, borderRadius: 8,
-                    background: "linear-gradient(135deg,#fef9c3,#fef08a)",
-                    border: "2px solid #f59e0b",
+                  <div style={{
+                    width: 52, height: 52, borderRadius: 10,
+                    border: `2px solid ${b.acquired ? "#10b981" : "#e5e7eb"}`,
+                    background: b.acquired ? "#ecfdf5" : "#f9fafb",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 20, cursor: "pointer",
+                    opacity: b.acquired ? 1 : 0.4,
                   }}>
-                  {b.icon}
-                </div>
-              ))}
-              {lockedBadges.map((b) => (
-                <div key={b.id} title={b.description}
-                  style={{
-                    width: 36, height: 36, borderRadius: 8,
-                    background: "#f3f4f6", border: "2px solid #e5e7eb",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 20, opacity: 0.4, cursor: "pointer",
+                    {iconInfo ? (
+                      <iconInfo.Icon style={{
+                        width: 28, height: 28,
+                        color: b.acquired ? iconInfo.color : "#9ca3af",
+                      }} />
+                    ) : (
+                      <span style={{ fontSize: 24 }}>{b.icon}</span>
+                    )}
+                  </div>
+                  <span style={{
+                    fontSize: 9, fontWeight: 600, textAlign: "center",
+                    color: b.acquired ? "#065f46" : "#9ca3af",
                   }}>
-                  {b.icon}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ミッション（3列） */}
-          <div style={{ flex: 1, overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
-            {missionGroups.map(({ type, label, icon }) => {
-              const items = missions.filter((m) => m.type === type);
-              return (
-                <div key={type} className="card" style={{ padding: 10, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                  <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 8, flexShrink: 0 }}>
-                    {icon} {label}ミッション
-                  </div>
-                  <div className="scroll-y" style={{ flex: 1 }}>
-                    {items.map((m) => {
-                      const pct = Math.round((m.progress / m.goal) * 100);
-                      const done = pct >= 100;
-                      return (
-                        <div key={m.id} style={{ marginBottom: 10 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
-                            <span style={{ fontSize: 11, fontWeight: 600, color: "#374151" }}>{m.title}</span>
-                            <span className="chip chip-yellow" style={{ fontSize: 9 }}>+{m.reward}💰</span>
-                          </div>
-                          <p style={{ fontSize: 10, color: "#6b7280", margin: "0 0 4px", lineHeight: 1.3 }}>{m.description}</p>
-                          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                            <div style={{ flex: 1, height: 6, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
-                              <div style={{
-                                width: `${Math.min(pct, 100)}%`, height: "100%", borderRadius: 3,
-                                background: done
-                                  ? "linear-gradient(90deg,#f59e0b,#d97706)"
-                                  : "linear-gradient(90deg,#10b981,#059669)",
-                              }} />
-                            </div>
-                            <span style={{ fontSize: 9, color: "#9ca3af", whiteSpace: "nowrap" }}>{m.progress}/{m.goal}</span>
-                          </div>
-                          {done && (
-                            <div style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, marginTop: 2, textAlign: "right" }}>
-                              達成ボーナス！
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                    {b.name}
+                  </span>
                 </div>
               );
             })}
+          </div>
+
+          {/* 展開ボタン */}
+          {badges.length > COLS * 3 && (
+            <div style={{ textAlign: "center", marginTop: 8 }}>
+              <button
+                onClick={() => setShowAll((v) => !v)}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: 18, color: "#9ca3af", padding: "2px 12px",
+                }}
+              >
+                {showAll ? <HiChevronUp style={{ width: 20, height: 20 }} /> : <HiChevronDown style={{ width: 20, height: 20 }} />}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ミッション（リンクカード） */}
+        <Link href="/mypage/missions" style={{ textDecoration: "none" }}>
+          <div className="card" style={{
+            padding: "14px 16px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            flexShrink: 0, cursor: "pointer",
+          }}>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: "#1a1a2e", marginBottom: 3 }}>ミッション</div>
+              <div style={{ fontSize: 11, color: "#6b7280" }}>
+                達成 {missionDone}/{missions.length} 件
+              </div>
+            </div>
+            <HiChevronRight style={{ width: 20, height: 20, color: "#9ca3af" }} />
+          </div>
+        </Link>
+
+        {/* XP・ステータス */}
+        <div className="card" style={{ padding: 12, flexShrink: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, color: "#1a1a2e" }}>ステータス</div>
+          <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#6b7280", marginBottom: 4 }}>
+                <span>Lv.{currentUser.level} → Lv.{currentUser.level + 1}</span>
+                <span>{currentUser.xp} / {currentUser.xpToNext} XP</span>
+              </div>
+              <div className="xp-bar">
+                <div
+                  className="xp-bar-fill"
+                  style={{ width: `${Math.round((currentUser.xp / currentUser.xpToNext) * 100)}%` }}
+                />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#4f46e5" }}>{currentUser.level}</div>
+                <div style={{ fontSize: 9, color: "#6b7280" }}>レベル</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#10b981" }}>{acquiredCount}</div>
+                <div style={{ fontSize: 9, color: "#6b7280" }}>バッジ</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b" }}>{currentUser.currency.toLocaleString()}</div>
+                <div style={{ fontSize: 9, color: "#6b7280" }}>コイン</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

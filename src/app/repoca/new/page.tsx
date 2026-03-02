@@ -3,178 +3,268 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { projects } from "@/lib/mock-data";
+import { projects, repoCas } from "@/lib/mock-data";
 import { TaskType, TaskLabel, ImplScope } from "@/types";
+import { HiArrowLeft, HiStar, HiOutlineStar, HiTrash, HiChevronUp, HiChevronDown } from "react-icons/hi";
 
-const SCOPE_COLORS: Record<ImplScope, string> = {
-  フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
-  フルスタック: "#ef4444", その他: "#6b7280",
-};
+type Tab = "開発" | "その他";
+
+interface DraftCard {
+  id: string;
+  projectId: string;
+  taskType: TaskType;
+  label: TaskLabel;
+  implScope: ImplScope;
+  content: string;
+  isFavorite: boolean;
+}
+
+const initDraft = (): DraftCard => ({
+  id: Date.now().toString(),
+  projectId: projects[0].id,
+  taskType: "開発",
+  label: "新規作成",
+  implScope: "フロント",
+  content: "",
+  isFavorite: false,
+});
 
 export default function NewRepoCa() {
   const router = useRouter();
-  const [projectId,  setProjectId]  = useState(projects[0].id);
-  const [taskType,   setTaskType]   = useState<TaskType>("開発");
-  const [label,      setLabel]      = useState<TaskLabel>("新規作成");
-  const [implScope,  setImplScope]  = useState<ImplScope>("フロント");
-  const [content,    setContent]    = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [tab, setTab] = useState<Tab>("開発");
+  const [draft, setDraft]     = useState<DraftCard>(initDraft());
+  const [created, setCreated] = useState<DraftCard[]>([]);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
-  const xp = taskType === "開発" ? 50 : taskType === "MTG" ? 20 : 30;
+  const isValid = draft.projectId && draft.label && draft.implScope && draft.content.trim();
 
-  const handleSubmit = () => {
-    if (!content.trim()) { alert("タスク内容を入力してください"); return; }
-    alert(`RepoCaを作成しました！\n✨ +${xp} XP`);
+  const addToDraft = () => {
+    if (!isValid) return;
+    setCreated((prev) => [...prev, { ...draft, id: Date.now().toString() }]);
+    setDraft(initDraft());
+  };
+
+  const addAndReport = () => {
+    if (!isValid) return;
+    const all = [...created, { ...draft, id: Date.now().toString() }];
+    setCreated(all);
+    setDraft(initDraft());
+    alert(`${all.length}件のRepoCaを作成して業務報告に追加しました！`);
+    router.push("/report/start");
+  };
+
+  const submitAll = () => {
+    if (created.length === 0 && !draft.content.trim()) {
+      alert("RepoCaを入力してください");
+      return;
+    }
+    const all = draft.content.trim()
+      ? [...created, { ...draft, id: Date.now().toString() }]
+      : created;
+    alert(`${all.length}件のRepoCaを新規作成しました！`);
     router.push("/repoca");
   };
 
+  const removeCreated = (id: string) => setCreated((prev) => prev.filter((c) => c.id !== id));
+
+  const xp = (tab === "開発" ? 50 : 20);
+
   return (
     <div className="page-root">
-      {/* ヘッダー */}
-      <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center", padding: "0 16px", gap: 8,
-        background: "linear-gradient(90deg,#10b981,#059669)", color: "white",
-      }}>
-        <Link href="/repoca" style={{ color: "white", textDecoration: "none", fontSize: 22 }}>←</Link>
-        <span style={{ fontWeight: 700, fontSize: 15 }}>🃏 RepoCa作成</span>
-        {/* XPバッジ */}
-        <span style={{
-          marginLeft: "auto", background: "#eef2ff", color: "#4f46e5",
-          fontWeight: 800, fontSize: 13, padding: "2px 12px", borderRadius: 99,
-        }}>
+      {/* サブヘッダー */}
+      <div className="page-subheader">
+        <Link href="/repoca" style={{ color: "#10b981", textDecoration: "none", lineHeight: 1, display: "flex", alignItems: "center" }}>
+          <HiArrowLeft style={{ width: 20, height: 20 }} />
+        </Link>
+        <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>RepoCa作成</span>
+        <span style={{ marginLeft: "auto", background: "#dcfce7", color: "#166534", fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 99 }}>
           +{xp} XP
         </span>
-      </header>
+      </div>
 
-      {/* フォーム（内部スクロール） */}
-      <div className="page-body" style={{ flexDirection: "column" }}>
-        <div className="scroll-y" style={{ flex: 1, padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+      {/* 2カラム: 作成済みリスト + 作成フォーム */}
+      <div className="page-body split-layout">
 
-          {/* プロジェクト */}
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>
-              📁 プロジェクト <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <select
-              value={projectId}
-              onChange={(e) => setProjectId(e.target.value)}
-              style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 10px", fontSize: 12 }}
-            >
-              {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+        {/* 左: 作成済みRepoCa */}
+        <div className="split-col">
+          <div className="split-col-header">
+            <span>作成済みのRepoCa</span>
+            <span className="chip chip-green">{created.length}件</span>
           </div>
+          <div className="split-col-body">
+            {created.length === 0 ? (
+              <div className="repoca-card slot-empty" style={{ height: 60 }}>
+                作成したRepoCaがここに表示されます
+              </div>
+            ) : (
+              created.map((c) => {
+                const proj = projects.find((p) => p.id === c.projectId);
+                const isOpen = expanded === c.id;
+                return (
+                  <div key={c.id} className="card" style={{ padding: "8px 10px", marginBottom: 6 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", gap: 4, marginBottom: 3 }}>
+                          <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.name}</span>
+                          <span className="chip chip-gray" style={{ fontSize: 9 }}>{c.label}</span>
+                        </div>
+                        <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{c.content}</p>
+                      </div>
+                      <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: 6 }}>
+                        <button onClick={() => setExpanded(isOpen ? null : c.id)}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9ca3af", display: "flex", alignItems: "center" }}>
+                          {isOpen ? <HiChevronUp style={{ width: 16, height: 16 }} /> : <HiChevronDown style={{ width: 16, height: 16 }} />}
+                        </button>
+                        <button onClick={() => removeCreated(c.id)}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}>
+                          <HiTrash style={{ width: 15, height: 15 }} />
+                        </button>
+                      </div>
+                    </div>
+                    {isOpen && (
+                      <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #f3f4f6", fontSize: 10, color: "#6b7280", display: "flex", flexDirection: "column", gap: 2 }}>
+                        <span>PJ名: {proj?.name}</span>
+                        <span>ラベル: {c.label}</span>
+                        <span>実装範囲: {c.implScope}</span>
+                        <span>タスク種類: {c.taskType}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
 
-          {/* タスク種類 */}
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>
-              🔧 タスク種類 <span style={{ color: "#ef4444" }}>*</span>
-            </label>
+        {/* 右: 作成フォーム */}
+        <div className="split-col">
+          <div className="split-col-header">
+            <span>RepoCa作成</span>
+            {/* 開発/その他タブ */}
+            <div style={{ display: "flex", gap: 2 }}>
+              {(["開発", "その他"] as Tab[]).map((t) => (
+                <button key={t} onClick={() => { setTab(t); setDraft((d) => ({ ...d, taskType: t === "開発" ? "開発" : "その他" })); }}
+                  style={{
+                    padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 10, fontWeight: 700, cursor: "pointer",
+                    background: tab === t ? "#4f46e5" : "#f3f4f6",
+                    color: tab === t ? "white" : "#6b7280",
+                  }}>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="split-col-body">
+
+            {/* お気に入り登録 / お気に入りから選択 */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <button
+                onClick={() => setDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
+                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 11, padding: 0 }}
+              >
+                {draft.isFavorite
+                  ? <HiStar style={{ width: 16, height: 16, color: "#d97706" }} />
+                  : <HiOutlineStar style={{ width: 16, height: 16, color: "#9ca3af" }} />}
+                <span style={{ color: draft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り登録</span>
+              </button>
+              <select
+                onChange={(e) => {
+                  const fav = repoCas.find((r) => r.id === e.target.value);
+                  if (fav) setDraft((d) => ({ ...d, projectId: fav.projectId, label: fav.label, implScope: fav.implScope, content: fav.content }));
+                }}
+                style={{ fontSize: 10, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 6px", color: "#374151" }}
+              >
+                <option value="">お気に入りから選択 ▼</option>
+                {repoCas.filter((r) => r.isFavorite).map((r) => (
+                  <option key={r.id} value={r.id}>{r.content}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* PJ名 */}
+            <div style={{ marginBottom: 8 }}>
+              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                PJ名 <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <select value={draft.projectId} onChange={(e) => setDraft((d) => ({ ...d, projectId: e.target.value }))}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
+              </select>
+            </div>
+
+            {/* ラベル */}
+            <div style={{ marginBottom: 8 }}>
+              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                ラベル <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <select value={draft.label} onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 実装範囲 */}
+            <div style={{ marginBottom: 8 }}>
+              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                実装範囲 <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <select value={draft.implScope} onChange={(e) => setDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* タスク内容 */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                タスク内容 <span style={{ color: "#ef4444" }}>*</span>
+              </label>
+              <textarea
+                value={draft.content}
+                onChange={(e) => setDraft((d) => ({ ...d, content: e.target.value }))}
+                placeholder="例）Contactページ作成、デイリースクラム..."
+                rows={3}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, resize: "none", color: "#374151" }}
+              />
+              <div style={{ textAlign: "right", fontSize: 9, color: "#9ca3af" }}>{draft.content.length}文字</div>
+            </div>
+
+            {/* フォームボタン */}
             <div style={{ display: "flex", gap: 6 }}>
-              {(["開発", "MTG", "その他"] as TaskType[]).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTaskType(t)}
-                  style={{
-                    flex: 1, padding: "7px 4px", borderRadius: 8, border: "none",
-                    fontSize: 12, fontWeight: 600, cursor: "pointer",
-                    background: taskType === t ? "#4f46e5" : "#f3f4f6",
-                    color: taskType === t ? "white" : "#374151",
-                  }}
-                >
-                  {t === "開発" ? "💻" : t === "MTG" ? "🤝" : "📌"} {t}
-                </button>
-              ))}
+              <button className="btn btn-ghost" style={{ flex: 1, fontSize: 10, padding: "6px" }}
+                disabled={!isValid} onClick={addToDraft}>
+                業務報告に追加
+              </button>
+              <button
+                className="btn"
+                style={{ flex: 1, fontSize: 10, padding: "6px", background: "#10b981", color: "white" }}
+                disabled={!isValid}
+                onClick={addAndReport}
+              >
+                追加して続けて作成
+              </button>
             </div>
           </div>
-
-          {/* ラベル */}
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>
-              🏷 ラベル <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLabel(l)}
-                  style={{
-                    padding: "5px 12px", borderRadius: 99, border: "none",
-                    fontSize: 11, fontWeight: 600, cursor: "pointer",
-                    background: label === l ? "#6366f1" : "#f3f4f6",
-                    color: label === l ? "white" : "#374151",
-                  }}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 実装範囲 */}
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>
-              🖥 実装範囲 <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setImplScope(s)}
-                  style={{
-                    padding: "5px 12px", borderRadius: 99, border: "none",
-                    fontSize: 11, fontWeight: 600, cursor: "pointer", color: "white",
-                    background: SCOPE_COLORS[s],
-                    opacity: implScope === s ? 1 : 0.4,
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* タスク内容 */}
-          <div>
-            <label style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 4 }}>
-              📝 タスク内容 <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="例）ログイン画面のUI実装、認証APIのバグ修正..."
-              rows={3}
-              style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 10px", fontSize: 12, resize: "none" }}
-            />
-            <div style={{ textAlign: "right", fontSize: 10, color: "#9ca3af", marginTop: 2 }}>{content.length}文字</div>
-          </div>
-
-          {/* お気に入り */}
-          <button
-            onClick={() => setIsFavorite(!isFavorite)}
-            style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0 }}
-          >
-            <span style={{ fontSize: 22 }}>{isFavorite ? "⭐" : "☆"}</span>
-            <span style={{ fontSize: 12, color: isFavorite ? "#d97706" : "#6b7280", fontWeight: 600 }}>
-              お気に入りに追加
-            </span>
-          </button>
         </div>
+      </div>
 
-        {/* 下部ボタン */}
-        <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
-          <Link href="/repoca" style={{ flex: 1 }}>
-            <button className="btn btn-ghost" style={{ width: "100%" }}>キャンセル</button>
-          </Link>
-          <button
-            className="btn"
-            style={{ flex: 2, background: "linear-gradient(90deg,#10b981,#059669)", color: "white" }}
-            disabled={!content.trim()}
-            onClick={handleSubmit}
-          >
-            🃏 作成する
-          </button>
-        </div>
+      {/* 下部ボタン */}
+      <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
+        <Link href="/repoca" style={{ flex: 1 }}>
+          <button className="btn btn-ghost" style={{ width: "100%" }}>もどる</button>
+        </Link>
+        <button
+          className="btn"
+          style={{ flex: 2, background: "linear-gradient(90deg,#10b981,#059669)", color: "white" }}
+          onClick={submitAll}
+          disabled={created.length === 0 && !draft.content.trim()}
+        >
+          カードを新規作成（{created.length + (draft.content.trim() ? 1 : 0)}件）
+        </button>
       </div>
     </div>
   );

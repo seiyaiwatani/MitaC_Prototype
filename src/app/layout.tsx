@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import AppHeader from "@/components/AppHeader";
 
 export const metadata: Metadata = {
   title: "Mita=C",
-  description: "ゲーミフィケーション×タスク管理システム",
+  description: "ゲーミフィケーション×業務報告システム",
 };
 
 export default function RootLayout({
@@ -16,7 +17,10 @@ export default function RootLayout({
     <html lang="ja">
       <body className="antialiased">
         <div className="app-container">
-          {children}
+          <AppHeader />
+          <div className="page-content">
+            {children}
+          </div>
         </div>
         <BottomNav />
       </body>
