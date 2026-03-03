@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
-import AppHeader from "@/components/AppHeader";
+import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {
   title: "Mita=C",
@@ -17,10 +17,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="antialiased">
         <div className="app-container">
-          <AppHeader />
-          <div className="page-content">
-            {children}
-          </div>
+          <AppShell>{children}</AppShell>
         </div>
         <BottomNav />
       </body>

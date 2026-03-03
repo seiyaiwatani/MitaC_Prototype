@@ -3,66 +3,42 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { repoCas, projects, todaySelectedIds } from "@/lib/mock-data";
+import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { HiArrowLeft, HiCheck } from "react-icons/hi";
-
-// 0.25h刻みのドロップダウン値（0h〜12h）
-const DURATION_OPTIONS: { label: string; value: number }[] = [
-  { label: "0h",    value: 0 },
-  { label: "0.25h", value: 15 },
-  { label: "0.50h", value: 30 },
-  { label: "0.75h", value: 45 },
-  { label: "1.00h", value: 60 },
-  { label: "1.25h", value: 75 },
-  { label: "1.50h", value: 90 },
-  { label: "1.75h", value: 105 },
-  { label: "2.00h", value: 120 },
-  { label: "2.50h", value: 150 },
-  { label: "3.00h", value: 180 },
-  { label: "3.50h", value: 210 },
-  { label: "4.00h", value: 240 },
-  { label: "4.50h", value: 270 },
-  { label: "5.00h", value: 300 },
-  { label: "6.00h", value: 360 },
-  { label: "7.00h", value: 420 },
-  { label: "8.00h", value: 480 },
-];
-
-const fmtH = (min: number) => {
-  const h = min / 60;
-  return `${h.toFixed(2)}h`;
-};
+import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
+import { useRepoCa } from "@/contexts/RepoCaContext";
 
 export default function EndReport() {
   const router  = useRouter();
-  const [selectedIds, setSelectedIds] = useState<string[]>([...todaySelectedIds]);
-  const [durations,   setDurations]   = useState<Record<string, number>>({
-    rc1: 60, rc2: 15, rc3: 60, rc4: 300, rc5: 30,
-  });
-  const [completed, setCompleted]     = useState<Record<string, boolean>>({
-    rc1: true, rc2: false, rc3: false, rc4: false, rc5: false,
-  });
+  const { todayRepoCas } = useRepoCa();
+
+  // 始業報告＋ホームで作成したRepoCaを初期表示
+  const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
+  // 初期は全て0分（やっていないものはそのまま0を維持）
+  const [durations, setDurations] = useState<Record<string, number>>(
+    Object.fromEntries(todayRepoCas.map((rc) => [rc.id, 0]))
+  );
+  const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [showAddPanel, setShowAddPanel] = useState(false);
   const [showConfirm, setShowConfirm]   = useState(false);
+  const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
-  const available = repoCas.filter((r) => !selectedIds.includes(r.id));
-  const totalMin  = selectedIds.reduce((s, id) => s + (durations[id] ?? 0), 0);
-  const maxBarMin = 480; // 8h
+  const available = repoCas.filter((r) => !selectedRepoCas.find((s) => s.id === r.id));
+  const totalMin  = selectedRepoCas.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0);
+  const maxBarMin = 480; // バーグラフ基準 8時間
 
   // PJでグループ化
-  const groupByPj = (ids: string[]) => {
+  const groupByPj = (rcs: RepoCa[]) => {
     const map = new Map<string, RepoCa[]>();
-    ids.forEach((id) => {
-      const rc = repoCas.find((r) => r.id === id);
-      if (!rc) return;
+    rcs.forEach((rc) => {
       const arr = map.get(rc.projectId) ?? [];
       arr.push(rc);
       map.set(rc.projectId, arr);
     });
     return map;
   };
-  const grouped = groupByPj(selectedIds);
+  const grouped = groupByPj(selectedRepoCas);
 
   // バーグラフ用: PJごとの合計分数
   const pjTotals = Array.from(grouped.entries()).map(([pjId, cards]) => ({
@@ -93,18 +69,18 @@ export default function EndReport() {
             ))}
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0", borderBottom: "1px solid #f3f4f6" }}>
               <span>完了タスク</span>
-              <span style={{ fontWeight: 700 }}>{completedCount}/{selectedIds.length}</span>
+              <span style={{ fontWeight: 700 }}>{completedCount}/{selectedRepoCas.length}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0" }}>
               <span>総工数</span>
-              <span style={{ fontWeight: 700 }}>{fmtH(totalMin)}</span>
+              <span style={{ fontWeight: 700 }}>{fmtDuration(totalMin)}</span>
             </div>
           </div>
         </div>
         <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
           <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>修正</button>
           <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
-            onClick={() => { alert(`終業報告を提出しました！\n総工数: ${fmtH(totalMin)}`); router.push("/report"); }}>
+            onClick={() => { alert(`終業報告を提出しました！\n総工数: ${fmtDuration(totalMin)}`); router.push("/report"); }}>
             送信
           </button>
         </div>
@@ -122,7 +98,7 @@ export default function EndReport() {
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
         <span style={{ marginLeft: "auto", fontSize: 11, color: "#6b7280" }}>
-          総工数: {fmtH(totalMin)}
+          総工数: {fmtDuration(totalMin)}
         </span>
       </div>
 
@@ -141,31 +117,79 @@ export default function EndReport() {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {cards.map((rc) => {
-                    const done = completed[rc.id] ?? false;
+                    const done    = completed[rc.id] ?? false;
+                    const dur     = durations[rc.id] ?? 0;
+                    const isZero  = dur === 0;
                     return (
-                      <div key={rc.id} className="card" style={{
-                        padding: "8px 10px",
-                        width: 160,
-                        flexShrink: 0,
-                        opacity: done ? 0.6 : 1,
-                        background: rc.isCompleted ? "#f0fdf4" : "white",
-                      }}>
+                      <div
+                        key={rc.id}
+                        className="card"
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setHovered({ id: rc.id, below: rect.top < 200 });
+                        }}
+                        onMouseLeave={() => setHovered(null)}
+                        style={{
+                          padding: "8px 10px",
+                          width: 160,
+                          flexShrink: 0,
+                          position: "relative",
+                          opacity: isZero ? 0.45 : 1,
+                          background: isZero ? "#f3f4f6" : "white",
+                          transition: "opacity 0.2s, background 0.2s",
+                        }}
+                      >
+                        {/* ホバー詳細ツールチップ */}
+                        {hovered?.id === rc.id && (
+                          <div style={{
+                            position: "absolute",
+                            ...(hovered.below
+                              ? { top: "calc(100% + 6px)" }
+                              : { bottom: "calc(100% + 6px)" }),
+                            left: 0,
+                            width: 200,
+                            background: "#1a1a2e",
+                            color: "white",
+                            borderRadius: 10,
+                            padding: "10px 12px",
+                            zIndex: 50,
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                            pointerEvents: "none",
+                          }}>
+                            <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{rc.content}</p>
+                            {[
+                              { label: "種別",   value: rc.taskType },
+                              { label: "ラベル", value: rc.label },
+                              { label: "範囲",   value: rc.implScope },
+                              { label: "XP",     value: `+${rc.xp} XP` },
+                              { label: "作成",   value: new Date(rc.createdAt).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }) },
+                            ].map(({ label, value }) => (
+                              <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 3 }}>
+                                <span style={{ color: "#9ca3af" }}>{label}</span>
+                                <span style={{ fontWeight: 600 }}>{value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                           <span className="chip" style={{ fontSize: 9, background: proj.color, color: proj.textColor }}>{rc.taskType}</span>
                           <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
                             ★
                           </button>
                         </div>
-                        <p style={{ fontSize: 11, margin: "0 0 6px", fontWeight: 500, color: "#1f2937", lineHeight: 1.3 }}>
+                        <p style={{ fontSize: 11, margin: "0 0 6px", fontWeight: 500, color: isZero ? "#9ca3af" : "#1f2937", lineHeight: 1.3 }}>
                           {rc.content}
                         </p>
+                        {/* 工数セレクト */}
                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <select
-                            value={durations[rc.id] ?? 0}
+                            value={dur}
                             onChange={(e) => setDurations((p) => ({ ...p, [rc.id]: Number(e.target.value) }))}
                             style={{
                               flex: 1, fontSize: 10, border: "1px solid #e5e7eb",
-                              borderRadius: 4, padding: "2px 3px", background: "white",
+                              borderRadius: 4, padding: "2px 3px",
+                              background: isZero ? "#e5e7eb" : "white",
+                              color: isZero ? "#9ca3af" : "#374151",
                             }}
                           >
                             {DURATION_OPTIONS.map((d) => (
@@ -173,12 +197,15 @@ export default function EndReport() {
                             ))}
                           </select>
                         </div>
+                        {/* 完了チェック（0分のときは無効化） */}
                         <button
-                          onClick={() => setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] }))}
+                          onClick={() => !isZero && setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] }))}
                           style={{
                             display: "flex", alignItems: "center", gap: 4,
-                            background: "none", border: "none", cursor: "pointer",
+                            background: "none", border: "none",
+                            cursor: isZero ? "not-allowed" : "pointer",
                             padding: "3px 0 0", fontSize: 10,
+                            opacity: isZero ? 0.4 : 1,
                           }}
                         >
                           <span style={{
@@ -227,7 +254,7 @@ export default function EndReport() {
               {pjTotals.map(({ pjId, totalMin: tMin, proj }) => (
                 <div
                   key={pjId}
-                  title={`${proj.name}: ${fmtH(tMin)}`}
+                  title={`${proj.name}: ${fmtDuration(tMin)}`}
                   style={{
                     width: "100%",
                     height: `${Math.min((tMin / maxBarMin) * 100, 100)}%`,
@@ -241,7 +268,7 @@ export default function EndReport() {
             </div>
           </div>
           <div style={{ fontSize: 8, color: "#6b7280", marginTop: 4, textAlign: "center" }}>
-            {fmtH(totalMin)}
+            {fmtDuration(totalMin)}
           </div>
         </div>
       </div>
@@ -261,7 +288,10 @@ export default function EndReport() {
                 const proj = projects.find((p) => p.id === rc.projectId)!;
                 return (
                   <div key={rc.id} className="repoca-mini"
-                    onClick={() => { setSelectedIds((prev) => [...prev, rc.id]); }}>
+                    onClick={() => {
+                      setSelectedRepoCas((prev) => [...prev, rc]);
+                      setDurations((prev) => ({ ...prev, [rc.id]: 0 }));
+                    }}>
                     <span className="chip" style={{ fontSize: 9, background: proj.color, color: proj.textColor }}>{proj.name}</span>
                     <p style={{ fontSize: 11, margin: "3px 0 0", fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
                   </div>

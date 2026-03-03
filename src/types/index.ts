@@ -38,6 +38,14 @@ export interface User {
   isExternal: boolean;
 }
 
+export type BadgeTier = "bronze" | "silver" | "gold";
+
+export interface BadgeTierRecord {
+  tier: BadgeTier;
+  date: string;
+  note?: string; // 取得の経緯・条件
+}
+
 export interface Badge {
   id: string;
   name: string;
@@ -45,6 +53,11 @@ export interface Badge {
   icon: string;
   acquired: boolean;
   acquiredAt?: string;
+  tier?: BadgeTier;
+  tierHistory?: BadgeTierRecord[];
+  nextTierCondition?: string;
+  nextTierProgress?: number;
+  nextTierGoal?: number;
 }
 
 export interface Mission {

@@ -4,11 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { currentUser, repoCas, projects, missions, badges } from "@/lib/mock-data";
 import { TaskLabel, ImplScope } from "@/types";
-import Image from "next/image";
-import {
-  HiFlag, HiDotsVertical, HiCheck, HiBadgeCheck, HiClipboardList, HiStar,
-  HiFolder,
-} from "react-icons/hi";
+import { HiPencil, HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiFolder, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import type { IconType } from "react-icons"; // NavItem 型で使用
+import { AvatarWithCostume, type HeadCostume, type BodyCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
+import { useAvatar } from "@/contexts/AvatarContext";
+import { useRepoCa } from "@/contexts/RepoCaContext";
+import { AvatarEditor } from "@/components/AvatarEditor";
+import { BadgeDetailModal } from "@/components/BadgeDetailModal";
+import { BADGE_ICON_MAP, TIER_STYLE } from "@/lib/badge-config";
+import type { Badge } from "@/types";
+import { fmtDuration } from "@/lib/utils";
 
 const AVATAR_MAP: Record<string, string> = {
   fox:     "/avatars/avatar_fox.svg",
@@ -22,7 +27,12 @@ const NEWS = [
   "今月のTOPユーザーに特別ボーナスをプレゼント",
 ];
 
-const MYPAGE_NAV = [
+type NavItem = { label: string; Icon: IconType; color: string } & (
+  | { href: string; onClick?: never }
+  | { href?: never; onClick: () => void }
+);
+
+const NAV_LINKS: NavItem[] = [
   { href: "/mypage",          label: "バッジ",       Icon: HiBadgeCheck,  color: "#10b981" },
   { href: "/mypage/rewards",  label: "報酬交換",     Icon: HiStar,        color: "#f59e0b" },
   { href: "/mypage/missions", label: "ミッション",   Icon: HiFlag,        color: "#4f46e5" },
@@ -38,6 +48,19 @@ export default function Home() {
   const [implScope, setImplScope]     = useState<ImplScope>("フロント");
   const [taskContent, setTaskContent] = useState("");
   const [attendance, setAttendance]   = useState<AttendanceState>("idle");
+  const { avatarKey, setAvatarKey }     = useAvatar();
+  const { addTodayRepoCa }              = useRepoCa();
+  const [headCostume, setHeadCostume]   = useState<HeadCostume>(null);
+  const [bodyCostume, setBodyCostume]   = useState<BodyCostume>(null);
+  const [editorOpen, setEditorOpen]     = useState(false);
+  const [missionTab, setMissionTab]       = useState<"daily" | "monthly" | "unlimited">("daily");
+  const [showAllBadges, setShowAllBadges] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+
+  const MYPAGE_NAV: NavItem[] = [
+    ...NAV_LINKS,
+    { label: "アバター", Icon: HiPencil, color: "#ec4899", onClick: () => setEditorOpen(true) },
+  ];
 
   const handleCheckIn = () => {
     if (attendance !== "idle") return;
@@ -50,6 +73,26 @@ export default function Home() {
   const handleAvatarAnimEnd = () => {
     if (attendance === "departing") setAttendance("working");
     else if (attendance === "returning") setAttendance("idle");
+  };
+
+  const handleCreateRepoCa = () => {
+    if (!taskContent.trim()) return;
+    const newRc = {
+      id: `rc_${Date.now()}`,
+      projectId,
+      taskType: "開発" as const,
+      label,
+      implScope,
+      content: taskContent.trim(),
+      isFavorite: false,
+      isCompleted: false,
+      duration: 0,
+      xp: 30,
+      createdAt: new Date().toISOString(),
+    };
+    addTodayRepoCa(newRc);
+    setLocalRepoCas((prev) => [...prev, newRc]);
+    setTaskContent("");
   };
 
   // タスク（本日のRepoCa）- ローカル状態でトグル可能に
@@ -71,7 +114,12 @@ export default function Home() {
   const dailyMissions  = missions.filter((m) => m.type === "daily");
   const acquiredBadges = badges.filter((b) => b.acquired).length;
   const xpPct          = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
-  const avatarSrc      = AVATAR_MAP[currentUser.avatar] ?? AVATAR_MAP.fox;
+  const avatarSrc      = AVATAR_MAP[avatarKey] ?? AVATAR_MAP.fox;
+  // 装備中コスチュームの効果チップ（頭=紫、胴体=緑）
+  const activeEffectChips = [
+    headCostume ? { key: headCostume, color: "#4f46e5", label: `効果: ${COSTUME_EFFECTS[headCostume].label}` } : null,
+    bodyCostume ? { key: bodyCostume, color: "#10b981", label: `効果: ${COSTUME_EFFECTS[bodyCostume].label}` } : null,
+  ].filter(Boolean) as { key: string; color: string; label: string }[];
 
   return (
     <div className="page-root">
@@ -93,16 +141,23 @@ export default function Home() {
         flexShrink: 0, background: "white", borderBottom: "1px solid #e5e7eb",
         display: "flex", padding: "6px 10px", gap: 20, overflowX: "auto",
       }}>
-        {MYPAGE_NAV.map((item) => (
-          <Link key={item.href} href={item.href} style={{
+        {MYPAGE_NAV.map((item) => {
+          const btnStyle = {
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "7px 22px", borderRadius: 99, textDecoration: "none",
-            fontSize: 13, color: "#374151", fontWeight: 700, whiteSpace: "nowrap",
-            background: "#f3f4f6", flexShrink: 0,
-          }}>
-            {item.label}
-          </Link>
-        ))}
+            fontSize: 13, color: "#374151", fontWeight: 700, whiteSpace: "nowrap" as const,
+            background: "#f3f4f6", flexShrink: 0 as const, border: "none", cursor: "pointer",
+          };
+          return item.href ? (
+            <Link key={item.label} href={item.href} style={btnStyle}>
+              {item.label}
+            </Link>
+          ) : (
+            <button key={item.label} onClick={item.onClick} style={btnStyle}>
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* 3カラムメインエリア */}
@@ -189,7 +244,7 @@ export default function Home() {
                         )}
                         <span style={{ fontSize: 9, color: "#9ca3af" }}>{rc.label}</span>
                         {rc.duration > 0 && (
-                          <span style={{ fontSize: 9, color: "#9ca3af" }}>{rc.duration}分</span>
+                          <span style={{ fontSize: 9, color: "#9ca3af" }}>{fmtDuration(rc.duration)}</span>
                         )}
                       </div>
                     </div>
@@ -251,27 +306,35 @@ export default function Home() {
               <div style={{ position: "absolute", bottom: "31%", right: "6%", fontSize: 40 }}>🏠</div>
               {/* アバター (中央揃えラッパー) */}
               <div style={{ position: "absolute", bottom: "30%", left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-                <div
-                  className={
+                <AvatarWithCostume
+                  avatarSrc={avatarSrc}
+                  headCostume={headCostume}
+                  bodyCostume={bodyCostume}
+                  size={80}
+                  animClass={
                     attendance === "departing" ? "avatar-depart" :
                     attendance === "returning" ? "avatar-return" :
                     "avatar-bob"
                   }
-                  style={{ width: 80, height: 80 }}
                   onAnimationEnd={handleAvatarAnimEnd}
-                >
-                  <Image src={avatarSrc} alt="アバター" width={80} height={80}
-                    style={{ imageRendering: "pixelated", objectFit: "contain", width: "100%", height: "100%" }} />
-                </div>
+                />
               </div>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "#5a8a3c" }} />
-              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <span style={{ fontWeight: 800, fontSize: 14, color: "#1a1a2e", background: "rgba(255,255,255,0.75)", padding: "2px 8px", borderRadius: 6 }}>
                   {currentUser.name}
                 </span>
-                <span style={{ fontWeight: 800, fontSize: 12, color: "white", background: "#4f46e5", padding: "2px 10px", borderRadius: 99 }}>
-                  Lv.{currentUser.level}
-                </span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+                  {activeEffectChips.map((eff) => (
+                    <span key={eff.key} style={{
+                      fontSize: 8, fontWeight: 700,
+                      background: "rgba(255,255,255,0.88)", color: eff.color,
+                      borderRadius: 99, padding: "1px 6px",
+                    }}>
+                      {eff.label}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
@@ -297,24 +360,38 @@ export default function Home() {
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "#5a8a3c" }} />
               {/* 歩くアバター */}
               <div style={{ position: "absolute", bottom: "30%", left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-                <div className="avatar-walk" style={{ width: 80, height: 80 }}>
-                  <Image src={avatarSrc} alt="アバター" width={80} height={80}
-                    style={{ imageRendering: "pixelated", objectFit: "contain", width: "100%", height: "100%" }} />
-                </div>
+                <AvatarWithCostume
+                  avatarSrc={avatarSrc}
+                  headCostume={headCostume}
+                  bodyCostume={bodyCostume}
+                  size={80}
+                  animClass="avatar-walk"
+                />
               </div>
               {/* 出勤中バッジ */}
-              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <span style={{ fontWeight: 800, fontSize: 14, color: "#1a1a2e", background: "rgba(255,255,255,0.75)", padding: "2px 8px", borderRadius: 6 }}>
                   {currentUser.name}
                 </span>
-                <span style={{ fontWeight: 700, fontSize: 11, color: "white", background: "#10b981", padding: "2px 10px", borderRadius: 99 }}>
-                  🏃 出勤中
-                </span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+                  <span style={{ fontWeight: 700, fontSize: 11, color: "white", background: "#10b981", padding: "2px 10px", borderRadius: 99 }}>
+                    🏃 出勤中
+                  </span>
+                  {activeEffectChips.map((eff) => (
+                    <span key={eff.key} style={{
+                      fontSize: 8, fontWeight: 700,
+                      background: "rgba(255,255,255,0.88)", color: eff.color,
+                      borderRadius: 99, padding: "1px 6px",
+                    }}>
+                      {eff.label}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
-          {/* XPバー */}
+          {/* XPバー + コスチューム効果 */}
           <div style={{ padding: "8px 14px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#6b7280", marginBottom: 3 }}>
               <span style={{ fontWeight: 600 }}>EXP</span>
@@ -323,6 +400,21 @@ export default function Home() {
             <div style={{ height: 7, background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
               <div style={{ width: `${xpPct}%`, height: "100%", background: "linear-gradient(90deg,#6366f1,#a855f7)", borderRadius: 4 }} />
             </div>
+            {/* 装備中コスチュームの効果 */}
+            {activeEffectChips.length > 0 && (
+              <div style={{ display: "flex", gap: 4, marginTop: 5, flexWrap: "wrap" }}>
+                {activeEffectChips.map((eff) => (
+                  <span key={eff.key} style={{
+                    fontSize: 9, fontWeight: 700,
+                    background: eff.color + "22", color: eff.color,
+                    borderRadius: 99, padding: "1px 7px",
+                    border: `1px solid ${eff.color}44`,
+                  }}>
+                    {eff.label}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ステータス3列 */}
@@ -424,35 +516,194 @@ export default function Home() {
               <textarea value={taskContent} onChange={(e) => setTaskContent(e.target.value)} placeholder="タスク内容" rows={2}
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 6px", fontSize: 11, resize: "none", color: "#374151", boxSizing: "border-box" }} />
             </div>
-            <Link href="/repoca/new">
-              <button className="btn btn-primary" style={{ width: "100%", marginTop: 8, fontSize: 11, padding: "7px" }}>新規作成</button>
-            </Link>
+            <button
+              className="btn btn-primary"
+              style={{ width: "100%", marginTop: 8, fontSize: 11, padding: "7px", opacity: taskContent.trim() ? 1 : 0.5 }}
+              onClick={handleCreateRepoCa}
+              disabled={!taskContent.trim()}
+            >
+              新規作成
+            </button>
           </div>
 
-          {/* ショートカット */}
-          <div className="card" style={{ padding: 12, flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e", marginBottom: 10, flexShrink: 0 }}>ショートカット</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, flex: 1 }}>
-              {MYPAGE_NAV.map((item) => (
-                <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    height: "100%", minHeight: 90,
-                    border: "1px solid #e5e7eb", borderRadius: 10,
-                    padding: "16px 12px",
-                    display: "flex", flexDirection: "column",
-                    alignItems: "center", justifyContent: "center", gap: 10,
-                    background: "#fafafa", cursor: "pointer",
-                  }}>
-                    <item.Icon style={{ width: 30, height: 30, color: item.color }} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>{item.label}</span>
+          {/* ミッション */}
+          {(() => {
+            const tabMissions   = missions.filter((m) => m.type === missionTab);
+            const doneCount     = tabMissions.filter((m) => m.completed).length;
+            const TABS: { key: "daily" | "monthly" | "unlimited"; label: string }[] = [
+              { key: "daily",     label: "日" },
+              { key: "monthly",   label: "月" },
+              { key: "unlimited", label: "無期限" },
+            ];
+            return (
+              <div className="card" style={{ padding: "10px 12px", flexShrink: 0 }}>
+                {/* ヘッダー */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>ミッション</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}>
+                    {doneCount}/{tabMissions.length}
+                  </span>
+                </div>
+                {/* タブ */}
+                <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
+                  {TABS.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setMissionTab(key)}
+                      style={{
+                        padding: "2px 10px", borderRadius: 99, border: "none",
+                        fontSize: 10, fontWeight: 700, cursor: "pointer",
+                        background: missionTab === key ? "#ef4444" : "#f3f4f6",
+                        color:      missionTab === key ? "white"   : "#6b7280",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {/* ミッションリスト */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                  {tabMissions.map((m) => (
+                    <div key={m.id} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                      {/* チェックボックス */}
+                      <div style={{
+                        width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginTop: 1,
+                        border: `2px solid ${m.completed ? "#10b981" : "#d1d5db"}`,
+                        background: m.completed ? "#10b981" : "white",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {m.completed && <HiCheck style={{ width: 11, height: 11, color: "white" }} />}
+                      </div>
+                      {/* テキスト */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 11, fontWeight: 700,
+                          color: m.completed ? "#9ca3af" : "#1f2937",
+                          textDecoration: m.completed ? "line-through" : "none",
+                        }}>
+                          {m.title}
+                        </div>
+                        <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 1, lineHeight: 1.3 }}>
+                          {m.description}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 9, color: "#f59e0b", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>
+                        +{m.reward}
+                      </span>
+                    </div>
+                  ))}
+                  {tabMissions.length === 0 && (
+                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>
+                      ミッションはありません
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* バッジ */}
+          {(() => {
+            const COLS = 6;
+            const visibleBadges = showAllBadges ? badges : badges.slice(0, COLS * 2);
+            return (
+              <div className="card" style={{ padding: "10px 12px", flexShrink: 0 }}>
+                {/* ヘッダー */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>バッジ</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {(["bronze","silver","gold"] as const).map((t) => (
+                      <span key={t} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 9, color: "#6b7280" }}>
+                        <span style={{ width: 8, height: 8, borderRadius: "50%", background: TIER_STYLE[t].bg, display: "inline-block" }} />
+                        {TIER_STYLE[t].label}
+                      </span>
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+                </div>
+                {/* グリッド */}
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+                  gap: 7,
+                  alignContent: "start",
+                }}>
+                  {visibleBadges.map((b) => {
+                    const iconInfo = BADGE_ICON_MAP[b.name];
+                    const ts = b.tier ? TIER_STYLE[b.tier] : null;
+                    return (
+                      <div
+                        key={b.id}
+                        title={`${b.name}${b.tier ? ` [${TIER_STYLE[b.tier].label}]` : ""}: ${b.description}`}
+                        onClick={() => setSelectedBadge(b)}
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, cursor: "pointer" }}
+                      >
+                        <div style={{
+                          width: 36, height: 36, borderRadius: 10,
+                          border: `2px solid ${ts ? ts.border : "#e5e7eb"}`,
+                          background: ts ? ts.bg : "#f3f4f6",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          opacity: b.acquired ? 1 : 0.35,
+                        }}>
+                          {iconInfo ? (
+                            <iconInfo.Icon style={{
+                              width: 18, height: 18,
+                              color: ts ? "white" : "#9ca3af",
+                            }} />
+                          ) : (
+                            <span style={{ fontSize: 16 }}>{b.icon}</span>
+                          )}
+                        </div>
+                        <span style={{
+                          fontSize: 9, fontWeight: 600, textAlign: "center",
+                          color: ts ? ts.labelColor : "#9ca3af",
+                        }}>
+                          {b.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* 展開ボタン */}
+                {badges.length > COLS * 2 && (
+                  <div style={{ textAlign: "center", marginTop: 4 }}>
+                    <button
+                      onClick={() => setShowAllBadges((v) => !v)}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "2px 12px" }}
+                    >
+                      {showAllBadges
+                        ? <HiChevronUp style={{ width: 14, height: 14 }} />
+                        : <HiChevronDown style={{ width: 14, height: 14 }} />
+                      }
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
+      {/* アバター衣装エディター */}
+      {editorOpen && (
+        <AvatarEditor
+          avatar={avatarKey}
+          avatarSrc={avatarSrc}
+          headCostume={headCostume}
+          bodyCostume={bodyCostume}
+          onAvatarChange={setAvatarKey}
+          onHeadChange={setHeadCostume}
+          onBodyChange={setBodyCostume}
+          onClose={() => setEditorOpen(false)}
+        />
+      )}
+
+      {/* バッジ詳細モーダル */}
+      {selectedBadge && (
+        <BadgeDetailModal
+          badge={selectedBadge}
+          onClose={() => setSelectedBadge(null)}
+        />
+      )}
     </div>
   );
 }
