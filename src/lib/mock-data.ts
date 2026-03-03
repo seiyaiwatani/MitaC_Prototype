@@ -148,18 +148,87 @@ export const repoCas: RepoCa[] = [
 export const todaySelectedIds: string[] = ["rc1", "rc2", "rc3", "rc4", "rc5"];
 
 export const badges: Badge[] = [
-  { id: "b1",  name: "Next",        description: "Next.jsを使用したPJに参加",  icon: "▤",  acquired: true,  acquiredAt: "2026-01-15" },
-  { id: "b2",  name: "SCSS",        description: "SCSSを使用したPJに参加",      icon: "🤖", acquired: true,  acquiredAt: "2026-02-01" },
-  { id: "b3",  name: "Java",        description: "Javaを使用したPJに参加",      icon: "〜", acquired: true,  acquiredAt: "2026-02-10" },
-  { id: "b4",  name: "PHP",         description: "PHPを使用したPJに参加",       icon: "○",  acquired: false },
-  { id: "b5",  name: "WordPress",   description: "WordPressを使用したPJに参加", icon: "△",  acquired: false },
-  { id: "b6",  name: "AWS",         description: "AWSを使用したPJに参加",       icon: "☆",  acquired: false },
-  { id: "b7",  name: "TypeScript",  description: "TypeScriptを活用",            icon: "▤",  acquired: true,  acquiredAt: "2026-01-20" },
-  { id: "b8",  name: "React",       description: "Reactを使用したPJに参加",     icon: "🤖", acquired: true,  acquiredAt: "2026-01-25" },
-  { id: "b9",  name: "Docker",      description: "Dockerを使用したPJに参加",    icon: "〜", acquired: false },
-  { id: "b10", name: "PostgreSQL",  description: "PostgreSQLを使用",            icon: "○",  acquired: false },
-  { id: "b11", name: "GraphQL",     description: "GraphQLを使用したPJに参加",   icon: "△",  acquired: false },
-  { id: "b12", name: "Terraform",   description: "Terraformを使用",             icon: "☆",  acquired: false },
+  {
+    id: "b1", name: "Next", description: "Next.jsを使用したPJに参加",
+    icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold",
+    tierHistory: [
+      { tier: "bronze", date: "2025-08-10", note: "ITS-xLPでNext.jsを初採用" },
+      { tier: "silver", date: "2025-11-05", note: "Next.jsプロジェクト5件を完了" },
+      { tier: "gold",   date: "2026-01-15", note: "Next.jsプロジェクト15件以上を経験" },
+    ],
+    nextTierCondition: "全ティア取得済み",
+  },
+  {
+    id: "b2", name: "SCSS", description: "SCSSを使用したPJに参加",
+    icon: "🤖", acquired: true, acquiredAt: "2026-02-01", tier: "silver",
+    tierHistory: [
+      { tier: "bronze", date: "2025-09-20", note: "コーポレートサイトリニューアルでSCSS導入" },
+      { tier: "silver", date: "2026-02-01", note: "SCSSを使ったPJ10件に参加" },
+    ],
+    nextTierCondition: "SCSSプロジェクト20件に参加", nextTierProgress: 12, nextTierGoal: 20,
+  },
+  {
+    id: "b3", name: "Java", description: "Javaを使用したPJに参加",
+    icon: "〜", acquired: true, acquiredAt: "2026-02-10", tier: "bronze",
+    tierHistory: [
+      { tier: "bronze", date: "2026-02-10", note: "データ基盤構築PJでJavaバックエンドを担当" },
+    ],
+    nextTierCondition: "Javaプロジェクト5件に参加", nextTierProgress: 1, nextTierGoal: 5,
+  },
+  {
+    id: "b4", name: "PHP", description: "PHPを使用したPJに参加",
+    icon: "○", acquired: false,
+    nextTierCondition: "PHPプロジェクトに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b5", name: "WordPress", description: "WordPressを使用したPJに参加",
+    icon: "△", acquired: false,
+    nextTierCondition: "WordPressプロジェクトに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b6", name: "AWS", description: "AWSを使用したPJに参加",
+    icon: "☆", acquired: false,
+    nextTierCondition: "AWSを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b7", name: "TypeScript", description: "TypeScriptを活用",
+    icon: "▤", acquired: true, acquiredAt: "2026-01-20", tier: "silver",
+    tierHistory: [
+      { tier: "bronze", date: "2025-10-01", note: "ITS-xLPフロント開発でTypeScriptを初導入" },
+      { tier: "silver", date: "2026-01-20", note: "TypeScript採用PJ10件に参加" },
+    ],
+    nextTierCondition: "TypeScriptプロジェクト20件に参加", nextTierProgress: 15, nextTierGoal: 20,
+  },
+  {
+    id: "b8", name: "React", description: "Reactを使用したPJに参加",
+    icon: "🤖", acquired: true, acquiredAt: "2026-01-25", tier: "gold",
+    tierHistory: [
+      { tier: "bronze", date: "2025-07-15", note: "モバイルアプリ開発PJでReactを初採用" },
+      { tier: "silver", date: "2025-10-20", note: "ReactプロジェクトをSPA化・5件完了" },
+      { tier: "gold",   date: "2026-01-25", note: "Reactを主軸としたPJ15件以上に参加" },
+    ],
+    nextTierCondition: "全ティア取得済み",
+  },
+  {
+    id: "b9", name: "Docker", description: "Dockerを使用したPJに参加",
+    icon: "〜", acquired: false,
+    nextTierCondition: "Dockerを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b10", name: "PostgreSQL", description: "PostgreSQLを使用",
+    icon: "○", acquired: false,
+    nextTierCondition: "PostgreSQLを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b11", name: "GraphQL", description: "GraphQLを使用したPJに参加",
+    icon: "△", acquired: false,
+    nextTierCondition: "GraphQLを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
+  {
+    id: "b12", name: "Terraform", description: "Terraformを使用",
+    icon: "☆", acquired: false,
+    nextTierCondition: "Terraformを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+  },
 ];
 
 export const missions: Mission[] = [

@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { currentUser } from "@/lib/mock-data";
+import { useAvatar } from "@/contexts/AvatarContext";
+
+const AVATAR_SRC: Record<string, string> = {
+  fox:     "/avatars/avatar_fox.svg",
+  cat:     "/avatars/avatar_cat.svg",
+  doragon: "/avatars/avatar_doragon.svg",
+};
 
 export default function AppHeader() {
-  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
-
-  const avatarSrc =
-    currentUser.avatar === "cat"    ? "/avatars/avatar_cat.svg" :
-    currentUser.avatar === "doragon"? "/avatars/avatar_doragon.svg" :
-                                      "/avatars/avatar_fox.svg";
+  const { avatarKey } = useAvatar();
+  const xpPct    = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
+  const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
 
   return (
     <header
@@ -23,7 +28,8 @@ export default function AppHeader() {
       }}
     >
       {/* ロゴ */}
-      <div
+      <Link
+        href="/"
         style={{
           width: 130,
           background: "#4f46e5",
@@ -31,18 +37,19 @@ export default function AppHeader() {
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
+          textDecoration: "none",
         }}
       >
         <span className="pixel-logo" style={{ fontSize: 12, letterSpacing: 0, lineHeight: 1 }}>
           <span style={{ color: "white" }}>Mita</span>
           <span style={{ color: "#facc15" }}>=C</span>
         </span>
-      </div>
+      </Link>
 
-      {/* 中央: 空きスペース（ナビゲーション等への拡張余地） */}
+      {/* 中央: 空きスペース */}
       <div style={{ flex: 1 }} />
 
-      {/* 右: アバター + ユーザー情報（まとめて右寄せ） */}
+      {/* 右: アバター + ユーザー情報 */}
       <div
         style={{
           paddingRight: 20,
@@ -70,7 +77,7 @@ export default function AppHeader() {
             alt="アバター"
             width={36}
             height={36}
-            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+            style={{ objectFit: "cover", width: "100%", height: "100%", imageRendering: "pixelated" }}
           />
         </div>
 

@@ -4,23 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
+import { fmtDuration } from "@/lib/utils";
 
 const SCOPE_COLOR: Record<string, string> = {
   フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
   フルスタック: "#ef4444", その他: "#6b7280",
 };
-const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌" };
+const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
 
 const FILTERS = [
-  { key: "all",       label: "すべて" },
-  { key: "favorite",  label: "⭐ お気に入り" },
+  { key: "all",        label: "すべて" },
+  { key: "favorite",   label: "⭐ お気に入り" },
   { key: "incomplete", label: "未完了" },
-  { key: "completed", label: "✓ 完了" },
+  { key: "completed",  label: "✓ 完了" },
 ] as const;
 
 export default function RepoCaList() {
-  const [filter, setFilter] = useState<"all" | "favorite" | "incomplete" | "completed">("all");
-  const [search, setSearch] = useState("");
+  const [filter, setFilter]           = useState<"all" | "favorite" | "incomplete" | "completed">("all");
+  const [search, setSearch]           = useState("");
+  const [selectedRc, setSelectedRc]   = useState<RepoCa | null>(null);
 
   const filtered = repoCas.filter((rc) => {
     const proj = projects.find((p) => p.id === rc.projectId);
@@ -30,16 +32,16 @@ export default function RepoCaList() {
       (proj?.name ?? "").includes(search);
     const matchFilter =
       filter === "all" ||
-      (filter === "favorite"  && rc.isFavorite) ||
-      (filter === "completed" && rc.isCompleted) ||
+      (filter === "favorite"   && rc.isFavorite) ||
+      (filter === "completed"  && rc.isCompleted) ||
       (filter === "incomplete" && !rc.isCompleted);
     return matchSearch && matchFilter;
   });
 
   const stats = [
-    { label: "作成済み", value: repoCas.length, icon: "🃏" },
-    { label: "完了",     value: repoCas.filter((r) => r.isCompleted).length, icon: "✅" },
-    { label: "総XP",    value: `${repoCas.reduce((s, r) => s + r.xp, 0)}XP`, icon: "⭐" },
+    { label: "作成済み", value: repoCas.length,                                     icon: "🃏" },
+    { label: "完了",     value: repoCas.filter((r) => r.isCompleted).length,        icon: "✅" },
+    { label: "総XP",    value: `${repoCas.reduce((s, r) => s + r.xp, 0)}XP`,       icon: "⭐" },
   ];
 
   return (
@@ -112,18 +114,29 @@ export default function RepoCaList() {
               <p style={{ fontSize: 13 }}>RepoCaが見つかりませんでした</p>
             </div>
           ) : (
-            filtered.map((rc) => <RepoCaCard key={rc.id} rc={rc} />)
+            filtered.map((rc) => (
+              <RepoCaCard key={rc.id} rc={rc} onClick={() => setSelectedRc(rc)} />
+            ))
           )}
         </div>
       </div>
+
+      {/* 詳細モーダル */}
+      {selectedRc && (
+        <RepoCaDetailModal rc={selectedRc} onClose={() => setSelectedRc(null)} />
+      )}
     </div>
   );
 }
 
-function RepoCaCard({ rc }: { rc: RepoCa }) {
+function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
   const proj = projects.find((p) => p.id === rc.projectId);
   return (
-    <div className="card" style={{ padding: 10, marginBottom: 6, display: "flex", gap: 8, alignItems: "flex-start" }}>
+    <div
+      className="card"
+      onClick={onClick}
+      style={{ padding: 10, marginBottom: 6, display: "flex", gap: 8, alignItems: "flex-start", cursor: "pointer" }}
+    >
       {/* 完了マーク */}
       <div style={{
         width: 18, height: 18, borderRadius: 3, flexShrink: 0, marginTop: 1,
@@ -137,7 +150,7 @@ function RepoCaCard({ rc }: { rc: RepoCa }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* タグ */}
         <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 4 }}>
-          <span style={{ fontSize: 12 }}>{TASK_ICON[rc.taskType]}</span>
+          <span style={{ fontSize: 12 }}>{TASK_ICON[rc.taskType] ?? "📌"}</span>
           <span className="chip chip-indigo" style={{ fontSize: 10, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis" }}>
             {proj?.name}
           </span>
@@ -147,9 +160,119 @@ function RepoCaCard({ rc }: { rc: RepoCa }) {
           {rc.isFavorite && <span style={{ fontSize: 10 }}>⭐</span>}
         </div>
         <p style={{ fontSize: 12, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
-        <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+        <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
           <span className="chip chip-gray" style={{ fontSize: 9 }}>{rc.label}</span>
+          {rc.duration > 0 && (
+            <span style={{ fontSize: 9, color: "#6b7280" }}>{fmtDuration(rc.duration)}</span>
+          )}
           <span style={{ fontSize: 10, color: "#4f46e5", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void }) {
+  const proj = projects.find((p) => p.id === rc.projectId);
+  const rows: { label: string; value: string }[] = [
+    { label: "プロジェクト",   value: proj?.name ?? "—" },
+    { label: "タスク種別",     value: `${TASK_ICON[rc.taskType] ?? "📌"} ${rc.taskType}` },
+    { label: "ラベル",         value: rc.label },
+    { label: "実装スコープ",   value: rc.implScope },
+    { label: "工数",           value: rc.duration > 0 ? fmtDuration(rc.duration) : "未記入" },
+    { label: "獲得XP",         value: `+${rc.xp} XP` },
+    { label: "作成日",         value: rc.createdAt.slice(0, 10) },
+    { label: "ステータス",     value: rc.isCompleted ? "✓ 完了" : "未完了" },
+  ];
+
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.5)",
+        zIndex: 300,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: "white", borderRadius: 16, width: 340, maxWidth: "92vw",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+          overflow: "hidden",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ヘッダー */}
+        <div style={{
+          background: "linear-gradient(135deg,#10b981,#059669)",
+          padding: "16px 20px",
+          display: "flex", alignItems: "flex-start", gap: 10,
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
+              {proj && (
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+                  background: proj.color, color: proj.textColor,
+                }}>
+                  {proj.icon} {proj.name}
+                </span>
+              )}
+              <span style={{
+                fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+                background: "rgba(255,255,255,0.25)", color: "white",
+              }}>
+                {rc.taskType}
+              </span>
+              {rc.isFavorite && (
+                <span style={{ fontSize: 12 }}>⭐</span>
+              )}
+            </div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>
+              {rc.content}
+            </p>
+          </div>
+          <div style={{
+            background: "rgba(255,255,255,0.25)", borderRadius: 8,
+            padding: "4px 10px", textAlign: "center", flexShrink: 0,
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: "white" }}>+{rc.xp}</div>
+            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.8)" }}>XP</div>
+          </div>
+        </div>
+
+        {/* 詳細テーブル */}
+        <div style={{ padding: "14px 20px 10px" }}>
+          {rows.map((r) => (
+            <div key={r.label} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12,
+            }}>
+              <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
+              <span style={{
+                color: r.label === "ステータス" ? (rc.isCompleted ? "#10b981" : "#9ca3af") :
+                       r.label === "獲得XP"     ? "#4f46e5" : "#1f2937",
+                fontWeight: r.label === "獲得XP" ? 700 : 500,
+              }}>
+                {r.value}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* フッター */}
+        <div style={{ padding: "8px 20px 18px" }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: "100%", padding: "10px 0", borderRadius: 10,
+              border: "none", background: "#f3f4f6",
+              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+            }}
+          >
+            閉じる
+          </button>
         </div>
       </div>
     </div>
