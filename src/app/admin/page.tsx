@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { projects } from "@/lib/mock-data";
 import {
-  HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX,
+  HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
 } from "react-icons/hi";
+import { useMission } from "@/contexts/MissionContext";
+import { Mission } from "@/types";
 
 /* ── 型定義 ── */
 type DailyTask = { name: string; min: number };
@@ -84,13 +86,14 @@ const MONTHLY_WORK: Record<string, Record<string, number>> = {
   m5: { p1: 2880, p2: 2880, p3: 1440 },
 };
 
-type View = "projects" | "daily" | "monthly" | "new-project";
+type View = "projects" | "daily" | "monthly" | "new-project" | "missions";
 
 const NAV_ITEMS: { key: View; label: string; Icon: React.ComponentType<{ style?: React.CSSProperties }> }[] = [
   { key: "projects",    label: "プロジェクト一覧", Icon: HiFolder },
   { key: "daily",       label: "工数管理/日",      Icon: HiChartBar },
   { key: "monthly",     label: "工数管理/月",      Icon: HiCalendar },
   { key: "new-project", label: "プロジェクト作成", Icon: HiPlus },
+  { key: "missions",    label: "ミッション管理",   Icon: HiFlag },
 ];
 
 type TooltipState = {
@@ -112,6 +115,14 @@ export default function AdminPage() {
   const [search, setSearch]     = useState("");
   const [projName, setProjName] = useState("");
   const [projMemo, setProjMemo] = useState("");
+  const { missions, toggleMission, addMission } = useMission();
+
+  // ミッション作成フォーム
+  const [mTitle, setMTitle]     = useState("");
+  const [mDesc, setMDesc]       = useState("");
+  const [mType, setMType]       = useState<Mission["type"]>("daily");
+  const [mReward, setMReward]   = useState(30);
+  const [mGoal, setMGoal]       = useState(1);
 
   const [hoveredKey, setHoveredKey]   = useState<string | null>(null);
   const [tooltip, setTooltip]         = useState<TooltipState>(null);
@@ -398,6 +409,103 @@ export default function AdminPage() {
                 <span>0h</span><span>40h</span><span>80h</span><span>120h</span><span>160h</span>
               </div>
             </>
+          )}
+
+          {/* ── ミッション管理 ── */}
+          {view === "missions" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
+
+              {/* 左: ミッション一覧 */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10 }}>ミッション一覧</div>
+                {(["daily", "monthly", "unlimited"] as Mission["type"][]).map((type) => {
+                  const label = type === "daily" ? "日次" : type === "monthly" ? "月次" : "無期限";
+                  const list  = missions.filter((m) => m.type === type);
+                  return (
+                    <div key={type} style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>{label}</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                        {list.length === 0 ? (
+                          <div style={{ fontSize: 11, color: "#9ca3af", padding: "6px 0" }}>なし</div>
+                        ) : list.map((m) => (
+                          <div
+                            key={m.id}
+                            className="card"
+                            style={{ padding: "9px 12px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
+                            onClick={() => toggleMission(m.id)}
+                          >
+                            <div style={{
+                              width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                              border: `2px solid ${m.completed ? "#10b981" : "#d1d5db"}`,
+                              background: m.completed ? "#10b981" : "white",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              transition: "all 0.15s",
+                            }}>
+                              {m.completed && <HiCheck style={{ width: 11, height: 11, color: "white" }} />}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: m.completed ? "#9ca3af" : "#1f2937", textDecoration: m.completed ? "line-through" : "none" }}>
+                                {m.title}
+                              </div>
+                              <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>{m.description}</div>
+                            </div>
+                            <div style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, flexShrink: 0 }}>
+                              +{m.reward}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 右: ミッション作成フォーム */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10 }}>ミッション追加</div>
+                <div className="card" style={{ padding: 14 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>タイトル</label>
+                      <input value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="例: 始業報告を3日連続提出"
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>説明</label>
+                      <input value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="ミッションの詳細説明"
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
+                        <select value={mType} onChange={(e) => setMType(e.target.value as Mission["type"])}
+                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 12 }}>
+                          <option value="daily">日次</option>
+                          <option value="monthly">月次</option>
+                          <option value="unlimited">無期限</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>報酬経験値</label>
+                        <input type="number" min={1} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
+                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    style={{ width: "100%", marginTop: 12, fontSize: 12 }}
+                    disabled={!mTitle.trim()}
+                    onClick={() => {
+                      addMission({ type: mType, title: mTitle.trim(), description: mDesc.trim(), reward: mReward, goal: mGoal, progress: 0, completed: false });
+                      setMTitle(""); setMDesc(""); setMType("daily"); setMReward(30); setMGoal(1);
+                    }}
+                  >
+                    追加
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* ── プロジェクト作成 ── */}

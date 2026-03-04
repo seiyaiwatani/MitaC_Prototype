@@ -78,16 +78,21 @@ export function AvatarEditor({
 
         {/* プレビュー */}
         <div style={{
-          display: "flex", justifyContent: "center", alignItems: "center",
+          display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
           marginBottom: 10,
-          background: "#f0f4ff", borderRadius: 12, padding: "16px 0",
+          background: "linear-gradient(135deg,#f0f4ff,#e0e7ff)", borderRadius: 12, padding: "20px 0 12px",
         }}>
           <AvatarWithCostume
             avatarSrc={avatarSrc}
             headCostume={headCostume}
             bodyCostume={bodyCostume}
-            size={100}
+            size={140}
           />
+          {(headCostume || bodyCostume) && (
+            <div style={{ marginTop: 8, fontSize: 10, color: "#4f46e5", fontWeight: 700 }}>
+              ✨ 装備中
+            </div>
+          )}
         </div>
 
         {/* アクティブ効果 */}

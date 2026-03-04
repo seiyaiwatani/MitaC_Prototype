@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
+import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 
 const AVATAR_SRC: Record<string, string> = {
   fox:     "/avatars/avatar_fox.svg",
@@ -12,7 +12,7 @@ const AVATAR_SRC: Record<string, string> = {
 };
 
 export default function AppHeader() {
-  const { avatarKey } = useAvatar();
+  const { avatarKey, headCostume, bodyCostume } = useAvatar();
   const xpPct    = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
 
@@ -60,24 +60,22 @@ export default function AppHeader() {
           flexShrink: 0,
         }}
       >
-        {/* アバター */}
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: "50%",
-            overflow: "hidden",
-            border: "2px solid #c4b5fd",
-            background: "#e5e7eb",
-            flexShrink: 0,
-          }}
-        >
-          <Image
-            src={avatarSrc}
-            alt="アバター"
-            width={36}
-            height={36}
-            style={{ objectFit: "cover", width: "100%", height: "100%", imageRendering: "pixelated" }}
+        {/* アバター（コスチューム付き） */}
+        <div style={{
+          width: 40, height: 40, flexShrink: 0,
+          borderRadius: "50%",
+          border: "2px solid #c4b5fd",
+          background: "#e5e7eb",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          position: "relative",
+          overflow: "visible",
+        }}>
+          <AvatarWithCostume
+            avatarSrc={avatarSrc}
+            headCostume={headCostume}
+            bodyCostume={bodyCostume}
+            size={36}
+            style={{ borderRadius: "50%" }}
           />
         </div>
 

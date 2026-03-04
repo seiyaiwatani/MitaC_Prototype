@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
-import { currentUser, repoCas, projects, missions, badges } from "@/lib/mock-data";
+import { currentUser, repoCas, projects, badges } from "@/lib/mock-data";
+import { useMission } from "@/contexts/MissionContext";
 import { TaskLabel, ImplScope } from "@/types";
 import { HiPencil, HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiFolder, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import type { IconType } from "react-icons"; // NavItem 型で使用
-import { AvatarWithCostume, type HeadCostume, type BodyCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
+import { AvatarWithCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
+import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
 import { useAvatar } from "@/contexts/AvatarContext";
+import gsap from "gsap";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { AvatarEditor } from "@/components/AvatarEditor";
 import { BadgeDetailModal } from "@/components/BadgeDetailModal";
@@ -20,6 +23,69 @@ const AVATAR_MAP: Record<string, string> = {
   cat:     "/avatars/avatar_cat.svg",
   doragon: "/avatars/avatar_doragon.svg",
 };
+
+// ===== GSAP Avatar Sub-Components =====
+function BobAvatar({ avatarSrc, headCostume, bodyCostume }: {
+  avatarSrc: string; headCostume: HeadCostume; bodyCostume: BodyCostume;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const tween = gsap.to(el, { y: -10, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    return () => { tween.kill(); gsap.set(el, { clearProps: "all" }); };
+  }, []);
+  return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
+}
+
+function DepartAvatar({ avatarSrc, headCostume, bodyCostume, onComplete }: {
+  avatarSrc: string; headCostume: HeadCostume; bodyCostume: BodyCostume; onComplete: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const tl = gsap.timeline({ onComplete });
+    // その場で即回転
+    tl.to(el, { rotation: 360, duration: 0.38, ease: "power2.inOut" })
+      // 走って右へ退場
+      .to(el, { x: 360, opacity: 0, duration: 0.48, ease: "power2.in" });
+    return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
+  }, []);
+  return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
+}
+
+function ReturnAvatar({ avatarSrc, headCostume, bodyCostume, onComplete }: {
+  avatarSrc: string; headCostume: HeadCostume; bodyCostume: BodyCostume; onComplete: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    gsap.set(el, { x: -360, opacity: 0 });
+    const tl = gsap.timeline({ onComplete });
+    // 左から走って登場（回転しながら）
+    tl.to(el, { x: 0, opacity: 1, rotation: 360, duration: 0.42, ease: "power2.out" })
+      // 着地バウンス
+      .to(el, { y: -16, duration: 0.22, ease: "power2.out" })
+      .to(el, { y: 0, duration: 0.28, ease: "bounce.out" });
+    return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
+  }, []);
+  return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
+}
+
+function WalkAvatar({ avatarSrc, headCostume, bodyCostume }: {
+  avatarSrc: string; headCostume: HeadCostume; bodyCostume: BodyCostume;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const tl = gsap.timeline({ repeat: -1 });
+    tl.to(el, { y: -7, duration: 0.26, ease: "power1.inOut" })
+      .to(el, { y: 0,  duration: 0.26, ease: "power1.inOut" })
+      .to(el, { y: -4, duration: 0.20, ease: "power1.inOut" })
+      .to(el, { y: 0,  duration: 0.20, ease: "power1.inOut" });
+    return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
+  }, []);
+  return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
+}
 
 const NEWS = [
   "新機能追加！バッジシートが追加されました",
@@ -48,14 +114,14 @@ export default function Home() {
   const [implScope, setImplScope]     = useState<ImplScope>("フロント");
   const [taskContent, setTaskContent] = useState("");
   const [attendance, setAttendance]   = useState<AttendanceState>("idle");
-  const { avatarKey, setAvatarKey }     = useAvatar();
-  const { addTodayRepoCa }              = useRepoCa();
-  const [headCostume, setHeadCostume]   = useState<HeadCostume>(null);
-  const [bodyCostume, setBodyCostume]   = useState<BodyCostume>(null);
+  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume } = useAvatar();
+  const { addTodayRepoCa, toggleTodayRepoCa } = useRepoCa();
+  const { missions, toggleMission }      = useMission();
   const [editorOpen, setEditorOpen]     = useState(false);
   const [missionTab, setMissionTab]       = useState<"daily" | "monthly" | "unlimited">("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const [hoveredTask, setHoveredTask] = useState<string | null>(null);
 
   const MYPAGE_NAV: NavItem[] = [
     ...NAV_LINKS,
@@ -69,10 +135,6 @@ export default function Home() {
   const handleCheckOut = () => {
     if (attendance !== "working") return;
     setAttendance("returning");
-  };
-  const handleAvatarAnimEnd = () => {
-    if (attendance === "departing") setAttendance("working");
-    else if (attendance === "returning") setAttendance("idle");
   };
 
   const handleCreateRepoCa = () => {
@@ -101,8 +163,10 @@ export default function Home() {
   );
   const [taskFilter, setTaskFilter] = useState<FilterType>("全て");
 
-  const toggleTask = (id: string) =>
+  const toggleTask = (id: string) => {
     setLocalRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r));
+    toggleTodayRepoCa(id);
+  };
 
   const filteredRepoCas = localRepoCas.filter((r) => {
     if (taskFilter === "未完了") return !r.isCompleted;
@@ -139,7 +203,7 @@ export default function Home() {
       {/* クイックナビ */}
       <div style={{
         flexShrink: 0, background: "white", borderBottom: "1px solid #e5e7eb",
-        display: "flex", padding: "6px 10px", gap: 20, overflowX: "auto",
+        display: "flex", padding: "6px 10px", gap: 20, overflowX: "auto", justifyContent: "center",
       }}>
         {MYPAGE_NAV.map((item) => {
           const btnStyle = {
@@ -178,7 +242,7 @@ export default function Home() {
             <div style={{ display: "flex", gap: 4 }}>
               {(["全て", "未完了", "完了"] as FilterType[]).map((f) => (
                 <button key={f} onClick={() => setTaskFilter(f)} style={{
-                  padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 10, fontWeight: 700,
+                  flex: 1, padding: "4px 0", borderRadius: 99, border: "none", fontSize: 10, fontWeight: 700,
                   cursor: "pointer",
                   background: taskFilter === f ? "#4f46e5" : "#f3f4f6",
                   color:      taskFilter === f ? "white"   : "#6b7280",
@@ -209,13 +273,39 @@ export default function Home() {
                   <div
                     key={rc.id}
                     onClick={() => toggleTask(rc.id)}
+                    onMouseEnter={() => setHoveredTask(rc.id)}
+                    onMouseLeave={() => setHoveredTask(null)}
                     style={{
                       display: "flex", alignItems: "flex-start", gap: 8,
                       padding: "7px 4px", borderBottom: "1px solid #f3f4f6",
                       cursor: "pointer",
                       opacity: rc.isCompleted ? 0.6 : 1,
+                      position: "relative",
                     }}
                   >
+                    {hoveredTask === rc.id && (
+                      <div style={{
+                        position: "absolute",
+                        top: "calc(100% + 4px)", left: 0, right: 0,
+                        background: "#1a1a2e", color: "white",
+                        borderRadius: 10, padding: "10px 12px",
+                        zIndex: 50, boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                        pointerEvents: "none",
+                      }}>
+                        <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{rc.content}</p>
+                        {[
+                          { label: "種別",   value: rc.taskType },
+                          { label: "ラベル", value: rc.label },
+                          { label: "範囲",   value: rc.implScope },
+                          { label: "XP",     value: `+${rc.xp} XP` },
+                        ].map(({ label, value }) => (
+                          <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 3 }}>
+                            <span style={{ color: "#9ca3af" }}>{label}</span>
+                            <span style={{ fontWeight: 600 }}>{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div style={{
                       width: 18, height: 18, borderRadius: "50%", flexShrink: 0, marginTop: 1,
                       border: `2px solid ${rc.isCompleted ? "#10b981" : "#d1d5db"}`,
@@ -283,7 +373,7 @@ export default function Home() {
           </div>
 
           {/* ボタン */}
-          <div style={{ padding: "6px 10px", display: "flex", gap: 6, flexShrink: 0 }}>
+          <div style={{ padding: "6px 10px", display: "flex", gap: 6, flexShrink: 0, borderTop: "1px solid #e5e7eb" }}>
             <Link href="/report/start" style={{ flex: 1 }}>
               <button className="btn btn-primary" style={{ width: "100%", fontSize: 11, padding: "7px 4px" }}>始業報告</button>
             </Link>
@@ -293,31 +383,27 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ====== 中央: ユーザーステータス ====== */}
-        <div className="card" style={{ display: "flex", flexDirection: "column", overflow: "hidden", padding: 0 }}>
+        {/* ====== 中央: ユーザーステータス + ミッション ====== */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "hidden", height: "100%" }}>
+        <div className="card" style={{ display: "flex", flexDirection: "column", overflow: "hidden", padding: 0, flexShrink: 0 }}>
 
           {/* ゲームシーン */}
           {attendance !== "working" ? (
             /* ホームシーン (idle / departing / returning) */
-            <div className="avatar-game-wrap" style={{ height: 160, flexShrink: 0 }}>
+            <div className="avatar-game-wrap" style={{ height: 160, flex: "none" }}>
               <div style={{ position: "absolute", bottom: "33%", left: "5%",  fontSize: 28 }}>🌲</div>
               <div style={{ position: "absolute", bottom: "31%", left: "16%", fontSize: 22 }}>🌲</div>
               <div style={{ position: "absolute", bottom: "29%", left: "25%", fontSize: 16 }}>🌿</div>
               <div style={{ position: "absolute", bottom: "31%", right: "6%", fontSize: 40 }}>🏠</div>
               {/* アバター (中央揃えラッパー) */}
               <div style={{ position: "absolute", bottom: "30%", left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-                <AvatarWithCostume
-                  avatarSrc={avatarSrc}
-                  headCostume={headCostume}
-                  bodyCostume={bodyCostume}
-                  size={80}
-                  animClass={
-                    attendance === "departing" ? "avatar-depart" :
-                    attendance === "returning" ? "avatar-return" :
-                    "avatar-bob"
-                  }
-                  onAnimationEnd={handleAvatarAnimEnd}
-                />
+                {attendance === "departing" ? (
+                  <DepartAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} onComplete={() => setAttendance("working")} />
+                ) : attendance === "returning" ? (
+                  <ReturnAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} onComplete={() => setAttendance("idle")} />
+                ) : (
+                  <BobAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} />
+                )}
               </div>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "#5a8a3c" }} />
               <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -339,7 +425,7 @@ export default function Home() {
             </div>
           ) : (
             /* 冒険シーン (working) */
-            <div className="avatar-game-wrap" style={{ height: 160, flexShrink: 0 }}>
+            <div className="avatar-game-wrap" style={{ height: 160, flex: "none" }}>
               {/* スクロールする雲 */}
               <div style={{ position: "absolute", top: "6%", left: 0, right: 0, overflow: "hidden", height: 32 }}>
                 <div style={{ display: "flex", gap: 120, animation: "scroll-left-loop 9s linear infinite", width: "max-content" }}>
@@ -360,13 +446,7 @@ export default function Home() {
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "#5a8a3c" }} />
               {/* 歩くアバター */}
               <div style={{ position: "absolute", bottom: "30%", left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-                <AvatarWithCostume
-                  avatarSrc={avatarSrc}
-                  headCostume={headCostume}
-                  bodyCostume={bodyCostume}
-                  size={80}
-                  animClass="avatar-walk"
-                />
+                <WalkAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} />
               </div>
               {/* 出勤中バッジ */}
               <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -417,46 +497,23 @@ export default function Home() {
             )}
           </div>
 
-          {/* ステータス3列 */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+          {/* 本日の進捗サマリー */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", flexShrink: 0 }}>
             {[
               { Icon: HiClipboardList, label: "本日タスク", value: `${completedCount}/${localRepoCas.length}`, color: "#4f46e5" },
               { Icon: HiBadgeCheck,    label: "バッジ",     value: `${acquiredBadges}個`,                      color: "#10b981" },
-              { Icon: HiStar,         label: "コイン",     value: currentUser.currency.toLocaleString(),      color: "#f59e0b" },
+              { Icon: HiStar,         label: "レベル",     value: `Lv.${currentUser.level}`,                  color: "#f59e0b" },
             ].map(({ Icon, label, value, color }, i) => (
               <div key={label} style={{
-                padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                padding: "10px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
                 borderRight: i < 2 ? "1px solid #e5e7eb" : "none",
+                borderBottom: "1px solid #e5e7eb",
               }}>
-                <Icon style={{ width: 18, height: 18, color }} />
-                <span style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e" }}>{value}</span>
-                <span style={{ fontSize: 10, color: "#6b7280" }}>{label}</span>
+                <Icon style={{ width: 16, height: 16, color }} />
+                <span style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}>{value}</span>
+                <span style={{ fontSize: 9, color: "#6b7280" }}>{label}</span>
               </div>
             ))}
-          </div>
-
-          {/* 本日のミッション進捗 */}
-          <div style={{ padding: "12px 16px", flex: 1, overflow: "hidden" }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8 }}>本日のミッション</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {dailyMissions.map((m) => {
-                const pct = Math.min(Math.round((m.progress / m.goal) * 100), 100);
-                return (
-                  <div key={m.id}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 600, color: "#374151" }}>{m.title}</span>
-                      <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 10 }}>+{m.reward}</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ flex: 1, height: 7, background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
-                        <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#10b981,#059669)", borderRadius: 4 }} />
-                      </div>
-                      <span style={{ fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>{m.progress}/{m.goal}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
 
           {/* 出退勤ボタン */}
@@ -492,40 +549,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ====== 右: RepoCa作成 + ショートカット ====== */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "hidden" }}>
-
-          {/* RepoCa作成 */}
-          <div className="card" style={{ padding: 12, flexShrink: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 8, color: "#1a1a2e" }}>RepoCa 作成</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <select value={projectId} onChange={(e) => setProjectId(e.target.value)}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 6px", fontSize: 11, color: "#374151" }}>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                <select value={label} onChange={(e) => setLabel(e.target.value as TaskLabel)}
-                  style={{ border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 6px", fontSize: 11, color: "#374151" }}>
-                  {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-                <select value={implScope} onChange={(e) => setImplScope(e.target.value as ImplScope)}
-                  style={{ border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 6px", fontSize: 11, color: "#374151" }}>
-                  {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <textarea value={taskContent} onChange={(e) => setTaskContent(e.target.value)} placeholder="タスク内容" rows={2}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 6px", fontSize: 11, resize: "none", color: "#374151", boxSizing: "border-box" }} />
-            </div>
-            <button
-              className="btn btn-primary"
-              style={{ width: "100%", marginTop: 8, fontSize: 11, padding: "7px", opacity: taskContent.trim() ? 1 : 0.5 }}
-              onClick={handleCreateRepoCa}
-              disabled={!taskContent.trim()}
-            >
-              新規作成
-            </button>
-          </div>
-
           {/* ミッション */}
           {(() => {
             const tabMissions   = missions.filter((m) => m.type === missionTab);
@@ -536,80 +559,94 @@ export default function Home() {
               { key: "unlimited", label: "無期限" },
             ];
             return (
-              <div className="card" style={{ padding: "10px 12px", flexShrink: 0 }}>
-                {/* ヘッダー */}
+              <div className="card" style={{ padding: "10px 12px", flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                   <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>ミッション</span>
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}>
                     {doneCount}/{tabMissions.length}
                   </span>
                 </div>
-                {/* タブ */}
                 <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
                   {TABS.map(({ key, label }) => (
-                    <button
-                      key={key}
-                      onClick={() => setMissionTab(key)}
-                      style={{
-                        padding: "2px 10px", borderRadius: 99, border: "none",
-                        fontSize: 10, fontWeight: 700, cursor: "pointer",
-                        background: missionTab === key ? "#ef4444" : "#f3f4f6",
-                        color:      missionTab === key ? "white"   : "#6b7280",
-                      }}
-                    >
-                      {label}
-                    </button>
+                    <button key={key} onClick={() => setMissionTab(key)} style={{
+                      padding: "2px 10px", borderRadius: 99, border: "none",
+                      fontSize: 10, fontWeight: 700, cursor: "pointer",
+                      background: missionTab === key ? "#ef4444" : "#f3f4f6",
+                      color:      missionTab === key ? "white"   : "#6b7280",
+                    }}>{label}</button>
                   ))}
                 </div>
-                {/* ミッションリスト */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
                   {tabMissions.map((m) => (
-                    <div key={m.id} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      {/* チェックボックス */}
+                    <div key={m.id} style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }} onClick={() => toggleMission(m.id)}>
                       <div style={{
                         width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginTop: 1,
                         border: `2px solid ${m.completed ? "#10b981" : "#d1d5db"}`,
                         background: m.completed ? "#10b981" : "white",
-                        display: "flex", alignItems: "center", justifyContent: "center",
+                        display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
                       }}>
                         {m.completed && <HiCheck style={{ width: 11, height: 11, color: "white" }} />}
                       </div>
-                      {/* テキスト */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: 11, fontWeight: 700,
-                          color: m.completed ? "#9ca3af" : "#1f2937",
-                          textDecoration: m.completed ? "line-through" : "none",
-                        }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: m.completed ? "#9ca3af" : "#1f2937", textDecoration: m.completed ? "line-through" : "none" }}>
                           {m.title}
                         </div>
-                        <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 1, lineHeight: 1.3 }}>
-                          {m.description}
-                        </div>
+                        <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 1, lineHeight: 1.3 }}>{m.description}</div>
                       </div>
-                      <span style={{ fontSize: 9, color: "#f59e0b", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>
-                        +{m.reward}
-                      </span>
+                      <span style={{ fontSize: 9, color: "#f59e0b", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>+{m.reward}</span>
                     </div>
                   ))}
                   {tabMissions.length === 0 && (
-                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>
-                      ミッションはありません
-                    </div>
+                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>ミッションはありません</div>
                   )}
                 </div>
               </div>
             );
           })()}
+        </div>
+
+        {/* ====== 右: RepoCa作成 + ショートカット ====== */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "hidden", height: "100%" }}>
+
+          {/* RepoCa作成 */}
+          <div className="card" style={{ padding: 20, flexShrink: 0 }}>
+            <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 14, color: "#1a1a2e" }}>RepoCa 作成</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <select value={projectId} onChange={(e) => setProjectId(e.target.value)}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
+                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <select value={label} onChange={(e) => setLabel(e.target.value as TaskLabel)}
+                  style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
+                  {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <select value={implScope} onChange={(e) => setImplScope(e.target.value as ImplScope)}
+                  style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
+                  {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <textarea value={taskContent} onChange={(e) => setTaskContent(e.target.value)} placeholder="タスク内容" rows={4}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, resize: "none", color: "#374151", boxSizing: "border-box", lineHeight: 1.6 }} />
+            </div>
+            <button
+              className="btn btn-primary"
+              style={{ width: "100%", marginTop: 12, fontSize: 14, padding: "11px", opacity: taskContent.trim() ? 1 : 0.5, borderRadius: 10 }}
+              onClick={handleCreateRepoCa}
+              disabled={!taskContent.trim()}
+            >
+              新規作成
+            </button>
+          </div>
 
           {/* バッジ */}
           {(() => {
             const COLS = 6;
             const visibleBadges = showAllBadges ? badges : badges.slice(0, COLS * 2);
             return (
-              <div className="card" style={{ padding: "10px 12px", flexShrink: 0 }}>
+              <div className="card" style={{ padding: "10px 12px", flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
                 {/* ヘッダー */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexShrink: 0 }}>
                   <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>バッジ</span>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     {(["bronze","silver","gold"] as const).map((t) => (
@@ -621,6 +658,7 @@ export default function Home() {
                   </div>
                 </div>
                 {/* グリッド */}
+                <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
                 <div style={{
                   display: "grid",
                   gridTemplateColumns: `repeat(${COLS}, 1fr)`,
@@ -677,6 +715,7 @@ export default function Home() {
                     </button>
                   </div>
                 )}
+                </div>
               </div>
             );
           })()}

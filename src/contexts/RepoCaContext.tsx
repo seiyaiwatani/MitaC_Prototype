@@ -7,11 +7,13 @@ import { repoCas, todaySelectedIds } from "@/lib/mock-data";
 interface RepoCaContextValue {
   todayRepoCas: RepoCa[];
   addTodayRepoCa: (rc: RepoCa) => void;
+  toggleTodayRepoCa: (id: string) => void;
 }
 
 const RepoCaContext = createContext<RepoCaContextValue>({
   todayRepoCas: [],
   addTodayRepoCa: () => {},
+  toggleTodayRepoCa: () => {},
 });
 
 export function RepoCaProvider({ children }: { children: ReactNode }) {
@@ -20,9 +22,11 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   );
   const addTodayRepoCa = (rc: RepoCa) =>
     setTodayRepoCas((prev) => [...prev, rc]);
+  const toggleTodayRepoCa = (id: string) =>
+    setTodayRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r));
 
   return (
-    <RepoCaContext.Provider value={{ todayRepoCas, addTodayRepoCa }}>
+    <RepoCaContext.Provider value={{ todayRepoCas, addTodayRepoCa, toggleTodayRepoCa }}>
       {children}
     </RepoCaContext.Provider>
   );

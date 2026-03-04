@@ -113,11 +113,11 @@ body {
   background: white;
   border-radius: 8px;
   border: 1.5px solid var(--border);
-  padding: 7px 9px;
+  padding: 9px 11px;
   cursor: pointer;
   transition: border-color 0.15s;
-  min-width: 120px;
-  max-width: 160px;
+  min-width: 150px;
+  max-width: 200px;
   flex-shrink: 0;
 }
 .repoca-mini:hover { border-color: var(--primary); }

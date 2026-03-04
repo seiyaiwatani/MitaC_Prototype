@@ -9,24 +9,40 @@ import { HiArrowLeft, HiCheck } from "react-icons/hi";
 import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 
+/** バーグラフ用の短い時間表示 (例: 1h15m, 30分, 2h) */
+function shortDur(min: number): string {
+  if (min === 0) return "0m";
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m}分`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${m}m`;
+}
+
 export default function EndReport() {
   const router  = useRouter();
   const { todayRepoCas } = useRepoCa();
 
-  // 始業報告＋ホームで作成したRepoCaを初期表示
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
-  // 初期は全て0分（やっていないものはそのまま0を維持）
   const [durations, setDurations] = useState<Record<string, number>>(
     Object.fromEntries(todayRepoCas.map((rc) => [rc.id, 0]))
   );
-  const [completed, setCompleted] = useState<Record<string, boolean>>({});
-  const [showAddPanel, setShowAddPanel] = useState(false);
-  const [showConfirm, setShowConfirm]   = useState(false);
+  const [completed, setCompleted] = useState<Record<string, boolean>>(
+    Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]))
+  );
+  const [showConfirm, setShowConfirm] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
-  const available = repoCas.filter((r) => !selectedRepoCas.find((s) => s.id === r.id));
-  const totalMin  = selectedRepoCas.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0);
-  const maxBarMin = 480; // バーグラフ基準 8時間
+  const totalMin = selectedRepoCas.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0);
+
+  // サイドバー用
+  const unfinished = repoCas.filter((r) => !r.isCompleted && !selectedRepoCas.find((s) => s.id === r.id));
+  const favorites  = repoCas.filter((r) => r.isFavorite  && !selectedRepoCas.find((s) => s.id === r.id));
+
+  const addToList = (rc: RepoCa) => {
+    setSelectedRepoCas((prev) => [...prev, rc]);
+    setDurations((prev) => ({ ...prev, [rc.id]: 0 }));
+  };
 
   // PJでグループ化
   const groupByPj = (rcs: RepoCa[]) => {
@@ -102,7 +118,7 @@ export default function EndReport() {
         </span>
       </div>
 
-      {/* メインエリア: RepoCa一覧 + バーグラフ */}
+      {/* メインエリア: RepoCa一覧 + 右サイドバー */}
       <div className="page-body" style={{ padding: 8, gap: 8, overflow: "hidden" }}>
 
         {/* 左: PJグループRepoCa */}
@@ -117,9 +133,8 @@ export default function EndReport() {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {cards.map((rc) => {
-                    const done    = completed[rc.id] ?? false;
-                    const dur     = durations[rc.id] ?? 0;
-                    const isZero  = dur === 0;
+                    const done = completed[rc.id] ?? false;
+                    const dur  = durations[rc.id] ?? 0;
                     return (
                       <div
                         key={rc.id}
@@ -130,13 +145,10 @@ export default function EndReport() {
                         }}
                         onMouseLeave={() => setHovered(null)}
                         style={{
-                          padding: "8px 10px",
-                          width: 160,
+                          padding: "10px 12px",
+                          width: 200,
                           flexShrink: 0,
                           position: "relative",
-                          opacity: isZero ? 0.45 : 1,
-                          background: isZero ? "#f3f4f6" : "white",
-                          transition: "opacity 0.2s, background 0.2s",
                         }}
                       >
                         {/* ホバー詳細ツールチップ */}
@@ -177,7 +189,7 @@ export default function EndReport() {
                             ★
                           </button>
                         </div>
-                        <p style={{ fontSize: 11, margin: "0 0 6px", fontWeight: 500, color: isZero ? "#9ca3af" : "#1f2937", lineHeight: 1.3 }}>
+                        <p style={{ fontSize: 11, margin: "0 0 6px", fontWeight: 500, color: dur === 0 ? "#ef4444" : "#1f2937", lineHeight: 1.3 }}>
                           {rc.content}
                         </p>
                         {/* 工数セレクト */}
@@ -188,8 +200,6 @@ export default function EndReport() {
                             style={{
                               flex: 1, fontSize: 10, border: "1px solid #e5e7eb",
                               borderRadius: 4, padding: "2px 3px",
-                              background: isZero ? "#e5e7eb" : "white",
-                              color: isZero ? "#9ca3af" : "#374151",
                             }}
                           >
                             {DURATION_OPTIONS.map((d) => (
@@ -197,15 +207,13 @@ export default function EndReport() {
                             ))}
                           </select>
                         </div>
-                        {/* 完了チェック（0分のときは無効化） */}
+                        {/* 完了チェック */}
                         <button
-                          onClick={() => !isZero && setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] }))}
+                          onClick={() => setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] }))}
                           style={{
                             display: "flex", alignItems: "center", gap: 4,
-                            background: "none", border: "none",
-                            cursor: isZero ? "not-allowed" : "pointer",
+                            background: "none", border: "none", cursor: "pointer",
                             padding: "3px 0 0", fontSize: 10,
-                            opacity: isZero ? 0.4 : 1,
                           }}
                         >
                           <span style={{
@@ -228,79 +236,121 @@ export default function EndReport() {
           })}
         </div>
 
-        {/* 右: 工数バーグラフ */}
+        {/* 中: 工数バーグラフ */}
         <div style={{
-          width: 56,
+          width: 60,
           flexShrink: 0,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
           background: "white",
           border: "1px solid #e5e7eb",
           borderRadius: 10,
-          padding: "8px 4px",
-          overflow: "hidden",
+          padding: "8px 6px 6px",
         }}>
-          {/* 目盛り + バー */}
-          <div style={{ flex: 1, width: "100%", display: "flex", flexDirection: "row", gap: 4, alignItems: "stretch" }}>
-            {/* Y軸目盛り */}
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", fontSize: 8, color: "#9ca3af", alignItems: "flex-end", flexShrink: 0 }}>
-              <span>—0h</span>
-              <span>—4h</span>
-              <span>—8h</span>
+          {totalMin === 0 ? (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: 9, color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>工数<br />未入力</span>
             </div>
-            {/* バー本体 */}
-            <div style={{ flex: 1, background: "#f3f4f6", borderRadius: 4, overflow: "hidden", display: "flex", flexDirection: "column", position: "relative" }}>
-              {pjTotals.map(({ pjId, totalMin: tMin, proj }) => (
-                <div
-                  key={pjId}
-                  title={`${proj.name}: ${fmtDuration(tMin)}`}
-                  style={{
-                    width: "100%",
-                    height: `${Math.min((tMin / maxBarMin) * 100, 100)}%`,
-                    minHeight: tMin > 0 ? 4 : 0,
-                    background: proj.color,
-                    borderBottom: "1px solid rgba(255,255,255,0.6)",
-                    transition: "height 0.3s ease",
-                  }}
-                />
-              ))}
+          ) : (
+            <div style={{ flex: 1, display: "flex", flexDirection: "row", gap: 2, alignItems: "stretch", overflow: "hidden" }}>
+              {/* Y軸ラベル列 - 常に固定幅でバー幅を一定に保つ */}
+              <div style={{ width: 24, flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                {pjTotals.filter(x => x.totalMin > 0).length > 1 && pjTotals.map(({ pjId, totalMin: tMin }, i) => {
+                  const cumMin = pjTotals.slice(0, i + 1).reduce((s, x) => s + x.totalMin, 0);
+                  const isLast = i === pjTotals.length - 1;
+                  return (
+                    <div key={pjId} style={{ flex: tMin, minHeight: tMin > 0 ? 16 : 0, display: "flex", alignItems: "flex-end", paddingBottom: 2 }}>
+                      {!isLast && (
+                        <span style={{ fontSize: 7, color: "#9ca3af", whiteSpace: "nowrap", lineHeight: 1 }}>
+                          {shortDur(cumMin)}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {/* バー本体 */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                {pjTotals.map(({ pjId, totalMin: tMin, proj }) => (
+                  <div
+                    key={pjId}
+                    title={`${proj.name}: ${fmtDuration(tMin)}`}
+                    style={{
+                      flex: tMin,
+                      minHeight: tMin > 0 ? 16 : 0,
+                      background: proj.color,
+                      borderBottom: "1px solid rgba(255,255,255,0.6)",
+                      transition: "flex 0.3s ease",
+                    }}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div style={{ fontSize: 8, color: "#6b7280", marginTop: 4, textAlign: "center" }}>
-            {fmtDuration(totalMin)}
+          )}
+          <div style={{ fontSize: 9, color: "#6b7280", textAlign: "center", flexShrink: 0, marginTop: 4, lineHeight: 1.3 }}>
+            合計<br />{fmtDuration(totalMin)}
           </div>
         </div>
-      </div>
 
-      {/* RepoCa追加パネル */}
-      {showAddPanel && (
-        <div style={{
-          flexShrink: 0, maxHeight: 200, overflowY: "auto",
-          borderTop: "2px solid #e5e7eb", background: "#fafafa", padding: "8px 12px",
-        }}>
-          <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 6, color: "#374151" }}>RepoCaを追加</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {available.length === 0 ? (
-              <p style={{ fontSize: 11, color: "#9ca3af" }}>追加できるRepoCaがありません</p>
+        {/* 右サイドバー: RepoCa追加 */}
+        <div className="split-col" style={{ width: 200, flexShrink: 0 }}>
+
+          {/* 未完了のRepoCa */}
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+            未完了のRepoCa
+          </div>
+          <div style={{ flex: "0 0 auto", maxHeight: "32%", overflowY: "auto", padding: "6px 8px", borderBottom: "1px solid #e5e7eb" }}>
+            {unfinished.length === 0 ? (
+              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
-              available.map((rc) => {
-                const proj = projects.find((p) => p.id === rc.projectId)!;
+              unfinished.map((rc) => {
+                const proj = projects.find((p) => p.id === rc.projectId);
                 return (
-                  <div key={rc.id} className="repoca-mini"
-                    onClick={() => {
-                      setSelectedRepoCas((prev) => [...prev, rc]);
-                      setDurations((prev) => ({ ...prev, [rc.id]: 0 }));
-                    }}>
-                    <span className="chip" style={{ fontSize: 9, background: proj.color, color: proj.textColor }}>{proj.name}</span>
-                    <p style={{ fontSize: 11, margin: "3px 0 0", fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                  <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
+                    <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                      <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.icon} {proj?.name}</span>
+                    </div>
+                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
                   </div>
                 );
               })
             )}
           </div>
+
+          {/* お気に入りのRepoCa */}
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+            お気に入りのRepoCa
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", padding: "6px 8px" }}>
+            {favorites.length === 0 ? (
+              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
+            ) : (
+              favorites.map((rc) => {
+                const proj = projects.find((p) => p.id === rc.projectId);
+                return (
+                  <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
+                    <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                      <span className="chip chip-yellow" style={{ fontSize: 9 }}>⭐ お気に入り</span>
+                    </div>
+                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <span style={{ fontSize: 9, color: "#9ca3af" }}>{proj?.name}</span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* 新しいRepoCaを作成 */}
+          <div style={{ padding: "8px", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
+            <Link href="/repoca/new">
+              <button className="btn btn-ghost" style={{ width: "100%", fontSize: 11, padding: "6px" }}>
+                + 新しいRepoCaを作成
+              </button>
+            </Link>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* 下部ボタン */}
       <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
@@ -313,13 +363,6 @@ export default function EndReport() {
           onClick={() => setShowConfirm(true)}
         >
           提出
-        </button>
-        <button
-          className="btn btn-ghost"
-          style={{ flex: 1 }}
-          onClick={() => setShowAddPanel((v) => !v)}
-        >
-          RepoCaを追加
         </button>
       </div>
     </div>

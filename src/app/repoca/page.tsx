@@ -66,12 +66,6 @@ export default function RepoCaList() {
             style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 12 }}
           />
         </div>
-        <Link href="/repoca/new" style={{
-          background: "white", color: "#059669", borderRadius: 20,
-          padding: "4px 12px", fontSize: 11, fontWeight: 700, textDecoration: "none",
-        }}>
-          + 作成
-        </Link>
       </header>
 
       {/* ボディ */}
@@ -120,6 +114,19 @@ export default function RepoCaList() {
           )}
         </div>
       </div>
+
+      {/* フローティング作成ボタン */}
+      <Link href="/repoca/new" style={{
+        position: "fixed", right: 20, bottom: 24,
+        width: 56, height: 56, borderRadius: "50%",
+        background: "linear-gradient(135deg,#10b981,#059669)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: "0 4px 16px rgba(16,185,129,0.5)",
+        textDecoration: "none", fontSize: 28, color: "white",
+        zIndex: 100,
+      }}>
+        +
+      </Link>
 
       {/* 詳細モーダル */}
       {selectedRc && (
