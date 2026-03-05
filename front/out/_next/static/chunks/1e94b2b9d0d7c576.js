@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,75157,t=>{"use strict";function r(t){if(0===t)return"0分";let r=Math.floor(t/60),e=t%60;return 0===r?`${e}分`:0===e?`${r}時間`:`${r}時間${e}分`}let e=Array.from({length:49},(t,e)=>{let o=15*e;return{label:r(o),value:o}});t.s(["DURATION_OPTIONS",0,e,"fmtDuration",()=>r])}]);
