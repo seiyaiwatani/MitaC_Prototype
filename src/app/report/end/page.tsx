@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { HiArrowLeft, HiCheck } from "react-icons/hi";
@@ -20,8 +19,7 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const router  = useRouter();
-  const { todayRepoCas } = useRepoCa();
+  const { todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports } = useRepoCa();
 
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
   const [durations, setDurations] = useState<Record<string, number>>(
@@ -31,6 +29,7 @@ export default function EndReport() {
     Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]))
   );
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
   const totalMin = selectedRepoCas.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0);
@@ -62,6 +61,87 @@ export default function EndReport() {
     totalMin: cards.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0),
     proj: projects.find((p) => p.id === pjId)!,
   }));
+
+  /* ── 始業未報告ブロック画面 ── */
+  if (!hasStartReported) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <HiArrowLeft style={{ width: 20, height: 20 }} />
+          </Link>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 48 }}>⚠️</div>
+          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            始業報告が提出されていません
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+            終業報告は始業報告を提出した後に<br />行うことができます
+          </p>
+          <Link href="/report/start">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── 残業未報告ブロック画面 ── */
+  if (!hasOvertimeReported) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <HiArrowLeft style={{ width: 20, height: 20 }} />
+          </Link>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 48 }}>⚠️</div>
+          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            残業報告が提出されていません
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+            終業報告は残業報告を提出した後に<br />行うことができます
+          </p>
+          <Link href="/report/overtime">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>残業報告する</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── 完了画面 ── */
+  if (showCompleted) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 56 }}>🎉</div>
+          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            本日の報告が完了しました！
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+            お疲れ様でした。<br />
+            総工数: {fmtDuration(totalMin)}
+          </p>
+          <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ecfdf5", border: "2px solid #10b981", textAlign: "center" }}>
+            <p style={{ fontSize: 12, color: "#047857", margin: 0, fontWeight: 600 }}>
+              ✅ 始業・残業・終業すべての報告が完了
+            </p>
+          </div>
+          <Link href="/">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   /* ── 確認画面 ── */
   if (showConfirm) {
@@ -96,7 +176,7 @@ export default function EndReport() {
         <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
           <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>修正</button>
           <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
-            onClick={() => { alert(`終業報告を提出しました！\n総工数: ${fmtDuration(totalMin)}`); router.push("/report"); }}>
+            onClick={() => { setHasEndReported(true); resetDailyReports(); setShowCompleted(true); }}>
             送信
           </button>
         </div>
@@ -253,22 +333,37 @@ export default function EndReport() {
             </div>
           ) : (
             <div style={{ flex: 1, display: "flex", flexDirection: "row", gap: 2, alignItems: "stretch", overflow: "hidden" }}>
-              {/* Y軸ラベル列 - 常に固定幅でバー幅を一定に保つ */}
-              <div style={{ width: 24, flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                {pjTotals.filter(x => x.totalMin > 0).length > 1 && pjTotals.map(({ pjId, totalMin: tMin }, i) => {
-                  const cumMin = pjTotals.slice(0, i + 1).reduce((s, x) => s + x.totalMin, 0);
-                  const isLast = i === pjTotals.length - 1;
-                  return (
-                    <div key={pjId} style={{ flex: tMin, minHeight: tMin > 0 ? 16 : 0, display: "flex", alignItems: "flex-end", paddingBottom: 2 }}>
-                      {!isLast && (
-                        <span style={{ fontSize: 7, color: "#9ca3af", whiteSpace: "nowrap", lineHeight: 1 }}>
-                          {shortDur(cumMin)}
+              {/* Y軸ラベル列 - 絶対座標で境界線に配置、近接ラベルはスキップ */}
+              {pjTotals.filter(x => x.totalMin > 0).length > 1 && (
+                <div style={{ width: 24, flexShrink: 0, position: "relative" }}>
+                  {(() => {
+                    let cum = 0;
+                    let lastPct = -20;
+                    return pjTotals.slice(0, -1).map(({ pjId, totalMin: tMin }) => {
+                      cum += tMin;
+                      const pct = (cum / totalMin) * 100;
+                      if (pct < 8 || pct > 92 || pct - lastPct < 18) return null;
+                      lastPct = pct;
+                      return (
+                        <span key={pjId} style={{
+                          position: "absolute",
+                          top: `${pct}%`,
+                          right: 0,
+                          transform: "translateY(-50%)",
+                          fontSize: 7,
+                          color: "#9ca3af",
+                          whiteSpace: "nowrap",
+                          lineHeight: 1,
+                          background: "white",
+                          padding: "0 1px",
+                        }}>
+                          {shortDur(cum)}
                         </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      );
+                    });
+                  })()}
+                </div>
+              )}
               {/* バー本体 */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
                 {pjTotals.map(({ pjId, totalMin: tMin, proj }) => (

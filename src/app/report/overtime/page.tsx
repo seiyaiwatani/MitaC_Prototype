@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiArrowLeft } from "react-icons/hi";
+import { useRepoCa } from "@/contexts/RepoCaContext";
 
 export default function OvertimeReport() {
   const router = useRouter();
+  const { setHasOvertimeReported } = useRepoCa();
   const [hasOvertime, setHasOvertime] = useState<boolean | null>(null);
   const [hours,   setHours]   = useState(1);
   const [minutes, setMinutes] = useState(0);
@@ -14,10 +16,7 @@ export default function OvertimeReport() {
 
   const handleSubmit = () => {
     if (hasOvertime === null) return;
-    const msg = hasOvertime
-      ? `残業報告を提出しました。\n残業時間: ${hours}時間${minutes > 0 ? minutes + "分" : ""}`
-      : "残業なしで報告を提出しました。お疲れ様でした！";
-    alert(msg);
+    setHasOvertimeReported(true);
     router.push("/report");
   };
 

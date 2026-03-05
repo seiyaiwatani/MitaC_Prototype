@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import Link from "next/link";
 import { currentUser, repoCas, projects, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
 import { TaskLabel, ImplScope } from "@/types";
-import { HiPencil, HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiFolder, HiChevronDown, HiChevronUp } from "react-icons/hi";
-import type { IconType } from "react-icons"; // NavItem 型で使用
+import { HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { AvatarWithCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
 import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
 import { useAvatar } from "@/contexts/AvatarContext";
 import gsap from "gsap";
 import { useRepoCa } from "@/contexts/RepoCaContext";
-import { AvatarEditor } from "@/components/AvatarEditor";
 import { BadgeDetailModal } from "@/components/BadgeDetailModal";
 import { BADGE_ICON_MAP, TIER_STYLE } from "@/lib/badge-config";
 import type { Badge } from "@/types";
@@ -31,8 +29,19 @@ function BobAvatar({ avatarSrc, headCostume, bodyCostume }: {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
-    const tween = gsap.to(el, { y: -10, duration: 0.9, ease: "sine.inOut", yoyo: true, repeat: -1 });
-    return () => { tween.kill(); gsap.set(el, { clearProps: "all" }); };
+    const tl = gsap.timeline({ repeat: -1 });
+    // ふわふわ x2 → キョロキョロ → ふわふわ x2 → 短い静止
+    tl.to(el, { y: -8, duration: 0.7, ease: "sine.inOut" })
+      .to(el, { y: 0,  duration: 0.7, ease: "sine.inOut" })
+      .to(el, { y: -8, duration: 0.7, ease: "sine.inOut" })
+      .to(el, { y: 0,  duration: 0.7, ease: "sine.inOut" })
+      .to(el, { rotation: -9, duration: 0.28, ease: "power2.out" })
+      .to(el, { rotation: 9,  duration: 0.42, ease: "power2.inOut" })
+      .to(el, { rotation: 0,  duration: 0.28, ease: "power2.in" })
+      .to(el, { duration: 0.5 })
+      .to(el, { y: -8, duration: 0.7, ease: "sine.inOut" })
+      .to(el, { y: 0,  duration: 0.7, ease: "sine.inOut" });
+    return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
   }, []);
   return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
 }
@@ -43,11 +52,13 @@ function DepartAvatar({ avatarSrc, headCostume, bodyCostume, onComplete }: {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
+    gsap.set(el, { transformPerspective: 400 });
     const tl = gsap.timeline({ onComplete });
-    // その場で即回転
-    tl.to(el, { rotation: 360, duration: 0.38, ease: "power2.inOut" })
-      // 走って右へ退場
-      .to(el, { x: 360, opacity: 0, duration: 0.48, ease: "power2.in" });
+    // ジャンプしながらZ回転 → 着地
+    tl.to(el, { rotation: 360, y: -20, duration: 0.32, ease: "power2.out" })
+      .to(el, { y: 0, duration: 0.18, ease: "power1.in" })
+      // Y軸フリップしながら走って退場
+      .to(el, { x: 360, opacity: 0, rotationY: 360, rotation: "+=180", duration: 0.5, ease: "power2.in" });
     return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
   }, []);
   return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
@@ -59,13 +70,21 @@ function ReturnAvatar({ avatarSrc, headCostume, bodyCostume, onComplete }: {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
-    gsap.set(el, { x: -360, opacity: 0 });
+    gsap.set(el, { x: -360, opacity: 0, transformPerspective: 400 });
     const tl = gsap.timeline({ onComplete });
-    // 左から走って登場（回転しながら）
-    tl.to(el, { x: 0, opacity: 1, rotation: 360, duration: 0.42, ease: "power2.out" })
-      // 着地バウンス
-      .to(el, { y: -16, duration: 0.22, ease: "power2.out" })
-      .to(el, { y: 0, duration: 0.28, ease: "bounce.out" });
+    // 左から走って登場: Y軸フリップ+Z回転を交互に混ぜたタンブリング
+    tl.to(el, { x: 0, opacity: 1, rotation: 270, rotationY: 180, duration: 0.42, ease: "power2.out" })
+      // 着地バウンス（向きをリセット）
+      .to(el, { rotation: 360, rotationY: 0, y: -16, duration: 0.18, ease: "power2.out" })
+      .to(el, { y: 0, duration: 0.28, ease: "bounce.out" })
+      // うれしそうなモーション: 1回目はZ回転ジャンプ
+      .to(el, { y: -24, rotation: "+=360", duration: 0.32, ease: "power2.out" })
+      .to(el, { y: 0, duration: 0.26, ease: "bounce.out" })
+      // 2回目はY軸フリップ（側転）
+      .to(el, { y: -18, rotationY: "+=360", duration: 0.28, ease: "power2.out" })
+      .to(el, { y: 0, duration: 0.22, ease: "bounce.out" })
+      .to(el, { scaleX: 1.35, scaleY: 0.68, duration: 0.1, ease: "power2.in" })
+      .to(el, { scaleX: 1, scaleY: 1, duration: 0.35, ease: "elastic.out(1.2, 0.4)" });
     return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
   }, []);
   return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
@@ -78,31 +97,100 @@ function WalkAvatar({ avatarSrc, headCostume, bodyCostume }: {
   useLayoutEffect(() => {
     const el = ref.current; if (!el) return;
     const tl = gsap.timeline({ repeat: -1 });
-    tl.to(el, { y: -7, duration: 0.26, ease: "power1.inOut" })
-      .to(el, { y: 0,  duration: 0.26, ease: "power1.inOut" })
-      .to(el, { y: -4, duration: 0.20, ease: "power1.inOut" })
-      .to(el, { y: 0,  duration: 0.20, ease: "power1.inOut" });
+    // 左右に体を傾けながら歩く
+    tl.to(el, { y: -8, rotation: -5, scaleX: 0.96, duration: 0.23, ease: "power2.out" })
+      .to(el, { y: 0,  rotation: 0,  scaleX: 1,    duration: 0.23, ease: "power2.in" })
+      .to(el, { y: -5, rotation: 5,  scaleX: 0.96, duration: 0.19, ease: "power2.out" })
+      .to(el, { y: 0,  rotation: 0,  scaleX: 1,    duration: 0.19, ease: "power2.in" });
     return () => { tl.kill(); gsap.set(el, { clearProps: "all" }); };
   }, []);
   return <div ref={ref}><AvatarWithCostume avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} size={80} /></div>;
 }
 
+function WorkResultModal({ workedMinutes, completedCount, totalTasks, earnedXp, onClose }: {
+  workedMinutes: number;
+  completedCount: number;
+  totalTasks: number;
+  earnedXp: number;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    gsap.fromTo(el,
+      { scale: 0.65, opacity: 0, y: 40 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.7)" }
+    );
+  }, []);
+  const h = Math.floor(workedMinutes / 60);
+  const m = workedMinutes % 60;
+  const timeStr = h > 0 ? `${h}時間${m > 0 ? `${m}分` : ""}` : `${m}分`;
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+      <div ref={ref} style={{ background: "white", borderRadius: 24, padding: "32px 28px", width: 300, boxShadow: "0 24px 64px rgba(0,0,0,0.3)", display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
+        <div style={{ fontSize: 52 }}>🎉</div>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: 18, fontWeight: 800, color: "#1a1a2e", margin: "0 0 4px" }}>お疲れ様でした！</p>
+          <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>本日も一日お疲れ様でした</p>
+        </div>
+        <div style={{ width: "100%", background: "#f9fafb", borderRadius: 14, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            { label: "勤務時間",    value: timeStr,                         icon: "⏱️", color: "#4f46e5" },
+            { label: "完了RepoCa", value: `${completedCount} / ${totalTasks} 件`, icon: "✅", color: "#10b981" },
+            { label: "獲得XP",     value: `+${earnedXp} XP`,              icon: "⭐", color: "#f59e0b" },
+          ].map(({ label, value, icon, color }) => (
+            <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 16 }}>{icon}</span>
+                <span style={{ fontSize: 13, color: "#6b7280" }}>{label}</span>
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 800, color }}>{value}</span>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={onClose}
+          style={{ width: "100%", padding: "13px", borderRadius: 12, border: "none", background: "linear-gradient(90deg,#6366f1,#a855f7)", color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+        >
+          閉じる
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ===== 天気 =====
+type WeatherInfo = {
+  skyColor: string;
+  clouds: string[];
+  cloudSpeed: number;
+  icon: string;
+  label: string;
+};
+const DEFAULT_WEATHER: WeatherInfo = {
+  skyColor: "#87ceeb",
+  clouds: ["☁️","⛅","☁️","☁️","⛅","☁️","☁️","⛅"],
+  cloudSpeed: 22,
+  icon: "⛅",
+  label: "くもり",
+};
+function codeToWeather(code: number, isDay: boolean): WeatherInfo {
+  if (!isDay) return { skyColor: "#1c2a4a", clouds: ["🌙","⭐","🌙","⭐","🌙","⭐","🌙","⭐"], cloudSpeed: 40, icon: "🌙", label: "夜" };
+  if (code === 0)  return { skyColor: "#4fa8e8", clouds: ["☀️","  ","☀️","  ","☀️","  ","☀️","  "], cloudSpeed: 60, icon: "☀️", label: "晴れ" };
+  if (code <= 2)   return { skyColor: "#87ceeb", clouds: ["🌤️","☁️","🌤️","☁️","🌤️","☁️","🌤️","☁️"], cloudSpeed: 22, icon: "🌤️", label: "晴れのちくもり" };
+  if (code <= 3)   return { skyColor: "#a0b8cc", clouds: ["☁️","☁️","☁️","☁️","☁️","☁️","☁️","☁️"], cloudSpeed: 18, icon: "☁️", label: "くもり" };
+  if (code <= 48)  return { skyColor: "#b8c4cc", clouds: ["🌫️","🌫️","🌫️","🌫️","🌫️","🌫️","🌫️","🌫️"], cloudSpeed: 25, icon: "🌫️", label: "霧" };
+  if (code <= 67 || (code >= 80 && code <= 82)) return { skyColor: "#5a6a7a", clouds: ["🌧️","☁️","🌧️","☁️","🌧️","☁️","🌧️","☁️"], cloudSpeed: 10, icon: "🌧️", label: "雨" };
+  if (code <= 77)  return { skyColor: "#a8bcc8", clouds: ["🌨️","❄️","🌨️","❄️","🌨️","❄️","🌨️","❄️"], cloudSpeed: 18, icon: "🌨️", label: "雪" };
+  if (code >= 95)  return { skyColor: "#3e4858", clouds: ["⛈️","☁️","⛈️","☁️","⛈️","☁️","⛈️","☁️"], cloudSpeed: 8, icon: "⛈️", label: "雷雨" };
+  return DEFAULT_WEATHER;
+}
+
+
 const NEWS = [
   "新機能追加！バッジシートが追加されました",
   "1月10日にメンテナンスを実施します",
   "今月のTOPユーザーに特別ボーナスをプレゼント",
-];
-
-type NavItem = { label: string; Icon: IconType; color: string } & (
-  | { href: string; onClick?: never }
-  | { href?: never; onClick: () => void }
-);
-
-const NAV_LINKS: NavItem[] = [
-  { href: "/mypage",          label: "バッジ",       Icon: HiBadgeCheck,  color: "#10b981" },
-  { href: "/mypage/rewards",  label: "報酬交換",     Icon: HiStar,        color: "#f59e0b" },
-  { href: "/mypage/missions", label: "ミッション",   Icon: HiFlag,        color: "#4f46e5" },
-  { href: "/admin",           label: "プロジェクト", Icon: HiFolder,      color: "#6366f1" },
 ];
 
 type FilterType = "全て" | "未完了" | "完了";
@@ -115,21 +203,28 @@ export default function Home() {
   const [taskContent, setTaskContent] = useState("");
   const [attendance, setAttendance]   = useState<AttendanceState>("idle");
   const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume } = useAvatar();
-  const { addTodayRepoCa, toggleTodayRepoCa } = useRepoCa();
+  const { addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
   const { missions, toggleMission }      = useMission();
-  const [editorOpen, setEditorOpen]     = useState(false);
   const [missionTab, setMissionTab]       = useState<"daily" | "monthly" | "unlimited">("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
   const [hoveredTask, setHoveredTask] = useState<string | null>(null);
+  const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
+  const [showWorkResult, setShowWorkResult] = useState(false);
+  const [workedMinutes, setWorkedMinutes] = useState(0);
+  const [weather, setWeather] = useState<WeatherInfo>(DEFAULT_WEATHER);
 
-  const MYPAGE_NAV: NavItem[] = [
-    ...NAV_LINKS,
-    { label: "アバター", Icon: HiPencil, color: "#ec4899", onClick: () => setEditorOpen(true) },
-  ];
+  // 東京の天気を取得（Open-Meteo API）
+  useEffect(() => {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6762&longitude=139.6503&current=weather_code,is_day&timezone=Asia%2FTokyo")
+      .then((r) => r.json())
+      .then((data) => setWeather(codeToWeather(data.current.weather_code, data.current.is_day === 1)))
+      .catch(() => {}); // fallback to default
+  }, []);
 
   const handleCheckIn = () => {
     if (attendance !== "idle") return;
+    setWorkStartTime(new Date());
     setAttendance("departing");
   };
   const handleCheckOut = () => {
@@ -200,29 +295,64 @@ export default function Home() {
         </div>
       </div>
 
-      {/* クイックナビ */}
-      <div style={{
-        flexShrink: 0, background: "white", borderBottom: "1px solid #e5e7eb",
-        display: "flex", padding: "6px 10px", gap: 20, overflowX: "auto", justifyContent: "center",
-      }}>
-        {MYPAGE_NAV.map((item) => {
-          const btnStyle = {
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "7px 22px", borderRadius: 99, textDecoration: "none",
-            fontSize: 13, color: "#374151", fontWeight: 700, whiteSpace: "nowrap" as const,
-            background: "#f3f4f6", flexShrink: 0 as const, border: "none", cursor: "pointer",
-          };
-          return item.href ? (
-            <Link key={item.label} href={item.href} style={btnStyle}>
-              {item.label}
-            </Link>
-          ) : (
-            <button key={item.label} onClick={item.onClick} style={btnStyle}>
-              {item.label}
+      {/* 警告バナー */}
+      {!hasStartReported && (
+        <div style={{
+          flexShrink: 0, background: "#fef3c7", borderBottom: "1px solid #fcd34d",
+          padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span style={{ fontSize: 14 }}>⚠️</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}>
+            本日の始業報告がまだ提出されていません
+          </span>
+          <Link href="/report/start">
+            <button style={{
+              background: "#f59e0b", color: "white", border: "none",
+              borderRadius: 99, fontSize: 11, fontWeight: 700, padding: "3px 12px", cursor: "pointer",
+            }}>
+              始業報告する
             </button>
-          );
-        })}
-      </div>
+          </Link>
+        </div>
+      )}
+      {hasStartReported && !hasOvertimeReported && (
+        <div style={{
+          flexShrink: 0, background: "#ede9fe", borderBottom: "1px solid #c4b5fd",
+          padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span style={{ fontSize: 14 }}>⚠️</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#4c1d95", flex: 1 }}>
+            残業報告がまだ提出されていません
+          </span>
+          <Link href="/report/overtime">
+            <button style={{
+              background: "#4f46e5", color: "white", border: "none",
+              borderRadius: 99, fontSize: 11, fontWeight: 700, padding: "3px 12px", cursor: "pointer",
+            }}>
+              残業報告する
+            </button>
+          </Link>
+        </div>
+      )}
+      {hasStartReported && hasOvertimeReported && !hasEndReported && (
+        <div style={{
+          flexShrink: 0, background: "#fef3c7", borderBottom: "1px solid #fcd34d",
+          padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span style={{ fontSize: 14 }}>⚠️</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}>
+            終業報告がまだ提出されていません
+          </span>
+          <Link href="/report/end">
+            <button style={{
+              background: "#f59e0b", color: "white", border: "none",
+              borderRadius: 99, fontSize: 11, fontWeight: 700, padding: "3px 12px", cursor: "pointer",
+            }}>
+              終業報告する
+            </button>
+          </Link>
+        </div>
+      )}
 
       {/* 3カラムメインエリア */}
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 340px 1fr", gap: 20, padding: 12, overflow: "hidden" }}>
@@ -377,9 +507,20 @@ export default function Home() {
             <Link href="/report/start" style={{ flex: 1 }}>
               <button className="btn btn-primary" style={{ width: "100%", fontSize: 11, padding: "7px 4px" }}>始業報告</button>
             </Link>
-            <Link href="/report/end" style={{ flex: 1 }}>
-              <button className="btn" style={{ width: "100%", fontSize: 11, padding: "7px 4px", background: "#f59e0b", color: "white" }}>終業報告</button>
-            </Link>
+            {hasStartReported ? (
+              <Link href="/report/end" style={{ flex: 1 }}>
+                <button className="btn" style={{ width: "100%", fontSize: 11, padding: "7px 4px", background: "#f59e0b", color: "white" }}>終業報告</button>
+              </Link>
+            ) : (
+              <div style={{ flex: 1 }}>
+                <button
+                  className="btn"
+                  disabled
+                  title="始業報告後に終業報告できます"
+                  style={{ width: "100%", fontSize: 11, padding: "7px 4px", background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed" }}
+                >終業報告</button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -390,7 +531,19 @@ export default function Home() {
           {/* ゲームシーン */}
           {attendance !== "working" ? (
             /* ホームシーン (idle / departing / returning) */
-            <div className="avatar-game-wrap" style={{ height: 160, flex: "none" }}>
+            <div className="avatar-game-wrap" style={{ height: 160, flex: "none", background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)` }}>
+              {/* 天気の雲（速度・種類は天気に応じて変わる） */}
+              <div style={{ position: "absolute", top: "5%", left: 0, right: 0, overflow: "hidden", height: 26, pointerEvents: "none" }}>
+                <div style={{ display: "flex", gap: 180, animation: `scroll-left-loop ${weather.cloudSpeed}s linear infinite`, width: "max-content" }}>
+                  {weather.clouds.map((c, i) => (
+                    <span key={i} style={{ fontSize: 18, flexShrink: 0, opacity: 0.85 }}>{c}</span>
+                  ))}
+                </div>
+              </div>
+              {/* 天気バッジ */}
+              <div style={{ position: "absolute", top: 6, right: 10, fontSize: 9, fontWeight: 700, color: "#1a1a2e", background: "rgba(255,255,255,0.78)", borderRadius: 6, padding: "2px 7px", display: "flex", alignItems: "center", gap: 3, zIndex: 2 }}>
+                <span>{weather.icon}</span><span>{weather.label}</span>
+              </div>
               <div style={{ position: "absolute", bottom: "33%", left: "5%",  fontSize: 28 }}>🌲</div>
               <div style={{ position: "absolute", bottom: "31%", left: "16%", fontSize: 22 }}>🌲</div>
               <div style={{ position: "absolute", bottom: "29%", left: "25%", fontSize: 16 }}>🌿</div>
@@ -400,43 +553,56 @@ export default function Home() {
                 {attendance === "departing" ? (
                   <DepartAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} onComplete={() => setAttendance("working")} />
                 ) : attendance === "returning" ? (
-                  <ReturnAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} onComplete={() => setAttendance("idle")} />
+                  <ReturnAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} onComplete={() => {
+                    const mins = workStartTime ? Math.round((Date.now() - workStartTime.getTime()) / 60000) : 0;
+                    setWorkedMinutes(mins);
+                    setAttendance("idle");
+                    setShowWorkResult(true);
+                  }} />
                 ) : (
                   <BobAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} />
                 )}
               </div>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%", background: "#5a8a3c" }} />
-              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ position: "absolute", top: 8, left: 10, display: "flex", alignItems: "center", gap: 4, zIndex: 2 }}>
                 <span style={{ fontWeight: 800, fontSize: 14, color: "#1a1a2e", background: "rgba(255,255,255,0.75)", padding: "2px 8px", borderRadius: 6 }}>
                   {currentUser.name}
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
-                  {activeEffectChips.map((eff) => (
-                    <span key={eff.key} style={{
-                      fontSize: 8, fontWeight: 700,
-                      background: "rgba(255,255,255,0.88)", color: eff.color,
-                      borderRadius: 99, padding: "1px 6px",
-                    }}>
-                      {eff.label}
-                    </span>
-                  ))}
-                </div>
+              </div>
+              <div style={{ position: "absolute", bottom: 32, right: 10, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, zIndex: 2 }}>
+                {activeEffectChips.map((eff) => (
+                  <span key={eff.key} style={{ fontSize: 8, fontWeight: 700, background: "rgba(255,255,255,0.88)", color: eff.color, borderRadius: 99, padding: "1px 6px" }}>
+                    {eff.label}
+                  </span>
+                ))}
               </div>
             </div>
           ) : (
             /* 冒険シーン (working) */
-            <div className="avatar-game-wrap" style={{ height: 160, flex: "none" }}>
-              {/* スクロールする雲 */}
+            <div className="avatar-game-wrap" style={{ height: 160, flex: "none", background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)` }}>
+              {/* 天気の雲（冒険シーンは少し速め） */}
               <div style={{ position: "absolute", top: "6%", left: 0, right: 0, overflow: "hidden", height: 32 }}>
-                <div style={{ display: "flex", gap: 120, animation: "scroll-left-loop 9s linear infinite", width: "max-content" }}>
-                  {["⛅","⛅","⛅","⛅","⛅","⛅","⛅","⛅"].map((c, i) => (
+                <div style={{ display: "flex", gap: 120, animation: `scroll-left-loop ${Math.max(12, weather.cloudSpeed * 0.7)}s linear infinite`, width: "max-content" }}>
+                  {weather.clouds.map((c, i) => (
                     <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>{c}</span>
                   ))}
                 </div>
               </div>
-              {/* スクロールする木 */}
+              {/* 天気バッジ */}
+              <div style={{ position: "absolute", top: 6, right: 10, fontSize: 9, fontWeight: 700, color: "#1a1a2e", background: "rgba(255,255,255,0.78)", borderRadius: 6, padding: "2px 7px", display: "flex", alignItems: "center", gap: 3, zIndex: 2 }}>
+                <span>{weather.icon}</span><span>{weather.label}</span>
+              </div>
+              {/* 遠景の山（ゆっくりスクロール・視差） */}
+              <div style={{ position: "absolute", bottom: "46%", left: 0, right: 0, overflow: "hidden", height: 30, opacity: 0.35, pointerEvents: "none" }}>
+                <div style={{ display: "flex", gap: 90, alignItems: "flex-end", animation: "scroll-left-loop 16s linear infinite", width: "max-content" }}>
+                  {["🏔️","⛰️","🏔️","⛰️","🏔️","⛰️","🏔️","⛰️","🏔️","⛰️","🏔️","⛰️","🏔️","⛰️","🏔️","⛰️"].map((t, i) => (
+                    <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+              {/* スクロールする木（前景） */}
               <div style={{ position: "absolute", bottom: "28%", left: 0, right: 0, overflow: "hidden", height: 52 }}>
-                <div style={{ display: "flex", gap: 70, alignItems: "flex-end", animation: "scroll-left-loop 3s linear infinite", width: "max-content" }}>
+                <div style={{ display: "flex", gap: 70, alignItems: "flex-end", animation: "scroll-left-loop 7s linear infinite", width: "max-content" }}>
                   {["🌲","🌿","🌲","🌲","🌿","🌲","🌲","🌿","🌲","🌿","🌲","🌲","🌿","🌲","🌲","🌿"].map((t, i) => (
                     <span key={i} style={{ fontSize: 28, flexShrink: 0 }}>{t}</span>
                   ))}
@@ -449,24 +615,20 @@ export default function Home() {
                 <WalkAvatar avatarSrc={avatarSrc} headCostume={headCostume} bodyCostume={bodyCostume} />
               </div>
               {/* 出勤中バッジ */}
-              <div style={{ position: "absolute", top: 8, left: 10, right: 10, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ position: "absolute", top: 8, left: 10, display: "flex", alignItems: "center", gap: 6, zIndex: 2 }}>
                 <span style={{ fontWeight: 800, fontSize: 14, color: "#1a1a2e", background: "rgba(255,255,255,0.75)", padding: "2px 8px", borderRadius: 6 }}>
                   {currentUser.name}
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
-                  <span style={{ fontWeight: 700, fontSize: 11, color: "white", background: "#10b981", padding: "2px 10px", borderRadius: 99 }}>
-                    🏃 出勤中
+                <span style={{ fontWeight: 700, fontSize: 11, color: "white", background: "#10b981", padding: "2px 10px", borderRadius: 99 }}>
+                  🏃 出勤中
+                </span>
+              </div>
+              <div style={{ position: "absolute", bottom: 32, right: 10, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, zIndex: 2 }}>
+                {activeEffectChips.map((eff) => (
+                  <span key={eff.key} style={{ fontSize: 8, fontWeight: 700, background: "rgba(255,255,255,0.88)", color: eff.color, borderRadius: 99, padding: "1px 6px" }}>
+                    {eff.label}
                   </span>
-                  {activeEffectChips.map((eff) => (
-                    <span key={eff.key} style={{
-                      fontSize: 8, fontWeight: 700,
-                      background: "rgba(255,255,255,0.88)", color: eff.color,
-                      borderRadius: 99, padding: "1px 6px",
-                    }}>
-                      {eff.label}
-                    </span>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
           )}
@@ -722,25 +884,22 @@ export default function Home() {
         </div>
       </div>
 
-      {/* アバター衣装エディター */}
-      {editorOpen && (
-        <AvatarEditor
-          avatar={avatarKey}
-          avatarSrc={avatarSrc}
-          headCostume={headCostume}
-          bodyCostume={bodyCostume}
-          onAvatarChange={setAvatarKey}
-          onHeadChange={setHeadCostume}
-          onBodyChange={setBodyCostume}
-          onClose={() => setEditorOpen(false)}
-        />
-      )}
-
       {/* バッジ詳細モーダル */}
       {selectedBadge && (
         <BadgeDetailModal
           badge={selectedBadge}
           onClose={() => setSelectedBadge(null)}
+        />
+      )}
+
+      {/* 退勤結果モーダル */}
+      {showWorkResult && (
+        <WorkResultModal
+          workedMinutes={workedMinutes}
+          completedCount={completedCount}
+          totalTasks={localRepoCas.length}
+          earnedXp={localRepoCas.filter((r) => r.isCompleted).reduce((s, r) => s + r.xp, 0)}
+          onClose={() => setShowWorkResult(false)}
         />
       )}
     </div>

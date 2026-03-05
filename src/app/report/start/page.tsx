@@ -2,21 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { repoCas, projects, todaySelectedIds } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
-import { HiArrowLeft, HiCheck, HiX } from "react-icons/hi";
+import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar } from "react-icons/hi";
+import { useRepoCa } from "@/contexts/RepoCaContext";
 
 export default function StartReport() {
-  const router = useRouter();
+  const { setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite } = useRepoCa();
   // 追加したRepoCa（既に選択済みのもの）
   const [addedIds, setAddedIds] = useState<string[]>([...todaySelectedIds]);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // 未完了RepoCa（addedに含まれないもの）
   const unfinished = repoCas.filter((r) => !r.isCompleted && !addedIds.includes(r.id));
-  // お気に入りRepoCa（addedに含まれないもの）
-  const favorites  = repoCas.filter((r) => r.isFavorite && !addedIds.includes(r.id));
+  // お気に入りRepoCa（contextのfavoriteIdsベース、addedに含まれないもの）
+  const favorites  = repoCas.filter((r) => favoriteIds.includes(r.id) && !addedIds.includes(r.id));
 
   const addToList   = (id: string) => setAddedIds((prev) => [...prev, id]);
   const removeFromList = (id: string) => setAddedIds((prev) => prev.filter((x) => x !== id));
@@ -35,6 +36,35 @@ export default function StartReport() {
   };
 
   const grouped = groupByPj(addedIds);
+
+  /* ── 完了画面 ── */
+  if (showCompleted) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 56 }}>🌅</div>
+          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            始業報告が完了しました！
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+            今日も一日頑張りましょう！<br />
+            選択中のRepoCa: {addedIds.length}枚
+          </p>
+          <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ede9fe", border: "2px solid #4f46e5", textAlign: "center" }}>
+            <p style={{ fontSize: 12, color: "#4c1d95", margin: 0, fontWeight: 600 }}>
+              ✅ 始業報告が提出されました
+            </p>
+          </div>
+          <Link href="/">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   /* ── 確認モーダル ── */
   if (showConfirm) {
@@ -83,7 +113,7 @@ export default function StartReport() {
         <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
           <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>修正</button>
           <button className="btn btn-primary" style={{ flex: 2 }}
-            onClick={() => { alert("始業報告を提出しました！"); router.push("/report"); }}>
+            onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setShowCompleted(true); }}>
             送信
           </button>
         </div>
@@ -142,8 +172,16 @@ export default function StartReport() {
                           <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937", lineHeight: 1.3 }}>
                             {rc.content}
                           </p>
-                          <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 3 }}>
-                            {rc.createdAt.slice(0, 10)}
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
+                            <button
+                              onClick={() => toggleFavorite(rc.id)}
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+                            >
+                              {favoriteIds.includes(rc.id)
+                                ? <HiStar style={{ width: 11, height: 11, color: "#d97706" }} />
+                                : <HiOutlineStar style={{ width: 11, height: 11, color: "#d1d5db" }} />}
+                            </button>
+                            <span style={{ fontSize: 9, color: "#9ca3af" }}>{rc.createdAt.slice(0, 10)}</span>
                           </div>
                         </div>
                       ))}

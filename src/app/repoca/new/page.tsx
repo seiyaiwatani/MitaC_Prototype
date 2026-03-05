@@ -111,6 +111,14 @@ export default function NewRepoCa() {
                         <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{c.content}</p>
                       </div>
                       <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: 6 }}>
+                        <button
+                          onClick={() => setCreated((prev) => prev.map((x) => x.id === c.id ? { ...x, isFavorite: !x.isFavorite } : x))}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}
+                        >
+                          {c.isFavorite
+                            ? <HiStar style={{ width: 15, height: 15, color: "#d97706" }} />
+                            : <HiOutlineStar style={{ width: 15, height: 15, color: "#d1d5db" }} />}
+                        </button>
                         <button onClick={() => setExpanded(isOpen ? null : c.id)}
                           style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9ca3af", display: "flex", alignItems: "center" }}>
                           {isOpen ? <HiChevronUp style={{ width: 16, height: 16 }} /> : <HiChevronDown style={{ width: 16, height: 16 }} />}

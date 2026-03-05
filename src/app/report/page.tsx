@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HiClipboardList, HiCheck, HiX } from "react-icons/hi";
+import { HiClipboardList, HiCheck, HiX, HiStar, HiOutlineStar } from "react-icons/hi";
 import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-
-const REPORT_STATUS = [
-  { key: "start",    label: "始業報告", done: true,  href: "/report/start" },
-  { key: "overtime", label: "残業報告", done: false, href: "/report/overtime" },
-  { key: "end",      label: "終業報告", done: false, href: "/report/end" },
-];
+import { useRepoCa } from "@/contexts/RepoCaContext";
 
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
 
 export default function ReportIndex() {
+  const { hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
+  const reportStatus = [
+    { key: "start",    label: "始業報告", done: hasStartReported,    href: "/report/start" },
+    { key: "overtime", label: "残業報告", done: hasOvertimeReported, href: "/report/overtime" },
+    { key: "end",      label: "終業報告", done: hasEndReported,      href: "/report/end" },
+  ];
   const [localRepoCas, setLocalRepoCas] = useState<RepoCa[]>(
     repoCas.filter((r) => ["rc1","rc2","rc3","rc4","rc5"].includes(r.id))
   );
@@ -23,6 +24,11 @@ export default function ReportIndex() {
 
   const toggleTask = (id: string) =>
     setLocalRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r));
+
+  const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLocalRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isFavorite: !r.isFavorite } : r));
+  };
 
   const completedCount = localRepoCas.filter((r) => r.isCompleted).length;
 
@@ -75,6 +81,15 @@ export default function ReportIndex() {
                         {rc.isCompleted && <HiCheck style={{ width: 10, height: 10 }} />}
                       </div>
                     </button>
+                    {/* お気に入りボタン */}
+                    <button
+                      onClick={(e) => toggleFavorite(rc.id, e)}
+                      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, display: "flex", alignItems: "center", marginTop: 2 }}
+                    >
+                      {rc.isFavorite
+                        ? <HiStar style={{ width: 15, height: 15, color: "#d97706" }} />
+                        : <HiOutlineStar style={{ width: 15, height: 15, color: "#d1d5db" }} />}
+                    </button>
                     {/* テキスト（クリックで詳細） */}
                     <div
                       style={{ flex: 1, minWidth: 0, cursor: "pointer" }}
@@ -102,7 +117,7 @@ export default function ReportIndex() {
             〜報告ステータス〜
           </div>
           <div style={{ padding: "12px 20px", flex: 1 }}>
-            {REPORT_STATUS.map((s) => (
+            {reportStatus.map((s) => (
               <Link key={s.key} href={s.href} style={{ textDecoration: "none" }}>
                 <div style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
