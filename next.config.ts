@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: true,
   output: "export",
+  basePath: "/MitaC_Prototype",
   images: {
     unoptimized: true,
   },
