@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   output: "export",
   basePath: "/MitaC_Prototype",
-  images: {
-    unoptimized: true,
-  },
   experimental: {
     authInterrupts: true,
   },
