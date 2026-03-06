@@ -2,10 +2,12 @@
 
 import { AvatarWithCostume, HeadCostume, BodyCostume, COSTUME_SRC, COSTUME_EFFECTS } from "./AvatarWithCostume";
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const AVATAR_OPTIONS: { key: string; label: string; src: string }[] = [
-  { key: "fox",     label: "フォックス", src: "/avatars/avatar_fox.svg" },
-  { key: "cat",     label: "キャット",   src: "/avatars/avatar_cat.svg" },
-  { key: "doragon", label: "ドラゴン",   src: "/avatars/avatar_doragon.svg" },
+  { key: "fox",     label: "フォックス", src: `${BASE}/avatars/avatar_fox.svg` },
+  { key: "cat",     label: "キャット",   src: `${BASE}/avatars/avatar_cat.svg` },
+  { key: "doragon", label: "ドラゴン",   src: `${BASE}/avatars/avatar_doragon.svg` },
 ];
 
 const HEAD_OPTIONS: { key: HeadCostume; label: string; effect: string | null }[] = [

@@ -26,10 +26,12 @@ export const COSTUME_EFFECTS: Record<string, { label: string; color: string }> =
   tie:    { label: "EXP +5%",  color: "#10b981" },
 };
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const COSTUME_SRC: Record<string, string> = {
-  crown:  "/costumes/costume_crown.svg",
-  medals: "/costumes/costume_medals.svg",
-  tie:    "/costumes/costume_tie.svg",
+  crown:  `${BASE}/costumes/costume_crown.svg`,
+  medals: `${BASE}/costumes/costume_medals.svg`,
+  tie:    `${BASE}/costumes/costume_tie.svg`,
 };
 
 interface Props {
