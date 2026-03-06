@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { projects } from "@/lib/mock-data";
 import {
   HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
 } from "react-icons/hi";
 import { useMission } from "@/contexts/MissionContext";
+import { useProjects } from "@/contexts/ProjectContext";
 import { Mission } from "@/types";
 
 /* ── 型定義 ── */
@@ -123,6 +123,8 @@ export default function AdminPage() {
   const [mType, setMType]       = useState<Mission["type"]>("daily");
   const [mReward, setMReward]   = useState(30);
   const [mGoal, setMGoal]       = useState(1);
+
+  const { projects, addProject } = useProjects();
 
   const [hoveredKey, setHoveredKey]   = useState<string | null>(null);
   const [tooltip, setTooltip]         = useState<TooltipState>(null);
@@ -526,7 +528,7 @@ export default function AdminPage() {
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn btn-ghost" style={{ flex: 1, fontSize: 12 }} onClick={() => setView("projects")}>キャンセル</button>
                   <button className="btn btn-primary" style={{ flex: 2, fontSize: 12 }} disabled={!projName.trim()}
-                    onClick={() => { alert(`「${projName}」を登録しました`); setProjName(""); setProjMemo(""); setView("projects"); }}>
+                    onClick={() => { addProject(projName.trim()); setProjName(""); setProjMemo(""); setView("projects"); }}>
                     登録
                   </button>
                 </div>

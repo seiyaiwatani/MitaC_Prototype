@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { projects, repoCas } from "@/lib/mock-data";
+import { repoCas } from "@/lib/mock-data";
 import { TaskType, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiStar, HiOutlineStar, HiTrash, HiChevronUp, HiChevronDown } from "react-icons/hi";
+import { useProjects } from "@/contexts/ProjectContext";
 
 type Tab = "開発" | "その他";
 
@@ -19,20 +20,22 @@ interface DraftCard {
   isFavorite: boolean;
 }
 
-const initDraft = (): DraftCard => ({
-  id: Date.now().toString(),
-  projectId: projects[0].id,
-  taskType: "開発",
-  label: "新規作成",
-  implScope: "フロント",
-  content: "",
-  isFavorite: false,
-});
-
 export default function NewRepoCa() {
   const router = useRouter();
+  const { projects } = useProjects();
+
+  const initDraft = (): DraftCard => ({
+    id: Date.now().toString(),
+    projectId: projects[0]?.id ?? "",
+    taskType: "開発",
+    label: "新規作成",
+    implScope: "フロント",
+    content: "",
+    isFavorite: false,
+  });
+
   const [tab, setTab] = useState<Tab>("開発");
-  const [draft, setDraft]     = useState<DraftCard>(initDraft());
+  const [draft, setDraft]     = useState<DraftCard>(() => initDraft());
   const [created, setCreated] = useState<DraftCard[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
 

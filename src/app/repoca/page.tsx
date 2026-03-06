@@ -5,6 +5,7 @@ import Link from "next/link";
 import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { fmtDuration } from "@/lib/utils";
+import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiCheck } from "react-icons/hi";
 
 const SCOPE_COLOR: Record<string, string> = {
   フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
@@ -14,9 +15,9 @@ const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その�
 
 const FILTERS = [
   { key: "all",        label: "すべて" },
-  { key: "favorite",   label: "⭐ お気に入り" },
+  { key: "favorite",   label: "お気に入り" },
   { key: "incomplete", label: "未完了" },
-  { key: "completed",  label: "✓ 完了" },
+  { key: "completed",  label: "完了" },
 ] as const;
 
 export default function RepoCaList() {
@@ -39,9 +40,9 @@ export default function RepoCaList() {
   });
 
   const stats = [
-    { label: "作成済み", value: repoCas.length,                                     icon: "🃏" },
-    { label: "完了",     value: repoCas.filter((r) => r.isCompleted).length,        icon: "✅" },
-    { label: "総XP",    value: `${repoCas.reduce((s, r) => s + r.xp, 0)}XP`,       icon: "⭐" },
+    { label: "作成済み", value: repoCas.length,                                     Icon: HiCollection,  color: "#4f46e5" },
+    { label: "完了",     value: repoCas.filter((r) => r.isCompleted).length,        Icon: HiCheckCircle, color: "#10b981" },
+    { label: "総XP",    value: `${repoCas.reduce((s, r) => s + r.xp, 0)}XP`,       Icon: HiStar,        color: "#f59e0b" },
   ];
 
   return (
@@ -52,13 +53,15 @@ export default function RepoCaList() {
         display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
         background: "linear-gradient(90deg,#10b981,#059669)", color: "white",
       }}>
-        <span style={{ fontWeight: 800, fontSize: 15 }}>🃏 RepoCa</span>
+        <span style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 5 }}>
+          <HiCollection style={{ width: 18, height: 18 }} /> RepoCa
+        </span>
         {/* 検索 */}
         <div style={{
           flex: 1, display: "flex", alignItems: "center", gap: 6,
           background: "rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 10px",
         }}>
-          <span style={{ fontSize: 12 }}>🔍</span>
+          <HiSearch style={{ width: 14, height: 14, flexShrink: 0 }} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -75,7 +78,9 @@ export default function RepoCaList() {
         <div style={{ flexShrink: 0, display: "flex", gap: 6 }}>
           {stats.map((s) => (
             <div key={s.label} className="card" style={{ flex: 1, padding: "8px 6px", textAlign: "center" }}>
-              <div style={{ fontSize: 16 }}>{s.icon}</div>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <s.Icon style={{ width: 20, height: 20, color: s.color }} />
+              </div>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937" }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#6b7280" }}>{s.label}</div>
             </div>
@@ -95,7 +100,11 @@ export default function RepoCaList() {
                 color: filter === f.key ? "white" : "#6b7280",
               }}
             >
-              {f.label}
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2 }}>
+                {f.key === "favorite"  && <HiStar  style={{ width: 10, height: 10 }} />}
+                {f.key === "completed" && <HiCheck style={{ width: 10, height: 10 }} />}
+                {f.label}
+              </span>
             </button>
           ))}
         </div>

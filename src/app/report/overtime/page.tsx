@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiArrowLeft } from "react-icons/hi";
+import { HiArrowLeft, HiPaperAirplane, HiClock, HiCheckCircle } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 
 export default function OvertimeReport() {
@@ -48,7 +48,7 @@ export default function OvertimeReport() {
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
               }}
             >
-              <span style={{ fontSize: 28 }}>🌙</span>
+              <HiClock style={{ width: 28, height: 28 }} />
               残業あり
             </button>
             <button
@@ -62,7 +62,7 @@ export default function OvertimeReport() {
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
               }}
             >
-              <span style={{ fontSize: 28 }}>✅</span>
+              <HiCheckCircle style={{ width: 28, height: 28 }} />
               残業なし
             </button>
           </div>
@@ -122,7 +122,7 @@ export default function OvertimeReport() {
           disabled={hasOvertime === null}
           onClick={handleSubmit}
         >
-          🌙 提出する
+          <HiPaperAirplane style={{ width: 15, height: 15, transform: "rotate(90deg)" }} /> 提出する
         </button>
       </div>
     </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { currentUser, repoCas, projects, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
 import { TaskLabel, ImplScope } from "@/types";
-import { HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiChevronDown, HiChevronUp, HiExclamation } from "react-icons/hi";
 import { AvatarWithCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
 import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
 import { useAvatar } from "@/contexts/AvatarContext";
@@ -303,7 +303,7 @@ export default function Home() {
           flexShrink: 0, background: "#fef3c7", borderBottom: "1px solid #fcd34d",
           padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
         }}>
-          <span style={{ fontSize: 14 }}>⚠️</span>
+          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}>
             本日の始業報告がまだ提出されていません
           </span>
@@ -322,7 +322,7 @@ export default function Home() {
           flexShrink: 0, background: "#ede9fe", borderBottom: "1px solid #c4b5fd",
           padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
         }}>
-          <span style={{ fontSize: 14 }}>⚠️</span>
+          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ fontSize: 12, fontWeight: 700, color: "#4c1d95", flex: 1 }}>
             残業報告がまだ提出されていません
           </span>
@@ -341,7 +341,7 @@ export default function Home() {
           flexShrink: 0, background: "#fef3c7", borderBottom: "1px solid #fcd34d",
           padding: "6px 14px", display: "flex", alignItems: "center", gap: 8,
         }}>
-          <span style={{ fontSize: 14 }}>⚠️</span>
+          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}>
             終業報告がまだ提出されていません
           </span>
@@ -411,7 +411,6 @@ export default function Home() {
                       display: "flex", alignItems: "flex-start", gap: 8,
                       padding: "7px 4px", borderBottom: "1px solid #f3f4f6",
                       cursor: "pointer",
-                      opacity: rc.isCompleted ? 0.6 : 1,
                       position: "relative",
                     }}
                   >
