@@ -2,8 +2,9 @@
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import Link from "next/link";
-import { currentUser, repoCas, projects, badges } from "@/lib/mock-data";
+import { currentUser, repoCas, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
+import { useProjects } from "@/contexts/ProjectContext";
 import { TaskLabel, ImplScope } from "@/types";
 import { HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiChevronDown, HiChevronUp, HiExclamation } from "react-icons/hi";
 import { AvatarWithCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
@@ -199,7 +200,8 @@ type FilterType = "全て" | "未完了" | "完了";
 type AttendanceState = "idle" | "departing" | "working" | "returning";
 
 export default function Home() {
-  const [projectId, setProjectId]     = useState(projects[0].id);
+  const { projects } = useProjects();
+  const [projectId, setProjectId]     = useState(() => projects[0]?.id ?? "");
   const [label, setLabel]             = useState<TaskLabel>("新規作成");
   const [implScope, setImplScope]     = useState<ImplScope>("フロント");
   const [taskContent, setTaskContent] = useState("");
