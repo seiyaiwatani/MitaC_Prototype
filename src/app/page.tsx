@@ -16,10 +16,12 @@ import { BADGE_ICON_MAP, TIER_STYLE } from "@/lib/badge-config";
 import type { Badge } from "@/types";
 import { fmtDuration } from "@/lib/utils";
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const AVATAR_MAP: Record<string, string> = {
-  fox:     "/avatars/avatar_fox.svg",
-  cat:     "/avatars/avatar_cat.svg",
-  doragon: "/avatars/avatar_doragon.svg",
+  fox:     `${BASE}/avatars/avatar_fox.svg`,
+  cat:     `${BASE}/avatars/avatar_cat.svg`,
+  doragon: `${BASE}/avatars/avatar_doragon.svg`,
 };
 
 // ===== GSAP Avatar Sub-Components =====

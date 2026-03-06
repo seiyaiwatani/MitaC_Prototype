@@ -7,10 +7,12 @@ import { useAvatar } from "@/contexts/AvatarContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 import { AvatarEditor } from "@/components/AvatarEditor";
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const AVATAR_SRC: Record<string, string> = {
-  fox:     "/avatars/avatar_fox.svg",
-  cat:     "/avatars/avatar_cat.svg",
-  doragon: "/avatars/avatar_doragon.svg",
+  fox:     `${BASE}/avatars/avatar_fox.svg`,
+  cat:     `${BASE}/avatars/avatar_cat.svg`,
+  doragon: `${BASE}/avatars/avatar_doragon.svg`,
 };
 
 export default function AppHeader() {
