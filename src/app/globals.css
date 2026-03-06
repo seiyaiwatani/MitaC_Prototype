@@ -125,13 +125,18 @@ body {
 
 /* ボタン */
 .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 8px 20px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.1s;
-  border: none;
+  border: 1.5px solid transparent;
+  box-sizing: border-box;
 }
 .btn:hover { opacity: 0.88; }
 .btn:active { transform: scale(0.97); }
