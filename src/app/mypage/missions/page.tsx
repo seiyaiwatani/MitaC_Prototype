@@ -125,14 +125,25 @@ export default function MissionsPage() {
                       <p style={{ fontSize: 11, color: "#6b7280", margin: 0, lineHeight: 1.4 }}>{m.description}</p>
                     </div>
                   </div>
-                  <div style={{
-                    flexShrink: 0, marginLeft: 12,
-                    background: "#fef9c3", color: "#78350f",
-                    fontWeight: 800, fontSize: 12,
-                    padding: "3px 10px", borderRadius: 99,
-                    whiteSpace: "nowrap",
-                  }}>
-                    +{m.reward} XP
+                  <div style={{ flexShrink: 0, marginLeft: 12, display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-end" }}>
+                    <div style={{
+                      background: "#fff7ed", color: "#ea580c",
+                      fontWeight: 800, fontSize: 12,
+                      padding: "3px 10px", borderRadius: 99,
+                      whiteSpace: "nowrap",
+                    }}>
+                      +{m.reward} XP
+                    </div>
+                    {m.passExpReward && (
+                      <div style={{
+                        background: "#eff6ff", color: "#1e40af",
+                        fontWeight: 700, fontSize: 11,
+                        padding: "2px 8px", borderRadius: 99,
+                        whiteSpace: "nowrap",
+                      }}>
+                        +{m.passExpReward} パスEXP
+                      </div>
+                    )}
                   </div>
                 </div>
 

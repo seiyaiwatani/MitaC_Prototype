@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
+import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 import { AvatarEditor } from "@/components/AvatarEditor";
 
@@ -17,8 +18,10 @@ const AVATAR_SRC: Record<string, string> = {
 
 export default function AppHeader() {
   const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume } = useAvatar();
+  const { passLevel, passExp, passExpToNext } = useSeasonPass();
   const [editorOpen, setEditorOpen] = useState(false);
-  const xpPct    = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
+  const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
+  const passExpPct = Math.round((passExp / passExpToNext) * 100);
   const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
 
   return (
@@ -55,9 +58,8 @@ export default function AppHeader() {
       {/* 中央: ナビ */}
       <nav style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5vw", overflow: "hidden", padding: "0 1vw" }}>
         {[
-          { href: "/mypage/rewards",  label: "報酬交換" },
-          { href: "/mypage/missions", label: "ミッション" },
-          { href: "/admin",           label: "プロジェクト" },
+          { href: "/mypage/rewards", label: "報酬交換" },
+          { href: "/admin",          label: "プロジェクト" },
         ].map((item) => (
           <Link key={item.href} href={item.href} style={{
             padding: "5px clamp(8px, 1.2vw, 18px)", borderRadius: 99, textDecoration: "none",
@@ -114,17 +116,41 @@ export default function AppHeader() {
           {currentUser.name}
         </span>
 
-        {/* レベル＋XP */}
+        {/* アカウントレベル＋XP */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-          <span style={{ fontSize: "clamp(10px, 0.9vw, 12px)", color: "#4f46e5", fontWeight: 700, lineHeight: 1 }}>
+          <span style={{ fontSize: "clamp(9px, 0.8vw, 10px)", color: "#9ca3af", fontWeight: 600, lineHeight: 1 }}>
+            アカウント
+          </span>
+          <span style={{ fontSize: "clamp(10px, 0.9vw, 12px)", color: "#ea580c", fontWeight: 700, lineHeight: 1 }}>
             Lv.{currentUser.level}
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div className="xp-bar" style={{ width: "clamp(50px, 5vw, 80px)" }}>
-              <div className="xp-bar-fill" style={{ width: `${xpPct}%` }} />
+            <div style={{ width: "clamp(40px, 4vw, 64px)", height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ width: `${xpPct}%`, height: "100%", background: "#ea580c", borderRadius: 3 }} />
             </div>
-            <span style={{ fontSize: "clamp(9px, 0.8vw, 10px)", color: "#9ca3af", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "clamp(8px, 0.7vw, 9px)", color: "#9ca3af", whiteSpace: "nowrap" }}>
               {currentUser.xp}/{currentUser.xpToNext}
+            </span>
+          </div>
+        </div>
+
+        {/* 区切り */}
+        <div style={{ width: 1, height: 28, background: "#e5e7eb", flexShrink: 0 }} />
+
+        {/* シーズンパスレベル＋EXP */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
+          <span style={{ fontSize: "clamp(9px, 0.8vw, 10px)", color: "#9ca3af", fontWeight: 600, lineHeight: 1 }}>
+            シーズン
+          </span>
+          <span style={{ fontSize: "clamp(10px, 0.9vw, 12px)", color: "#1e40af", fontWeight: 700, lineHeight: 1 }}>
+            Lv.{passLevel}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: "clamp(40px, 4vw, 64px)", height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ width: `${passExpPct}%`, height: "100%", background: "#1e40af", borderRadius: 3 }} />
+            </div>
+            <span style={{ fontSize: "clamp(8px, 0.7vw, 9px)", color: "#9ca3af", whiteSpace: "nowrap" }}>
+              {passExp}/{passExpToNext}
             </span>
           </div>
         </div>

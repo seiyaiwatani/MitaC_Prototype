@@ -1,4 +1,4 @@
-import { User, Project, RepoCa, Badge, Mission } from "@/types";
+import { User, Project, RepoCa, Badge, Mission, SeasonPass } from "@/types";
 
 export const currentUser: User = {
   id: "u1",
@@ -238,6 +238,7 @@ export const missions: Mission[] = [
     title: "今日のRepoCa",
     description: "本日3枚のRepoCaを作成する",
     reward: 30,
+    passExpReward: 20,
     progress: 2,
     goal: 3,
     completed: false,
@@ -248,6 +249,7 @@ export const missions: Mission[] = [
     title: "時間厳守",
     description: "定時までに終業報告を提出する",
     reward: 20,
+    passExpReward: 15,
     progress: 0,
     goal: 1,
     completed: false,
@@ -258,6 +260,7 @@ export const missions: Mission[] = [
     title: "全力開発",
     description: "今月の開発タスクを20件完了する",
     reward: 200,
+    passExpReward: 100,
     progress: 14,
     goal: 20,
     completed: false,
@@ -268,6 +271,7 @@ export const missions: Mission[] = [
     title: "皆勤チャレンジ",
     description: "今月全ての稼働日に報告を提出する",
     reward: 300,
+    passExpReward: 150,
     progress: 18,
     goal: 20,
     completed: false,
@@ -278,8 +282,47 @@ export const missions: Mission[] = [
     title: "外部案件挑戦",
     description: "外部案件に参加申請する",
     reward: 500,
+    passExpReward: 200,
     progress: 0,
     goal: 1,
     completed: false,
   },
+  {
+    id: "m6",
+    type: "daily",
+    title: "シーズンデイリー",
+    description: "本日の始業報告を提出する",
+    reward: 0,
+    passExpReward: 30,
+    progress: 0,
+    goal: 1,
+    completed: false,
+  },
+  {
+    id: "m7",
+    type: "monthly",
+    title: "シーズン貢献",
+    description: "今月10回以上の報告を提出する",
+    reward: 0,
+    passExpReward: 250,
+    progress: 7,
+    goal: 10,
+    completed: false,
+  },
 ];
+
+export const seasonPass: SeasonPass = {
+  id: "sp1",
+  seasonName: "スプリングシーズン 2026",
+  endDate: "2026-04-01",
+  passLevel: 7,
+  passExp: 350,
+  passExpToNext: 500,
+  maxPassLevel: 50,
+  rewards: [
+    { level: 5,  type: "avatar_costume", name: "スプリングハット（仮）",        description: "シーズン限定アバター衣装", icon: "🎩", claimed: true },
+    { level: 10, type: "physical",       name: "クオカード 500円（仮）",        description: "物理報酬",                 icon: "🎁", claimed: false },
+    { level: 15, type: "avatar_costume", name: "サマーコスチューム（仮）",      description: "シーズン限定アバター衣装", icon: "👒", claimed: false },
+    { level: 20, type: "physical",       name: "スペシャル賞品（仮）",          description: "最高報酬",                 icon: "🏆", claimed: false },
+  ],
+};

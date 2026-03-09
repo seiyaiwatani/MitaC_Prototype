@@ -5,7 +5,8 @@ import Link from "next/link";
 import { currentUser, repoCas, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
-import { TaskLabel, ImplScope } from "@/types";
+import { useSeasonPass } from "@/contexts/SeasonPassContext";
+import type { SeasonRewardType } from "@/types";
 import { HiFlag, HiCheck, HiBadgeCheck, HiClipboardList, HiStar, HiChevronDown, HiChevronUp, HiExclamation } from "react-icons/hi";
 import { AvatarWithCostume, COSTUME_EFFECTS } from "@/components/AvatarWithCostume";
 import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
@@ -201,13 +202,10 @@ type AttendanceState = "idle" | "departing" | "working" | "returning";
 
 export default function Home() {
   const { projects } = useProjects();
-  const [projectId, setProjectId]     = useState(() => projects[0]?.id ?? "");
-  const [label, setLabel]             = useState<TaskLabel>("新規作成");
-  const [implScope, setImplScope]     = useState<ImplScope>("フロント");
-  const [taskContent, setTaskContent] = useState("");
+  const { passLevel, passExp, passExpToNext, maxPassLevel, seasonName, endDate, rewards } = useSeasonPass();
   const [attendance, setAttendance]   = useState<AttendanceState>("idle");
   const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume } = useAvatar();
-  const { addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
+  const { toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
   const { missions, toggleMission }      = useMission();
   const [missionTab, setMissionTab]       = useState<"daily" | "monthly" | "unlimited">("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
@@ -236,25 +234,6 @@ export default function Home() {
     setAttendance("returning");
   };
 
-  const handleCreateRepoCa = () => {
-    if (!taskContent.trim()) return;
-    const newRc = {
-      id: `rc_${Date.now()}`,
-      projectId,
-      taskType: "開発" as const,
-      label,
-      implScope,
-      content: taskContent.trim(),
-      isFavorite: false,
-      isCompleted: false,
-      duration: 0,
-      xp: 30,
-      createdAt: new Date().toISOString(),
-    };
-    addTodayRepoCa(newRc);
-    setLocalRepoCas((prev) => [...prev, newRc]);
-    setTaskContent("");
-  };
 
   // タスク（本日のRepoCa）- ローカル状態でトグル可能に
   const [localRepoCas, setLocalRepoCas] = useState(
@@ -358,8 +337,111 @@ export default function Home() {
         </div>
       )}
 
+      {/* ====== シーズンパス（全幅） ====== */}
+      {(() => {
+        const NODE_W = 52, MILESTONE_W = 76;
+        const rewardMap = Object.fromEntries(rewards.map((r) => [r.level, r]));
+        const levels = Array.from({ length: maxPassLevel }, (_, i) => i + 1);
+        const totalTrackW = levels.reduce((s, lv) => s + (rewardMap[lv] ? MILESTONE_W : NODE_W), 0);
+        const passExpPct = Math.round((passExp / passExpToNext) * 100);
+        const daysLeft = Math.max(0, Math.ceil((new Date(endDate).getTime() - Date.now()) / 86400000));
+        const endLabel = new Date(endDate).toLocaleDateString("ja-JP", { month: "long", day: "numeric" });
+        const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
+          avatar_costume: { label: "衣装", bg: "#ede9fe", color: "#5b21b6" },
+          physical: { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
+        };
+        let progressLineW = 0, accumulated = 0;
+        for (const lv of levels) {
+          const w = rewardMap[lv] ? MILESTONE_W : NODE_W;
+          if (lv < passLevel) { accumulated += w; progressLineW = accumulated - w / 2; }
+          else if (lv === passLevel) { progressLineW = accumulated + w / 2; break; }
+          else break;
+        }
+        return (
+          <div style={{ flexShrink: 0, padding: "8px 40px" }}>
+            <div className="card" style={{ overflow: "hidden" }}>
+              {/* バナー */}
+              <div style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", padding: "10px 16px", color: "white", display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ flexShrink: 0 }}>
+                  <div style={{ fontSize: 8, opacity: 0.7, letterSpacing: 1 }}>SEASON PASS</div>
+                  <div style={{ fontSize: 13, fontWeight: 800 }}>{seasonName}</div>
+                </div>
+                <div style={{ background: "#f59e0b", color: "#78350f", fontSize: 10, fontWeight: 800, padding: "3px 9px", borderRadius: 99, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  残り {daysLeft}日（{endLabel}まで）
+                </div>
+                <div style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "3px 10px", textAlign: "center", flexShrink: 0 }}>
+                  <div style={{ fontSize: 8, opacity: 0.8 }}>パスLv.</div>
+                  <div style={{ fontSize: 18, fontWeight: 900, lineHeight: 1.1 }}>{passLevel}</div>
+                </div>
+                <div style={{ flex: 1, minWidth: 120 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                    <span style={{ fontSize: 9, opacity: 0.8 }}>パスEXP</span>
+                    <span style={{ fontSize: 9, opacity: 0.8 }}>{passExp} / {passExpToNext}</span>
+                  </div>
+                  <div style={{ height: 6, background: "rgba(255,255,255,0.3)", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: `${passExpPct}%`, height: "100%", background: "linear-gradient(90deg,#facc15,#f59e0b)", borderRadius: 4 }} />
+                  </div>
+                </div>
+                <div style={{ fontSize: 10, opacity: 0.7, flexShrink: 0 }}>→ Lv.{passLevel + 1}</div>
+              </div>
+              {/* 報酬トラック */}
+              <div style={{ overflowX: "auto", display: "flex", alignItems: "stretch" }}>
+                <div style={{ display: "flex", minWidth: `${totalTrackW + 20}px`, position: "relative", padding: "14px 10px 4px", flex: 1 }}>
+                  <div style={{ position: "absolute", top: 34, left: 26, width: totalTrackW, height: 2, background: "#e5e7eb", zIndex: 0 }} />
+                  {progressLineW > 0 && (
+                    <div style={{ position: "absolute", top: 34, left: 26, width: progressLineW, height: 2, background: "linear-gradient(90deg,#4f46e5,#7c3aed)", zIndex: 1 }} />
+                  )}
+                  {levels.map((lv) => {
+                    const reward = rewardMap[lv];
+                    const isM = !!reward;
+                    if (!isM) return <div key={lv} style={{ width: NODE_W, flexShrink: 0 }} />;
+                    const claimed = lv <= passLevel;
+                    const isCur = lv === passLevel + 1;
+                    const chip = TYPE_CHIP[reward.type as SeasonRewardType];
+                    return (
+                      <div key={lv} style={{ width: MILESTONE_W, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}>
+                        <div style={{
+                          width: 36, height: 36, borderRadius: "50%",
+                          background: claimed ? "#4f46e5" : isCur ? "#e0e7ff" : "white",
+                          border: isCur ? "2px solid #4f46e5" : claimed ? "none" : "2px solid #c4b5fd",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: claimed ? 16 : 18,
+                          color: claimed ? "white" : isCur ? "#4f46e5" : "#9ca3af",
+                          boxShadow: isCur ? "0 0 0 3px #e0e7ff" : (claimed ? "none" : "0 0 0 3px #ede9fe"),
+                        }}>
+                          {reward.icon}
+                        </div>
+                        <span style={{ fontSize: 8, marginTop: 3, fontWeight: 700, color: isCur ? "#4f46e5" : claimed ? "#9ca3af" : "#374151" }}>Lv.{lv}</span>
+                        {chip && <span style={{ fontSize: 7, padding: "1px 3px", borderRadius: 3, marginTop: 1, background: chip.bg, color: chip.color, fontWeight: 700 }}>{chip.label}</span>}
+                        <span style={{ fontSize: 8, textAlign: "center", marginTop: 1, color: claimed ? "#9ca3af" : "#374151", lineHeight: 1.2, maxWidth: MILESTONE_W - 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {reward.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <Link href="/mypage/rewards" style={{
+                  flexShrink: 0, alignSelf: "center",
+                  margin: "0 12px",
+                  padding: "7px 14px",
+                  borderRadius: 99,
+                  background: "#4f46e5",
+                  color: "white",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}>
+                  報酬一覧
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* 3カラムメインエリア */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 340px 1fr", gap: 20, padding: 12, overflow: "hidden" }}>
+      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 340px 1fr", gap: 20, padding: "12px 40px", overflow: "hidden" }}>
 
         {/* ====== 左: 本日のタスク ====== */}
         <div className="card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -716,22 +798,20 @@ export default function Home() {
 
           {/* ミッション */}
           {(() => {
-            const tabMissions   = missions.filter((m) => m.type === missionTab);
-            const doneCount     = tabMissions.filter((m) => m.completed).length;
+            const tabMissions = missions.filter((m) => m.type === missionTab);
+            const doneCount   = tabMissions.filter((m) => m.completed).length;
             const TABS: { key: "daily" | "monthly" | "unlimited"; label: string }[] = [
               { key: "daily",     label: "日" },
               { key: "monthly",   label: "月" },
               { key: "unlimited", label: "無期限" },
             ];
             return (
-              <div className="card" style={{ padding: "10px 12px", flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div className="card" style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, flexShrink: 0 }}>
                   <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>ミッション</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}>
-                    {doneCount}/{tabMissions.length}
-                  </span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}>{doneCount}/{tabMissions.length}</span>
                 </div>
-                <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
+                <div style={{ display: "flex", gap: 4, marginBottom: 8, flexShrink: 0 }}>
                   {TABS.map(({ key, label }) => (
                     <button key={key} onClick={() => setMissionTab(key)} style={{
                       padding: "2px 10px", borderRadius: 99, border: "none",
@@ -741,26 +821,52 @@ export default function Home() {
                     }}>{label}</button>
                   ))}
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                  {tabMissions.map((m) => (
-                    <div key={m.id} style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }} onClick={() => toggleMission(m.id)}>
-                      <div style={{
-                        width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginTop: 1,
-                        border: `2px solid ${m.completed ? "#10b981" : "#d1d5db"}`,
-                        background: m.completed ? "#10b981" : "white",
-                        display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
-                      }}>
-                        {m.completed && <HiCheck style={{ width: 11, height: 11, color: "white" }} />}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: m.completed ? "#9ca3af" : "#1f2937", textDecoration: m.completed ? "line-through" : "none" }}>
-                          {m.title}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowY: "auto" }}>
+                  {tabMissions.map((m) => {
+                    const pct  = Math.min(Math.round((m.progress / m.goal) * 100), 100);
+                    const done = m.completed;
+                    return (
+                      <div key={m.id} style={{ cursor: "pointer", opacity: done ? 0.72 : 1 }} onClick={() => toggleMission(m.id)}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 4 }}>
+                          <div style={{
+                            width: 16, height: 16, borderRadius: 3, flexShrink: 0, marginTop: 1,
+                            border: `2px solid ${done ? "#10b981" : "#d1d5db"}`,
+                            background: done ? "#10b981" : "white",
+                            display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
+                          }}>
+                            {done && <HiCheck style={{ width: 10, height: 10, color: "white" }} />}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: done ? "#9ca3af" : "#1f2937", textDecoration: done ? "line-through" : "none", lineHeight: 1.3 }}>
+                              {m.title}
+                            </div>
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
+                            {m.reward > 0 && (
+                              <span style={{ fontSize: 9, fontWeight: 800, color: "#ea580c", background: "#fff7ed", padding: "1px 6px", borderRadius: 99, whiteSpace: "nowrap" }}>
+                                +{m.reward} XP
+                              </span>
+                            )}
+                            {(m.passExpReward ?? 0) > 0 && (
+                              <span style={{ fontSize: 9, fontWeight: 700, color: "#1e40af", background: "#eff6ff", padding: "1px 6px", borderRadius: 99, whiteSpace: "nowrap" }}>
+                                +{m.passExpReward} PEXP
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 1, lineHeight: 1.3 }}>{m.description}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 5, paddingLeft: 22 }}>
+                          <div style={{ flex: 1, height: 4, background: "#e5e7eb", borderRadius: 2, overflow: "hidden" }}>
+                            <div style={{
+                              width: `${pct}%`, height: "100%", borderRadius: 2,
+                              background: done ? "#10b981" : "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                              transition: "width 0.3s",
+                            }} />
+                          </div>
+                          <span style={{ fontSize: 8, color: "#9ca3af", whiteSpace: "nowrap" }}>{m.progress}/{m.goal}</span>
+                        </div>
                       </div>
-                      <span style={{ fontSize: 9, color: "#f59e0b", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>+{m.reward}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {tabMissions.length === 0 && (
                     <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>ミッションはありません</div>
                   )}
@@ -770,39 +876,8 @@ export default function Home() {
           })()}
         </div>
 
-        {/* ====== 右: RepoCa作成 + ショートカット ====== */}
+        {/* ====== 右: バッジ ====== */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, overflow: "hidden", height: "100%" }}>
-
-          {/* RepoCa作成 */}
-          <div className="card" style={{ padding: 20, flexShrink: 0 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 14, color: "#1a1a2e" }}>RepoCa 作成</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <select value={projectId} onChange={(e) => setProjectId(e.target.value)}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                <select value={label} onChange={(e) => setLabel(e.target.value as TaskLabel)}
-                  style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
-                  {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-                <select value={implScope} onChange={(e) => setImplScope(e.target.value as ImplScope)}
-                  style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, color: "#374151" }}>
-                  {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <textarea value={taskContent} onChange={(e) => setTaskContent(e.target.value)} placeholder="タスク内容" rows={4}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 10px", fontSize: 13, resize: "none", color: "#374151", boxSizing: "border-box", lineHeight: 1.6 }} />
-            </div>
-            <button
-              className="btn btn-primary"
-              style={{ width: "100%", marginTop: 12, fontSize: 14, padding: "11px", opacity: taskContent.trim() ? 1 : 0.5, borderRadius: 10 }}
-              onClick={handleCreateRepoCa}
-              disabled={!taskContent.trim()}
-            >
-              新規作成
-            </button>
-          </div>
 
           {/* バッジ */}
           {(() => {

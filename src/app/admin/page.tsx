@@ -118,11 +118,12 @@ export default function AdminPage() {
   const { missions, toggleMission, addMission } = useMission();
 
   // ミッション作成フォーム
-  const [mTitle, setMTitle]     = useState("");
-  const [mDesc, setMDesc]       = useState("");
-  const [mType, setMType]       = useState<Mission["type"]>("daily");
-  const [mReward, setMReward]   = useState(30);
-  const [mGoal, setMGoal]       = useState(1);
+  const [mTitle, setMTitle]       = useState("");
+  const [mDesc, setMDesc]         = useState("");
+  const [mType, setMType]         = useState<Mission["type"]>("daily");
+  const [mReward, setMReward]     = useState(30);
+  const [mPassExp, setMPassExp]   = useState(20);
+  const [mGoal, setMGoal]         = useState(1);
 
   const { projects, addProject } = useProjects();
 
@@ -451,8 +452,11 @@ export default function AdminPage() {
                               </div>
                               <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>{m.description}</div>
                             </div>
-                            <div style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, flexShrink: 0 }}>
-                              +{m.reward}
+                            <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
+                              <span style={{ fontSize: 10, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
+                              {m.passExpReward ? (
+                                <span style={{ fontSize: 9, color: "#1e40af", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
+                              ) : null}
                             </div>
                           </div>
                         ))}
@@ -477,20 +481,25 @@ export default function AdminPage() {
                       <input value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="ミッションの詳細説明"
                         style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
                     </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
+                      <select value={mType} onChange={(e) => setMType(e.target.value as Mission["type"])}
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 12 }}>
+                        <option value="daily">日次</option>
+                        <option value="monthly">月次</option>
+                        <option value="unlimited">無期限</option>
+                      </select>
+                    </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
-                        <select value={mType} onChange={(e) => setMType(e.target.value as Mission["type"])}
-                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 12 }}>
-                          <option value="daily">日次</option>
-                          <option value="monthly">月次</option>
-                          <option value="unlimited">無期限</option>
-                        </select>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: "#ea580c", display: "block", marginBottom: 3 }}>アカウントXP</label>
+                        <input type="number" min={0} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
+                          style={{ width: "100%", border: "1px solid #fed7aa", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>報酬経験値</label>
-                        <input type="number" min={1} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
-                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                        <label style={{ fontSize: 11, fontWeight: 600, color: "#1e40af", display: "block", marginBottom: 3 }}>パスEXP</label>
+                        <input type="number" min={0} value={mPassExp} onChange={(e) => setMPassExp(Number(e.target.value))}
+                          style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
                       </div>
                     </div>
                   </div>
@@ -499,8 +508,8 @@ export default function AdminPage() {
                     style={{ width: "100%", marginTop: 12, fontSize: 12 }}
                     disabled={!mTitle.trim()}
                     onClick={() => {
-                      addMission({ type: mType, title: mTitle.trim(), description: mDesc.trim(), reward: mReward, goal: mGoal, progress: 0, completed: false });
-                      setMTitle(""); setMDesc(""); setMType("daily"); setMReward(30); setMGoal(1);
+                      addMission({ type: mType, title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false });
+                      setMTitle(""); setMDesc(""); setMType("daily"); setMReward(30); setMPassExp(20); setMGoal(1);
                     }}
                   >
                     追加

@@ -66,9 +66,32 @@ export interface Mission {
   title: string;
   description: string;
   reward: number;
+  passExpReward?: number;
   progress: number;
   goal: number;
   completed: boolean;
+}
+
+export type SeasonRewardType = "avatar_costume" | "physical" | "currency" | "pass_exp";
+
+export interface SeasonReward {
+  level: number;
+  type: SeasonRewardType;
+  name: string;
+  description: string;
+  icon: string;
+  claimed: boolean;
+}
+
+export interface SeasonPass {
+  id: string;
+  seasonName: string;
+  endDate: string;
+  passLevel: number;
+  passExp: number;
+  passExpToNext: number;
+  maxPassLevel: number;
+  rewards: SeasonReward[];
 }
 
 export interface DailyReport {
