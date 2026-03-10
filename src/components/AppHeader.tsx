@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
-import { AvatarEditor } from "@/components/AvatarEditor";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -17,9 +15,8 @@ const AVATAR_SRC: Record<string, string> = {
 };
 
 export default function AppHeader() {
-  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume, omamori, setOmamori } = useAvatar();
+  const { avatarKey, headCostume, bodyCostume } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
-  const [editorOpen, setEditorOpen] = useState(false);
   const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const passExpPct = Math.round((passExp / passExpToNext) * 100);
   const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
@@ -69,17 +66,6 @@ export default function AppHeader() {
             {item.label}
           </Link>
         ))}
-        <button
-          onClick={() => setEditorOpen(true)}
-          style={{
-            padding: "5px clamp(8px, 1vw, 12px)", borderRadius: 99,
-            fontSize: "clamp(11px, 1vw, 13px)", color: "#374151", fontWeight: 700,
-            background: "white", border: "1px solid #e5e7eb",
-            cursor: "pointer", whiteSpace: "nowrap",
-          }}
-        >
-          アバター編集
-        </button>
       </nav>
 
       {/* 右: アバター + ユーザー情報 */}
@@ -155,22 +141,6 @@ export default function AppHeader() {
           </div>
         </div>
       </div>
-
-      {editorOpen && (
-        <AvatarEditor
-          initialAvatar={avatarKey}
-          initialHeadCostume={headCostume}
-          initialBodyCostume={bodyCostume}
-          initialOmamori={omamori}
-          onConfirm={(a, h, b, o) => {
-            setAvatarKey(a);
-            setHeadCostume(h);
-            setBodyCostume(b);
-            setOmamori(o);
-          }}
-          onClose={() => setEditorOpen(false)}
-        />
-      )}
     </header>
   );
 }

@@ -16,6 +16,7 @@ import {
   HiChevronDown,
   HiChevronUp,
   HiExclamation,
+  HiPencilAlt,
 } from "react-icons/hi";
 import {
   AvatarWithCostume,
@@ -23,6 +24,7 @@ import {
 } from "@/components/AvatarWithCostume";
 import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
 import { useAvatar } from "@/contexts/AvatarContext";
+import { AvatarEditor } from "@/components/AvatarEditor";
 import gsap from "gsap";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { BadgeDetailModal } from "@/components/BadgeDetailModal";
@@ -494,7 +496,8 @@ export default function Home() {
     rewards,
   } = useSeasonPass();
   const [attendance, setAttendance] = useState<AttendanceState>("idle");
-  const { avatarKey, headCostume, bodyCostume, omamori } = useAvatar();
+  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume, omamori, setOmamori } = useAvatar();
+  const [editorOpen, setEditorOpen] = useState(false);
   const {
     allRepoCas,
     addTodayRepoCa,
@@ -1544,6 +1547,25 @@ export default function Home() {
                   >
                     {currentUser.name}
                   </span>
+                  <button
+                    onClick={() => setEditorOpen(true)}
+                    style={{
+                      background: "rgba(255,255,255,0.75)",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "3px 6px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#4f46e5",
+                    }}
+                  >
+                    <HiPencilAlt style={{ width: 11, height: 11 }} />
+                    編集
+                  </button>
                 </div>
                 <div
                   style={{
@@ -1773,6 +1795,25 @@ export default function Home() {
                   >
                     {currentUser.name}
                   </span>
+                  <button
+                    onClick={() => setEditorOpen(true)}
+                    style={{
+                      background: "rgba(255,255,255,0.75)",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "3px 6px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#4f46e5",
+                    }}
+                  >
+                    <HiPencilAlt style={{ width: 11, height: 11 }} />
+                    編集
+                  </button>
                   <span
                     style={{
                       fontWeight: 700,
@@ -2416,6 +2457,23 @@ export default function Home() {
             .filter((r) => r.isCompleted)
             .reduce((s, r) => s + r.xp, 0)}
           onClose={() => setShowWorkResult(false)}
+        />
+      )}
+
+      {/* アバター編集モーダル */}
+      {editorOpen && (
+        <AvatarEditor
+          initialAvatar={avatarKey}
+          initialHeadCostume={headCostume}
+          initialBodyCostume={bodyCostume}
+          initialOmamori={omamori}
+          onConfirm={(a, h, b, o) => {
+            setAvatarKey(a);
+            setHeadCostume(h);
+            setBodyCostume(b);
+            setOmamori(o);
+          }}
+          onClose={() => setEditorOpen(false)}
         />
       )}
     </div>

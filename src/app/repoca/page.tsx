@@ -65,6 +65,21 @@ const PROJECT_DETAILS: Record<string, ProjectDetail> = {
     workContent: "ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。",
     assignedDate: "2026年1月15日〜",
   },
+  p3: {
+    description: "スマートフォン向けのライフスタイルアプリの新規開発プロジェクトです。iOS / Android 両対応のクロスプラットフォーム開発を行い、ユーザー体験を重視したUI/UX設計を進めています。",
+    memberList: [
+      { name: "西村 健太",    role: "PM" },
+      { name: "前田 彩香",    role: "デザイナー" },
+      { name: "菊池（自分）", role: "モバイルエンジニア" },
+      { name: "長谷川 勇",   role: "モバイルエンジニア" },
+      { name: "石田 美咲",   role: "バックエンドエンジニア" },
+      { name: "藤田 拓也",   role: "バックエンドエンジニア" },
+    ],
+    techStack: "React Native, TypeScript, Expo, Firebase, Node.js, PostgreSQL",
+    role: "モバイルエンジニア",
+    workContent: "React Native を用いたモバイルアプリのフロントエンド実装を担当。画面設計・コンポーネント開発・API連携・パフォーマンス最適化を行っています。",
+    assignedDate: "2026年1月15日〜",
+  },
   p4: {
     description: "ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。",
     memberList: [
@@ -166,7 +181,7 @@ export default function RepoCaList() {
       </div>
 
       {/* ボディ */}
-      <div className="page-body" style={{ flexDirection: "column", padding: 8, gap: 8 }}>
+      <div className="page-body" style={{ flexDirection: "column", padding: 8, gap: 8, overflow: "hidden" }}>
         {mainTab === "repoca" ? (
           <>
             {/* 統計 */}
@@ -292,161 +307,160 @@ function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
 function ProjectsContent() {
   const { projects } = useProjects();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = projects.find((p) => p.id === selectedId);
-  const detail = selectedId ? PROJECT_DETAILS[selectedId] : null;
+  const effectiveId = selectedId ?? projects[0]?.id ?? null;
+  const selected    = projects.find((p) => p.id === effectiveId);
+  const detail      = effectiveId ? PROJECT_DETAILS[effectiveId] : null;
 
-  return (
-    <>
-      <div className="scroll-y" style={{ flex: 1 }}>
-        {projects.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 32, color: "#9ca3af" }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>🐾</div>
-            <p style={{ fontSize: 13 }}>プロジェクトがありません</p>
-          </div>
-        ) : (
-          projects.map((project) => {
-            const d = PROJECT_DETAILS[project.id];
-            return (
-              <div
-                key={project.id}
-                className="card"
-                onClick={() => setSelectedId(project.id)}
-                style={{
-                  padding: "12px 14px", marginBottom: 8,
-                  display: "flex", alignItems: "center", gap: 12, cursor: "pointer",
-                }}
-              >
-                <div style={{
-                  width: 44, height: 44, borderRadius: 10,
-                  background: project.color,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 22, flexShrink: 0,
-                }}>
-                  {project.icon}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", marginBottom: 2 }}>
-                    {project.name}
-                  </div>
-                  {d && (
-                    <div style={{ fontSize: 11, color: "#6b7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {d.techStack.split(",").slice(0, 3).join(",")}
-                    </div>
-                  )}
-                </div>
-                <span style={{ fontSize: 18, color: "#9ca3af", flexShrink: 0 }}>›</span>
-              </div>
-            );
-          })
-        )}
-      </div>
-      {selected && detail && (
-        <ProjectDetailModal project={selected} detail={detail} onClose={() => setSelectedId(null)} />
-      )}
-    </>
-  );
-}
+  const memberGroups = detail ? [
+    { role: "PM",          members: detail.memberList.filter((m) => m.role === "PM") },
+    { role: "ディレクター", members: detail.memberList.filter((m) => m.role === "ディレクター") },
+    { role: "デザイナー",   members: detail.memberList.filter((m) => m.role === "デザイナー") },
+    { role: "エンジニア",   members: detail.memberList.filter((m) => !["PM", "ディレクター", "デザイナー"].includes(m.role)) },
+  ].filter((g) => g.members.length > 0) : [];
 
-// ---- プロジェクト詳細モーダル ----
-type ProjectType = { id: string; name: string; icon: string; color: string; textColor: string };
-
-function ProjectDetailModal({
-  project, detail, onClose,
-}: {
-  project: ProjectType;
-  detail: ProjectDetail;
-  onClose: () => void;
-}) {
-  const pm       = detail.memberList.filter((m) => m.role === "PM");
-  const director = detail.memberList.filter((m) => m.role === "ディレクター");
-  const designer = detail.memberList.filter((m) => m.role === "デザイナー");
-  const engineer = detail.memberList.filter((m) => !["PM", "ディレクター", "デザイナー"].includes(m.role));
-
-  return (
-    <div
-      style={{
-        position: "fixed", inset: 0,
-        background: "rgba(0,0,0,0.5)", zIndex: 300,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "white", borderRadius: 16, width: 340, maxWidth: "92vw",
-          maxHeight: "80vh", overflow: "hidden", display: "flex", flexDirection: "column",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* ヘッダー */}
-        <div style={{
-          background: project.color, padding: "16px 20px",
-          display: "flex", alignItems: "center", gap: 12,
-        }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 10,
-            background: "rgba(255,255,255,0.25)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
-          }}>
-            {project.icon}
-          </div>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: project.textColor }}>{project.name}</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 2 }}>{detail.role}</div>
-          </div>
+  if (projects.length === 0) {
+    return (
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>🐾</div>
+          <p style={{ fontSize: 13 }}>プロジェクトがありません</p>
         </div>
+      </div>
+    );
+  }
 
-        {/* 詳細スクロール */}
-        <div style={{ overflowY: "auto", padding: "14px 20px 10px" }}>
-          {/* 概要 */}
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 4 }}>概要</div>
-          <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.7, marginBottom: 12 }}>{detail.description}</div>
-
-          {/* 技術スタック */}
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 4 }}>主な使用技術</div>
-          <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.7, marginBottom: 12 }}>{detail.techStack}</div>
-
-          {/* メンバー数 */}
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 6 }}>メンバー</div>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
-            {pm.length > 0       && <span style={{ fontSize: 11, color: "#6b7280" }}>PM：{pm.length}名</span>}
-            {director.length > 0 && <span style={{ fontSize: 11, color: "#6b7280" }}>ディレクター：{director.length}名</span>}
-            {designer.length > 0 && <span style={{ fontSize: 11, color: "#6b7280" }}>デザイナー：{designer.length}名</span>}
-            {engineer.length > 0 && <span style={{ fontSize: 11, color: "#6b7280" }}>エンジニア：{engineer.length}名</span>}
-          </div>
-          <div style={{ background: "#f9fafb", borderRadius: 8, padding: "8px 12px", marginBottom: 12 }}>
-            {detail.memberList.map((m, i) => (
-              <div key={i} style={{
-                display: "flex", justifyContent: "space-between",
-                padding: "4px 0", borderBottom: i < detail.memberList.length - 1 ? "1px solid #e5e7eb" : "none",
-                fontSize: 12,
+  return (
+    <div style={{
+      flex: 1, display: "flex", overflow: "hidden",
+      border: "1px solid #e5e7eb", borderRadius: 10, background: "white",
+    }}>
+      {/* 左: プロジェクトリスト */}
+      <div style={{ width: 220, flexShrink: 0, borderRight: "1px solid #e5e7eb", overflowY: "auto" }}>
+        {projects.map((project) => {
+          const d          = PROJECT_DETAILS[project.id];
+          const isSelected = effectiveId === project.id;
+          return (
+            <div
+              key={project.id}
+              onClick={() => setSelectedId(project.id)}
+              style={{
+                display: "flex", alignItems: "center", gap: 10,
+                padding: isSelected ? "13px 14px" : "11px 14px",
+                borderBottom: "1px solid #f3f4f6",
+                cursor: "pointer",
+                background: isSelected ? "#f0fdf4" : "white",
+                transition: "background 0.1s",
+              }}
+            >
+              <div style={{
+                width: 38, height: 38, borderRadius: 9,
+                background: project.color,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 18, flexShrink: 0,
               }}>
-                <span style={{ color: "#374151" }}>{m.name}</span>
-                <span style={{ color: "#6b7280" }}>{m.role}</span>
+                {project.icon}
               </div>
-            ))}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontWeight: isSelected ? 700 : 600,
+                  fontSize: isSelected ? 13 : 12,
+                  color: "#1a1a2e", marginBottom: 2, lineHeight: 1.3,
+                }}>
+                  {project.name}
+                </div>
+                {d && (
+                  <div style={{ fontSize: 10, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {d.techStack.split(",").slice(0, 2).join(",")}
+                  </div>
+                )}
+              </div>
+              <span style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0 }}>›</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 右: プロジェクト詳細 */}
+      {selected && detail && (
+        <div style={{ flex: 1, overflowY: "auto", padding: "14px 18px" }}>
+          {/* 概要 */}
+          <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>概要</div>
+            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.description}</p>
+          </div>
+
+          {/* メンバー */}
+          <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, marginBottom: 8 }}>メンバー</div>
+            {/* 役割別サマリー */}
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+              {memberGroups.map((g) => (
+                <span key={g.role} style={{
+                  fontSize: 10, fontWeight: 600,
+                  background: "#f3f4f6", color: "#374151",
+                  borderRadius: 99, padding: "2px 8px",
+                }}>
+                  {g.role}：{g.members.length}名
+                </span>
+              ))}
+            </div>
+            {/* 名前一覧 */}
+            <div style={{ borderRadius: 8, overflow: "hidden", border: "1px solid #f3f4f6" }}>
+              {detail.memberList.map((m, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    padding: "6px 10px",
+                    borderBottom: i < detail.memberList.length - 1 ? "1px solid #f3f4f6" : "none",
+                    background: m.name.includes("自分") ? "#f0fdf4" : "white",
+                    fontSize: 11,
+                  }}
+                >
+                  <span style={{
+                    color: "#1a1a2e", fontWeight: m.name.includes("自分") ? 700 : 400,
+                  }}>
+                    {m.name}
+                  </span>
+                  <span style={{
+                    color: m.name.includes("自分") ? "#10b981" : "#6b7280",
+                    fontWeight: m.name.includes("自分") ? 700 : 400,
+                    fontSize: 10,
+                  }}>
+                    {m.role}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 主な仕様技術 */}
+          <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, marginBottom: 5 }}>主な仕様技術</div>
+            <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, wordBreak: "break-word" }}>
+              {detail.techStack}
+            </div>
+          </div>
+
+          {/* 役割 */}
+          <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>役割</div>
+            <div style={{ fontSize: 12, color: "#374151" }}>{detail.role}</div>
+          </div>
+
+          {/* 業務内容 */}
+          <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>業務内容</div>
+            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.workContent}</p>
           </div>
 
           {/* アサイン日 */}
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 4 }}>アサイン日</div>
-          <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 12 }}>{detail.assignedDate}</div>
+          <div>
+            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>アサイン日</div>
+            <div style={{ fontSize: 12, color: "#374151" }}>{detail.assignedDate}</div>
+          </div>
         </div>
-
-        {/* フッター */}
-        <div style={{ padding: "8px 20px 18px" }}>
-          <button
-            onClick={onClose}
-            style={{
-              width: "100%", padding: "10px 0", borderRadius: 10,
-              border: "none", background: "#f3f4f6",
-              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
-            }}
-          >
-            閉じる
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

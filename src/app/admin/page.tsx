@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
+  HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer,
 } from "react-icons/hi";
 import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -23,6 +24,57 @@ const TEAM_MEMBERS = [
 
 const PROJ_COLOR: Record<string, string> = {
   p1: "#4f46e5", p2: "#10b981", p3: "#a855f7", p4: "#f59e0b",
+};
+
+const PROJ_ICONS: Record<string, React.ComponentType<{ style?: React.CSSProperties }>> = {
+  p1: HiGlobeAlt,
+  p2: HiDesktopComputer,
+  p3: HiDeviceMobile,
+  p4: HiShoppingCart,
+};
+
+type ProjectDetail = {
+  description: string;
+  members: { role: string; count: number }[];
+  techStack: string;
+  myRole: string;
+  jobContent: string;
+  assignDate: string;
+};
+
+const PROJ_DETAIL: Record<string, ProjectDetail> = {
+  p1: {
+    description: "ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。",
+    members: [{ role: "PM", count: 1 }, { role: "ディレクター", count: 1 }, { role: "デザイナー", count: 1 }, { role: "エンジニア", count: 3 }],
+    techStack: "Next.js, TypeScript など",
+    myRole: "フロントエンドエンジニア",
+    jobContent: "ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。",
+    assignDate: "2026年2月9日〜",
+  },
+  p2: {
+    description: "ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。",
+    members: [{ role: "PM", count: 1 }, { role: "デザイナー", count: 2 }, { role: "エンジニア", count: 2 }],
+    techStack: "WordPress, PHP など",
+    myRole: "フロントエンドエンジニア",
+    jobContent: "ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。",
+    assignDate: "2025年11月1日〜",
+  },
+  p3: {
+    description: "ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。",
+    members: [{ role: "PM", count: 1 }, { role: "デザイナー", count: 1 }, { role: "エンジニア", count: 4 }],
+    techStack: "React Native, TypeScript など",
+    myRole: "モバイルエンジニア",
+    jobContent: "ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。",
+    assignDate: "2026年1月15日〜",
+  },
+  p4: {
+    description: "ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。ここにプロジェクトの説明が入ります。",
+    members: [{ role: "PM", count: 1 }, { role: "エンジニア", count: 3 }, { role: "デザイナー", count: 1 }],
+    techStack: "Next.js, Go, PostgreSQL など",
+    myRole: "フルスタックエンジニア",
+    jobContent: "ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。ここに業務内容の説明が入ります。",
+    assignDate: "2025年12月1日〜",
+  },
 };
 
 const DAILY_WORK: Record<string, DailySeg[]> = {
@@ -112,7 +164,7 @@ type ModalState = {
 
 export default function AdminPage() {
   const [view, setView]         = useState<View>("projects");
-  const [search, setSearch]     = useState("");
+
   const [projName, setProjName] = useState("");
   const [projMemo, setProjMemo] = useState("");
   const { missions, toggleMission, addMission } = useMission();
@@ -127,6 +179,7 @@ export default function AdminPage() {
 
   const { projects, addProject } = useProjects();
 
+  const [selectedProjId, setSelectedProjId] = useState<string>("p1");
   const [hoveredKey, setHoveredKey]   = useState<string | null>(null);
   const [tooltip, setTooltip]         = useState<TooltipState>(null);
   const [modal, setModal]             = useState<ModalState>(null);
@@ -172,44 +225,126 @@ export default function AdminPage() {
         <div className="admin-content">
 
           {/* ── プロジェクト一覧 ── */}
-          {view === "projects" && (
-            <>
-              <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="プロジェクト検索..."
-                  style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 10px", fontSize: 12 }}
-                />
-                <button
-                  className="btn btn-primary"
-                  style={{ fontSize: 11, padding: "5px 14px", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 4 }}
-                  onClick={() => setView("new-project")}
-                >
-                  <HiPlus style={{ width: 13, height: 13 }} /> 登録
-                </button>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {projects.filter((p) => p.name.includes(search)).map((p) => (
-                  <div key={p.id} className="card" style={{ padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[p.id] ?? "#6b7280" }} />
-                        <span style={{ fontWeight: 700, fontSize: 13 }}>{p.name}</span>
-                      </div>
-                      <div style={{ fontSize: 10, color: "#6b7280", marginTop: 3, marginLeft: 16 }}>
-                        チームID: {p.teamId} ｜ 進行中
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button className="btn btn-ghost" style={{ fontSize: 10, padding: "3px 10px" }}>編集</button>
-                      <button className="btn btn-danger" style={{ fontSize: 10, padding: "3px 10px" }}>削除</button>
-                    </div>
+          {view === "projects" && (() => {
+            const selProj   = projects.find((p) => p.id === selectedProjId) ?? projects[0];
+            const selDetail = selProj ? (PROJ_DETAIL[selProj.id] ?? PROJ_DETAIL.p1) : null;
+            return (
+              <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                {/* ページタイトル */}
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#1a1a2e", marginBottom: 14 }}>
+                  アサインされているプロジェクト一覧
+                </div>
+
+                {/* マスター・詳細 レイアウト */}
+                <div style={{
+                  display: "flex", flex: 1, overflow: "hidden",
+                  border: "1px solid #e5e7eb", borderRadius: 10,
+                  background: "white",
+                }}>
+                  {/* 左: プロジェクトリスト */}
+                  <div style={{
+                    width: 230, flexShrink: 0,
+                    borderRight: "1px solid #e5e7eb",
+                    overflowY: "auto",
+                  }}>
+                    {projects.map((p) => {
+                      const Icon     = PROJ_ICONS[p.id] ?? HiFolder;
+                      const selected = selectedProjId === p.id;
+                      return (
+                        <div
+                          key={p.id}
+                          onClick={() => setSelectedProjId(p.id)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 10,
+                            padding: selected ? "14px 16px" : "12px 14px",
+                            borderBottom: "1px solid #f3f4f6",
+                            cursor: "pointer",
+                            background: selected ? "#f3f4f6" : "white",
+                            transition: "background 0.1s",
+                          }}
+                        >
+                          <Icon style={{
+                            width: 18, height: 18, flexShrink: 0,
+                            color: selected ? (PROJ_COLOR[p.id] ?? "#4f46e5") : "#9ca3af",
+                          }} />
+                          <span style={{
+                            flex: 1, fontSize: selected ? 14 : 13,
+                            fontWeight: selected ? 700 : 500,
+                            color: selected ? "#1a1a2e" : "#374151",
+                            lineHeight: 1.3,
+                          }}>
+                            {p.name}
+                          </span>
+                          <span style={{ color: "#9ca3af", fontSize: 14, flexShrink: 0 }}>›</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+
+                  {/* 右: プロジェクト詳細 */}
+                  {selProj && selDetail && (
+                    <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+                      {/* 概要 */}
+                      <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>概要</div>
+                        <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>
+                          {selDetail.description}
+                        </p>
+                      </div>
+
+                      {/* メンバー */}
+                      <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>メンバー</div>
+                          <span style={{ fontSize: 10, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                            メンバーを見る &gt;
+                          </span>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {selDetail.members.map((m) => (
+                            <div key={m.role} style={{ fontSize: 12, color: "#374151" }}>
+                              {m.role}：{m.count}名
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* 主な仕様技術 */}
+                      <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                          <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>主な仕様技術</div>
+                          <span style={{ fontSize: 10, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                            すべて見る &gt;
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.techStack}</div>
+                      </div>
+
+                      {/* 役割 */}
+                      <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>役割</div>
+                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.myRole}</div>
+                      </div>
+
+                      {/* 業務内容 */}
+                      <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>業務内容</div>
+                        <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>
+                          {selDetail.jobContent}
+                        </p>
+                      </div>
+
+                      {/* アサイン日 */}
+                      <div>
+                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>アサイン日</div>
+                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.assignDate}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </>
-          )}
+            );
+          })()}
 
           {/* ── 工数管理/日 ── */}
           {view === "daily" && (
