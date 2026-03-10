@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { RepoCa } from "@/types";
-import { repoCas as defaultRepoCas, todaySelectedIds } from "@/lib/mock-data";
+import { repoCas as defaultRepoCas } from "@/lib/mock-data";
 
 const LS_KEY_REPOCAS = "mitac_repocas";
 
@@ -43,6 +43,7 @@ interface RepoCaContextValue {
   setOvertimeReportedDate: (v: string | null) => void;
   endReportedDate: string | null;
   setEndReportedDate: (v: string | null) => void;
+  bulkUpdateCompleted: (completedMap: Record<string, boolean>) => void;
 }
 
 const RepoCaContext = createContext<RepoCaContextValue>({
@@ -68,6 +69,7 @@ const RepoCaContext = createContext<RepoCaContextValue>({
   setOvertimeReportedDate: () => {},
   endReportedDate: null,
   setEndReportedDate: () => {},
+  bulkUpdateCompleted: () => {},
 });
 
 export function RepoCaProvider({ children }: { children: ReactNode }) {
@@ -91,9 +93,8 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   const addRepoCa = (rc: RepoCa) =>
     setAllRepoCas((prev) => [...prev, rc]);
 
-  const [todayRepoCas, setTodayRepoCas] = useState<RepoCa[]>(
-    defaultRepoCas.filter((r) => todaySelectedIds.includes(r.id))
-  );
+  // 始業報告するまで todayRepoCas は空
+  const [todayRepoCas, setTodayRepoCas] = useState<RepoCa[]>([]);
   const [hasStartReported, setHasStartReported] = useState(false);
   const [hasOvertimeReported, setHasOvertimeReported] = useState(false);
   const [hasEndReported, setHasEndReported] = useState(false);
@@ -104,6 +105,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
     setHasStartReported(false);
     setHasOvertimeReported(false);
     setHasEndReported(false);
+    setTodayRepoCas([]);
   };
   const [favoriteIds, setFavoriteIds] = useState<string[]>(
     defaultRepoCas.filter((r) => r.isFavorite).map((r) => r.id)
@@ -111,12 +113,29 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
 
   const addTodayRepoCa = (rc: RepoCa) =>
     setTodayRepoCas((prev) => [...prev, rc]);
-  const toggleTodayRepoCa = (id: string) =>
-    setTodayRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r));
+
+  // 完了トグル: todayRepoCas と allRepoCas の両方を更新
+  const toggleTodayRepoCa = (id: string) => {
+    setTodayRepoCas((prev) =>
+      prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r)
+    );
+    setAllRepoCas((prev) =>
+      prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r)
+    );
+  };
+
   const toggleFavorite = (id: string) =>
     setFavoriteIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+
+  // 終業報告時に完了状態を一括で allRepoCas に反映
+  const bulkUpdateCompleted = (completedMap: Record<string, boolean>) =>
+    setAllRepoCas((prev) =>
+      prev.map((r) => r.id in completedMap ? { ...r, isCompleted: completedMap[r.id] } : r)
+    );
+
+  // 始業報告で選ばれたIDから todayRepoCas をセット（allRepoCas の最新状態を使用）
   const setTodayFromIds = (ids: string[]) =>
-    setTodayRepoCas(allRepoCas.filter((r) => ids.includes(r.id)));
+    setTodayRepoCas(allRepoCas.filter((r) => ids.includes(r.id)).map((r) => ({ ...r, isCompleted: false })));
 
   return (
     <RepoCaContext.Provider value={{
@@ -124,7 +143,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
       todayRepoCas, addTodayRepoCa, toggleTodayRepoCa,
       hasStartReported, hasOvertimeReported, hasEndReported,
       setHasStartReported, setHasOvertimeReported, setHasEndReported, resetDailyReports,
-      favoriteIds, toggleFavorite, setTodayFromIds,
+      favoriteIds, toggleFavorite, setTodayFromIds, bulkUpdateCompleted,
       startReportedDate, setStartReportedDate,
       overtimeReportedDate, setOvertimeReportedDate,
       endReportedDate, setEndReportedDate,

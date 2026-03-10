@@ -19,7 +19,7 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds } = useRepoCa();
+  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted } = useRepoCa();
   const { projects } = useProjects();
 
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
@@ -523,7 +523,11 @@ export default function EndReport() {
               <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
                 <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
-                  onClick={() => { setShowConfirmModal(false); setHasEndReported(true); setEndReportedDate(new Date().toDateString()); resetDailyReports(); setShowCompleted(true); }}>
+                  onClick={() => {
+                    // 完了状態を allRepoCas に一括同期
+                    bulkUpdateCompleted(completed);
+                    setShowConfirmModal(false); setHasEndReported(true); setEndReportedDate(new Date().toDateString()); resetDailyReports(); setShowCompleted(true);
+                  }}>
                   送信
                 </button>
               </div>

@@ -150,7 +150,7 @@ export const todaySelectedIds: string[] = ["rc1", "rc2", "rc3", "rc4", "rc5"];
 export const badges: Badge[] = [
   {
     id: "b1", name: "Next", description: "Next.jsを使用したPJに参加",
-    icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold",
+    icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold", exp: 14500,
     tierHistory: [
       { tier: "bronze", date: "2025-08-10", note: "ITS-xLPでNext.jsを初採用" },
       { tier: "silver", date: "2025-11-05", note: "Next.jsプロジェクト5件を完了" },
@@ -160,7 +160,7 @@ export const badges: Badge[] = [
   },
   {
     id: "b2", name: "SCSS", description: "SCSSを使用したPJに参加",
-    icon: "🤖", acquired: true, acquiredAt: "2026-02-01", tier: "silver",
+    icon: "🤖", acquired: true, acquiredAt: "2026-02-01", tier: "silver", exp: 7200,
     tierHistory: [
       { tier: "bronze", date: "2025-09-20", note: "コーポレートサイトリニューアルでSCSS導入" },
       { tier: "silver", date: "2026-02-01", note: "SCSSを使ったPJ10件に参加" },
@@ -169,7 +169,7 @@ export const badges: Badge[] = [
   },
   {
     id: "b3", name: "Java", description: "Javaを使用したPJに参加",
-    icon: "〜", acquired: true, acquiredAt: "2026-02-10", tier: "bronze",
+    icon: "〜", acquired: true, acquiredAt: "2026-02-10", tier: "bronze", exp: 1800,
     tierHistory: [
       { tier: "bronze", date: "2026-02-10", note: "データ基盤構築PJでJavaバックエンドを担当" },
     ],
@@ -192,7 +192,7 @@ export const badges: Badge[] = [
   },
   {
     id: "b7", name: "TypeScript", description: "TypeScriptを活用",
-    icon: "▤", acquired: true, acquiredAt: "2026-01-20", tier: "silver",
+    icon: "▤", acquired: true, acquiredAt: "2026-01-20", tier: "silver", exp: 8500,
     tierHistory: [
       { tier: "bronze", date: "2025-10-01", note: "ITS-xLPフロント開発でTypeScriptを初導入" },
       { tier: "silver", date: "2026-01-20", note: "TypeScript採用PJ10件に参加" },
@@ -201,7 +201,7 @@ export const badges: Badge[] = [
   },
   {
     id: "b8", name: "React", description: "Reactを使用したPJに参加",
-    icon: "🤖", acquired: true, acquiredAt: "2026-01-25", tier: "gold",
+    icon: "🤖", acquired: true, acquiredAt: "2026-01-25", tier: "gold", exp: 12000,
     tierHistory: [
       { tier: "bronze", date: "2025-07-15", note: "モバイルアプリ開発PJでReactを初採用" },
       { tier: "silver", date: "2025-10-20", note: "ReactプロジェクトをSPA化・5件完了" },
@@ -239,9 +239,9 @@ export const missions: Mission[] = [
     description: "本日3枚のRepoCaを作成する",
     reward: 30,
     passExpReward: 20,
-    progress: 2,
+    progress: 3,
     goal: 3,
-    completed: false,
+    completed: true,
   },
   {
     id: "m2",

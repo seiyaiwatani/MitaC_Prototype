@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMission } from "@/contexts/MissionContext";
-import { HiArrowLeft, HiCheck } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 import type { Mission } from "@/types";
 
 const TABS: { key: Mission["type"]; label: string; accent: string; desc: string }[] = [
@@ -13,7 +13,7 @@ const TABS: { key: Mission["type"]; label: string; accent: string; desc: string 
 ];
 
 export default function MissionsPage() {
-  const { missions, toggleMission } = useMission();
+  const { missions } = useMission();
   const [activeTab, setActiveTab] = useState<Mission["type"]>("daily");
 
   const items      = missions.filter((m) => m.type === activeTab);
@@ -93,37 +93,29 @@ export default function MissionsPage() {
               <div
                 key={m.id}
                 className="card"
-                onClick={() => toggleMission(m.id)}
                 style={{
                   padding: "12px 14px",
                   borderLeft: `4px solid ${done ? "#10b981" : accent}`,
                   opacity: done ? 0.85 : 1,
-                  cursor: "pointer",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1, minWidth: 0 }}>
-                    {/* チェックボックス */}
-                    <div style={{
-                      width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 1,
-                      border: `2px solid ${done ? "#10b981" : "#d1d5db"}`,
-                      background: done ? "#10b981" : "white",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      transition: "all 0.15s",
-                    }}>
-                      {done && <HiCheck style={{ width: 12, height: 12, color: "white" }} />}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 700, color: done ? "#9ca3af" : "#1a1a2e",
+                        textDecoration: done ? "line-through" : "none",
+                      }}>{m.title}</span>
+                      {done && (
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#065f46", background: "#dcfce7", padding: "1px 8px", borderRadius: 99 }}>
+                          達成！
+                        </span>
+                      )}
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e" }}>{m.title}</span>
-                        {done && (
-                          <span style={{ fontSize: 10, fontWeight: 700, color: "#065f46", background: "#dcfce7", padding: "1px 8px", borderRadius: 99 }}>
-                            達成！
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ fontSize: 11, color: "#6b7280", margin: 0, lineHeight: 1.4 }}>{m.description}</p>
-                    </div>
+                    <p style={{
+                      fontSize: 11, color: "#6b7280", margin: 0, lineHeight: 1.4,
+                      textDecoration: done ? "line-through" : "none",
+                    }}>{m.description}</p>
                   </div>
                   <div style={{ flexShrink: 0, marginLeft: 12, display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-end" }}>
                     <div style={{

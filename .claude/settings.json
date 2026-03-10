@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(find /home/hibikikikuchi/MitaC_Prototype -type f \\\\\\(-name *badge* -o -name *Badge* \\\\\\))",
+      "Bash(npx tsc:*)"
     ]
   }
 }

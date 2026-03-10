@@ -11,27 +11,23 @@ import { useProjects } from "@/contexts/ProjectContext";
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
 
 export default function ReportIndex() {
-  const { allRepoCas, hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
+  const { allRepoCas, todayRepoCas, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported, favoriteIds, toggleFavorite: ctxToggleFavorite } = useRepoCa();
   const { projects } = useProjects();
   const reportStatus = [
     { key: "start",    label: "始業報告", done: hasStartReported,    href: "/report/start" },
     { key: "overtime", label: "残業報告", done: hasOvertimeReported, href: "/report/overtime" },
     { key: "end",      label: "終業報告", done: hasEndReported,      href: "/report/end" },
   ];
-  const [localRepoCas, setLocalRepoCas] = useState<RepoCa[]>(
-    allRepoCas.filter((r) => ["rc1","rc2","rc3","rc4","rc5"].includes(r.id))
-  );
   const [selectedRc, setSelectedRc] = useState<RepoCa | null>(null);
 
-  const toggleTask = (id: string) =>
-    setLocalRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r));
+  const toggleTask = (id: string) => toggleTodayRepoCa(id);
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setLocalRepoCas((prev) => prev.map((r) => r.id === id ? { ...r, isFavorite: !r.isFavorite } : r));
+    ctxToggleFavorite(id);
   };
 
-  const completedCount = localRepoCas.filter((r) => r.isCompleted).length;
+  const completedCount = todayRepoCas.filter((r) => r.isCompleted).length;
 
   return (
     <div className="page-root">
@@ -51,7 +47,7 @@ export default function ReportIndex() {
             〜本日のタスク〜
           </div>
           <div className="scroll-y" style={{ flex: 1, padding: 8 }}>
-            {localRepoCas.length === 0 ? (
+            {todayRepoCas.length === 0 ? (
               <div style={{ textAlign: "center", padding: "24px 16px" }}>
                 <p style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>カードが作成されていません</p>
                 <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12 }}>下のボタンからカードを作成しよう！</p>
@@ -60,7 +56,7 @@ export default function ReportIndex() {
                 </Link>
               </div>
             ) : (
-              localRepoCas.map((rc) => {
+              todayRepoCas.map((rc) => {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} style={{
@@ -87,7 +83,7 @@ export default function ReportIndex() {
                       onClick={(e) => toggleFavorite(rc.id, e)}
                       style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, display: "flex", alignItems: "center", marginTop: 2 }}
                     >
-                      {rc.isFavorite
+                      {favoriteIds.includes(rc.id)
                         ? <HiStar style={{ width: 15, height: 15, color: "#d97706" }} />
                         : <HiOutlineStar style={{ width: 15, height: 15, color: "#d1d5db" }} />}
                     </button>
@@ -138,7 +134,7 @@ export default function ReportIndex() {
             <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", alignItems: "center" }}>
               <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>完了タスク</span>
               <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>
-                {completedCount}/{localRepoCas.length}
+                {completedCount}/{todayRepoCas.length}
               </span>
             </div>
           </div>

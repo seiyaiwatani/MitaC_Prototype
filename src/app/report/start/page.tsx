@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { todaySelectedIds } from "@/lib/mock-data";
 import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar, HiPencil } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
+
+const truncate = (s: string, max = 10) => s.length > max ? s.slice(0, max) + "..." : s;
 
 const TASK_TYPES: TaskType[] = ["開発", "実装", "MTG", "デイリースクラム", "その他"];
 const TASK_LABELS: TaskLabel[] = ["新規作成", "修正", "調査", "レビュー", "その他"];
@@ -16,7 +17,7 @@ export default function StartReport() {
   const { allRepoCas, updateRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate } = useRepoCa();
   const { projects } = useProjects();
   // 追加したRepoCa（既に選択済みのもの）
-  const [addedIds, setAddedIds] = useState<string[]>([...todaySelectedIds]);
+  const [addedIds, setAddedIds] = useState<string[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
@@ -27,7 +28,6 @@ export default function StartReport() {
   const [editTaskType, setEditTaskType] = useState<TaskType>("開発");
   const [editLabel, setEditLabel] = useState<TaskLabel>("新規作成");
   const [editImplScope, setEditImplScope] = useState<ImplScope>("フロント");
-  const [editDuration, setEditDuration] = useState(0);
   const [editProjectId, setEditProjectId] = useState("");
 
   const openEditModal = (rc: RepoCa) => {
@@ -36,7 +36,6 @@ export default function StartReport() {
     setEditTaskType(rc.taskType);
     setEditLabel(rc.label);
     setEditImplScope(rc.implScope);
-    setEditDuration(rc.duration);
     setEditProjectId(rc.projectId);
   };
 
@@ -47,7 +46,6 @@ export default function StartReport() {
       taskType: editTaskType,
       label: editLabel,
       implScope: editImplScope,
-      duration: editDuration,
       projectId: editProjectId,
     });
     setEditingRepoCa(null);
@@ -198,7 +196,7 @@ export default function StartReport() {
                               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                               pointerEvents: "none",
                             }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{rc.content}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{truncate(rc.content)}</p>
                               {[
                                 { label: "種別",   value: rc.taskType },
                                 { label: "ラベル", value: rc.label },
@@ -234,7 +232,7 @@ export default function StartReport() {
                             </div>
                           </div>
                           <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937", lineHeight: 1.3 }}>
-                            {rc.content}
+                            {truncate(rc.content)}
                           </p>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
                             <button
@@ -274,7 +272,7 @@ export default function StartReport() {
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
                       <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.icon} {proj?.name}</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
                     <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
                   </div>
                 );
@@ -297,7 +295,7 @@ export default function StartReport() {
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
                       <span className="chip chip-yellow" style={{ fontSize: 9 }}>⭐ お気に入り</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
                     <span style={{ fontSize: 9, color: "#9ca3af" }}>{proj?.name}</span>
                   </div>
                 );
@@ -356,7 +354,7 @@ export default function StartReport() {
                   <div key={id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f3f4f6" }}>
                     <HiCheck style={{ width: 14, height: 14, color: "#4f46e5", flexShrink: 0 }} />
                     <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.name}</span>
-                    <span style={{ fontSize: 12, color: "#374151" }}>{rc.content}</span>
+                    <span style={{ fontSize: 12, color: "#374151" }}>{truncate(rc.content)}</span>
                   </div>
                 );
               })}
@@ -445,18 +443,6 @@ export default function StartReport() {
                 >
                   {IMPL_SCOPES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
-              </div>
-
-              {/* 作業時間 */}
-              <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>作業時間（分）</label>
-                <input
-                  type="number"
-                  value={editDuration}
-                  onChange={(e) => setEditDuration(Number(e.target.value))}
-                  min={0}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }}
-                />
               </div>
             </div>
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>

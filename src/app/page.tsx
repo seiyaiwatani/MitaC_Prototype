@@ -27,8 +27,7 @@ import { useAvatar } from "@/contexts/AvatarContext";
 import { AvatarEditor } from "@/components/AvatarEditor";
 import gsap from "gsap";
 import { useRepoCa } from "@/contexts/RepoCaContext";
-import { BadgeDetailModal } from "@/components/BadgeDetailModal";
-import { BADGE_ICON_MAP, TIER_STYLE } from "@/lib/badge-config";
+import { BADGE_ICON_MAP, TIER_STYLE, TIER_ORDER } from "@/lib/badge-config";
 import type { Badge } from "@/types";
 import { fmtDuration } from "@/lib/utils";
 
@@ -500,6 +499,7 @@ export default function Home() {
   const [editorOpen, setEditorOpen] = useState(false);
   const {
     allRepoCas,
+    todayRepoCas,
     addTodayRepoCa,
     toggleTodayRepoCa,
     updateRepoCa,
@@ -507,12 +507,12 @@ export default function Home() {
     hasOvertimeReported,
     hasEndReported,
   } = useRepoCa();
-  const { missions, toggleMission } = useMission();
+  const { missions } = useMission();
   const [missionTab, setMissionTab] = useState<
     "daily" | "monthly" | "unlimited"
   >("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
-  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(badges[0] ?? null);
   const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
   const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
@@ -543,32 +543,20 @@ export default function Home() {
     setAttendance("returning");
   };
 
-  // タスク（本日のRepoCa）- ローカル状態でトグル可能に
-  const [localRepoCas, setLocalRepoCas] = useState(
-    allRepoCas.filter((r) =>
-      ["rc1", "rc2", "rc3", "rc4", "rc5"].includes(r.id),
-    ),
-  );
+  // タスク（本日のRepoCa）- コンテキストの todayRepoCas を直接使用
   const [taskFilter, setTaskFilter] = useState<FilterType>("全て");
 
   const toggleTask = (id: string) => {
-    const target = localRepoCas.find((r) => r.id === id);
-    if (!target) return;
-    const newCompleted = !target.isCompleted;
-    updateRepoCa(id, { isCompleted: newCompleted });
-    setLocalRepoCas((prev) =>
-      prev.map((r) => r.id === id ? { ...r, isCompleted: newCompleted } : r),
-    );
     toggleTodayRepoCa(id);
   };
 
-  const filteredRepoCas = localRepoCas.filter((r) => {
+  const filteredRepoCas = todayRepoCas.filter((r) => {
     if (taskFilter === "未完了") return !r.isCompleted;
     if (taskFilter === "完了") return r.isCompleted;
     return true;
   });
 
-  const completedCount = localRepoCas.filter((r) => r.isCompleted).length;
+  const completedCount = todayRepoCas.filter((r) => r.isCompleted).length;
   const dailyMissions = missions.filter((m) => m.type === "daily");
   const acquiredBadges = badges.filter((b) => b.acquired).length;
   const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
@@ -1016,9 +1004,11 @@ export default function Home() {
           flex: 1,
           display: "grid",
           gridTemplateColumns: "1fr 340px 1fr",
+          gridTemplateRows: "auto 1fr",
           gap: 20,
-          padding: "12px 40px",
+          padding: "12px 40px 20px",
           overflow: "hidden",
+          minHeight: 0,
         }}
       >
         {/* ====== 左: 本日のタスク ====== */}
@@ -1028,6 +1018,7 @@ export default function Home() {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
+            gridRow: "1 / -1",
           }}
         >
           {/* ヘッダー */}
@@ -1050,7 +1041,7 @@ export default function Home() {
                 本日のタスク
               </span>
               <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
-                {completedCount}/{localRepoCas.length} 完了
+                {completedCount}/{todayRepoCas.length} 完了
               </span>
             </div>
             {/* フィルタータブ */}
@@ -1079,7 +1070,7 @@ export default function Home() {
 
           {/* タスクリスト */}
           <div className="scroll-y" style={{ flex: 1, padding: "4px 8px" }}>
-            {localRepoCas.length === 0 ? (
+            {todayRepoCas.length === 0 ? (
               <div
                 style={{
                   textAlign: "center",
@@ -1350,16 +1341,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ====== 中央: ユーザーステータス + ミッション ====== */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-            overflow: "hidden",
-            height: "100%",
-          }}
-        >
+        {/* ====== 中央: ユーザーステータス ====== */}
           <div
             className="card"
             style={{
@@ -1367,7 +1349,7 @@ export default function Home() {
               flexDirection: "column",
               overflow: "hidden",
               padding: 0,
-              flexShrink: 0,
+              gridRow: "1 / -1",
             }}
           >
             {/* ゲームシーン */}
@@ -1940,7 +1922,7 @@ export default function Home() {
                 {
                   Icon: HiClipboardList,
                   label: "本日タスク",
-                  value: `${completedCount}/${localRepoCas.length}`,
+                  value: `${completedCount}/${todayRepoCas.length}`,
                   color: "#4f46e5",
                 },
                 {
@@ -2030,57 +2012,227 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ミッション */}
-          {(() => {
-            const tabMissions = missions.filter((m) => m.type === missionTab);
-            const doneCount = tabMissions.filter((m) => m.completed).length;
-            const TABS: {
-              key: "daily" | "monthly" | "unlimited";
-              label: string;
-            }[] = [
-              { key: "daily", label: "日" },
-              { key: "monthly", label: "月" },
-              { key: "unlimited", label: "無期限" },
-            ];
-            return (
-              <div
-                className="card"
-                style={{
-                  padding: "10px 12px",
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 6,
-                    flexShrink: 0,
-                  }}
+        {/* ====== 右: バッジ ====== */}
+        <div
+          className="card"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            overflow: "hidden",
+          }}
+        >
+          {/* 左: バッジ一覧 */}
+          <div style={{ padding: "10px 12px", overflow: "hidden", display: "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb" }}>
+            {/* ヘッダー */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexShrink: 0 }}>
+              <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>バッジ一覧</span>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                {(["bronze", "silver", "gold"] as const).map((t) => {
+                  const cnt = badges.filter((b) => b.tier === t).length;
+                  return (
+                    <span key={t} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 9, color: "#6b7280" }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: TIER_STYLE[t].bg, display: "inline-block" }} />
+                      {cnt}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            {/* グリッド */}
+            <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+              {(() => {
+                const COLS = 4;
+                const visibleBadges = showAllBadges ? badges : badges.slice(0, COLS * 3);
+                return (
+                  <>
+                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 7, alignContent: "start" }}>
+                      {visibleBadges.map((b) => {
+                        const iconInfo = BADGE_ICON_MAP[b.name];
+                        const ts = b.tier ? TIER_STYLE[b.tier] : null;
+                        const isSelected = selectedBadge?.id === b.id;
+                        return (
+                          <div
+                            key={b.id}
+                            title={`${b.name}${b.tier ? ` [${TIER_STYLE[b.tier].label}]` : ""}: ${b.description}`}
+                            onClick={() => setSelectedBadge(b)}
+                            style={{
+                              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                              cursor: "pointer", padding: 3, borderRadius: 8,
+                              background: isSelected ? "rgba(79,70,229,0.08)" : "transparent",
+                              border: `2px solid ${isSelected ? "#4f46e5" : "transparent"}`,
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            <div style={{
+                              width: 36, height: 36, borderRadius: 10,
+                              border: `2px solid ${ts ? ts.border : "#e5e7eb"}`,
+                              background: ts ? ts.bg : "#f3f4f6",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              opacity: b.acquired ? 1 : 0.35,
+                            }}>
+                              {iconInfo ? (
+                                <iconInfo.Icon style={{ width: 18, height: 18, color: ts ? "white" : "#9ca3af" }} />
+                              ) : (
+                                <span style={{ fontSize: 16 }}>{b.icon}</span>
+                              )}
+                            </div>
+                            <span style={{ fontSize: 9, fontWeight: 600, textAlign: "center", color: ts ? ts.labelColor : "#9ca3af" }}>
+                              {b.name}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {badges.length > COLS * 3 && (
+                      <div style={{ textAlign: "center", marginTop: 4 }}>
+                        <button
+                          onClick={() => setShowAllBadges((v) => !v)}
+                          style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "2px 12px" }}
+                        >
+                          {showAllBadges ? (
+                            <HiChevronUp style={{ width: 14, height: 14 }} />
+                          ) : (
+                            <HiChevronDown style={{ width: 14, height: 14 }} />
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* 右: バッジ詳細 */}
+          <div style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            {selectedBadge ? (() => {
+              const b = selectedBadge;
+              const iconInfo = BADGE_ICON_MAP[b.name];
+              const currentTierStyle = b.tier ? TIER_STYLE[b.tier] : null;
+              const currentTierIndex = b.tier ? TIER_ORDER.indexOf(b.tier) : -1;
+              const nextTier = currentTierIndex >= 0 && currentTierIndex < TIER_ORDER.length - 1
+                ? TIER_ORDER[currentTierIndex + 1] : null;
+              const isMaxTier = b.tier === "gold";
+              const hasProgress = b.nextTierProgress !== undefined && b.nextTierGoal !== undefined && b.nextTierGoal > 0 && nextTier !== null;
+              const pct = hasProgress ? Math.min(Math.round((b.nextTierProgress! / b.nextTierGoal!) * 100), 100) : 0;
+              return (
+                <>
+                  {/* ヘッダー */}
+                  <div style={{
+                    background: currentTierStyle ? currentTierStyle.bg : "#f3f4f6",
+                    padding: "12px 14px", flexShrink: 0,
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  }}>
+                    {b.acquired && b.exp !== undefined && (
+                      <div style={{ alignSelf: "flex-start", fontSize: 10, color: "rgba(255,255,255,0.8)" }}>
+                        EXP: {b.exp.toLocaleString()}
+                      </div>
+                    )}
+                    {currentTierStyle && (
+                      <span style={{ alignSelf: "flex-end", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)" }}>
+                        {currentTierStyle.label}
+                      </span>
+                    )}
+                    {iconInfo && (
+                      <iconInfo.Icon style={{ width: 32, height: 32, color: "white" }} />
+                    )}
+                    <div style={{ fontWeight: 800, fontSize: 14, color: "white", textShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>
+                      {b.name}
+                    </div>
+                  </div>
+                  {/* コンテンツ */}
+                  <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
+                    {/* 次ティアへの進捗 */}
+                    <div style={{ background: "#f9fafb", borderRadius: 8, padding: "8px 10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#374151" }}>
+                          {nextTier ? `next : ${TIER_STYLE[nextTier].label}` : isMaxTier ? "蓄積EXP" : "初回取得条件"}
+                        </span>
+                        {hasProgress && (
+                          <span style={{ fontSize: 9, color: "#6b7280" }}>{b.nextTierProgress}/{b.nextTierGoal}</span>
+                        )}
+                        {isMaxTier && b.exp !== undefined && (
+                          <span style={{ fontSize: 9, color: "#6b7280" }}>{b.exp.toLocaleString()} EXP</span>
+                        )}
+                      </div>
+                      {hasProgress && (
+                        <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
+                          <div style={{ width: `${pct}%`, height: "100%", borderRadius: 3, background: nextTier ? TIER_STYLE[nextTier].bg : "#10b981" }} />
+                        </div>
+                      )}
+                      {isMaxTier && (
+                        <div style={{ fontSize: 9, color: "#10b981", marginTop: 3 }}>ゴールド取得後も経験値を蓄積中</div>
+                      )}
+                    </div>
+                    {/* 取得履歴 */}
+                    {b.tierHistory && b.tierHistory.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", marginBottom: 4 }}>取得履歴</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                          {[...b.tierHistory].reverse().map((h, i) => {
+                            const ts = TIER_STYLE[h.tier];
+                            return (
+                              <div key={i} style={{ padding: "4px 6px", borderRadius: 5, background: "#f9fafb", borderLeft: `3px solid ${ts.bg}` }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ flex: 1, fontSize: 10, fontWeight: 600, color: ts.labelColor }}>{ts.label}バッジ取得</span>
+                                  <span style={{ fontSize: 9, color: "#9ca3af" }}>{h.date}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
+              );
+            })() : (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9ca3af", fontSize: 11 }}>
+                バッジを選択してください
+              </div>
+            )}
+          </div>
+        </div>
+
+      {/* ====== ミッション（横長） ====== */}
+      {(() => {
+        const tabMissions = missions.filter((m) => m.type === missionTab);
+        const doneCount = tabMissions.filter((m) => m.completed).length;
+        const TABS: {
+          key: "daily" | "monthly" | "unlimited";
+          label: string;
+        }[] = [
+          { key: "daily", label: "日" },
+          { key: "monthly", label: "月" },
+          { key: "unlimited", label: "無期限" },
+        ];
+        return (
+          <div
+            className="card"
+            style={{
+              padding: "10px 16px",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              minHeight: 0,
+              gridColumn: "3",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 6,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span
+                  style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}
                 >
-                  <span
-                    style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}
-                  >
-                    ミッション
-                  </span>
-                  <span
-                    style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}
-                  >
-                    {doneCount}/{tabMissions.length}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 4,
-                    marginBottom: 8,
-                    flexShrink: 0,
-                  }}
-                >
+                  ミッション
+                </span>
+                <div style={{ display: "flex", gap: 4 }}>
                   {TABS.map(({ key, label }) => (
                     <button
                       key={key}
@@ -2100,343 +2252,162 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                    overflowY: "auto",
-                  }}
-                >
-                  {tabMissions.map((m) => {
-                    const pct = Math.min(
-                      Math.round((m.progress / m.goal) * 100),
-                      100,
-                    );
-                    const done = m.completed;
-                    return (
-                      <div
-                        key={m.id}
-                        style={{ cursor: "pointer", opacity: done ? 0.72 : 1 }}
-                        onClick={() => toggleMission(m.id)}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: 6,
-                            marginBottom: 4,
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: 16,
-                              height: 16,
-                              borderRadius: 3,
-                              flexShrink: 0,
-                              marginTop: 1,
-                              border: `2px solid ${done ? "#10b981" : "#d1d5db"}`,
-                              background: done ? "#10b981" : "white",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              transition: "all 0.15s",
-                            }}
-                          >
-                            {done && (
-                              <HiCheck
-                                style={{
-                                  width: 10,
-                                  height: 10,
-                                  color: "white",
-                                }}
-                              />
-                            )}
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 700,
-                                color: done ? "#9ca3af" : "#1f2937",
-                                textDecoration: done ? "line-through" : "none",
-                                lineHeight: 1.3,
-                              }}
-                            >
-                              {m.title}
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 2,
-                              alignItems: "flex-end",
-                              flexShrink: 0,
-                            }}
-                          >
-                            {m.reward > 0 && (
-                              <span
-                                style={{
-                                  fontSize: 9,
-                                  fontWeight: 800,
-                                  color: "#ea580c",
-                                  background: "#fff7ed",
-                                  padding: "1px 6px",
-                                  borderRadius: 99,
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                +{m.reward} XP
-                              </span>
-                            )}
-                            {(m.passExpReward ?? 0) > 0 && (
-                              <span
-                                style={{
-                                  fontSize: 9,
-                                  fontWeight: 700,
-                                  color: "#1e40af",
-                                  background: "#eff6ff",
-                                  padding: "1px 6px",
-                                  borderRadius: 99,
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                +{m.passExpReward} PEXP
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 5,
-                            paddingLeft: 22,
-                          }}
-                        >
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 4,
-                              background: "#e5e7eb",
-                              borderRadius: 2,
-                              overflow: "hidden",
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: `${pct}%`,
-                                height: "100%",
-                                borderRadius: 2,
-                                background: done
-                                  ? "#10b981"
-                                  : "linear-gradient(90deg,#4f46e5,#7c3aed)",
-                                transition: "width 0.3s",
-                              }}
-                            />
-                          </div>
-                          <span
-                            style={{
-                              fontSize: 8,
-                              color: "#9ca3af",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {m.progress}/{m.goal}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {tabMissions.length === 0 && (
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: "#9ca3af",
-                        textAlign: "center",
-                        padding: "8px 0",
-                      }}
-                    >
-                      ミッションはありません
-                    </div>
-                  )}
-                </div>
               </div>
-            );
-          })()}
-        </div>
-
-        {/* ====== 右: バッジ ====== */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-            overflow: "hidden",
-            height: "100%",
-          }}
-        >
-          {/* バッジ */}
-          {(() => {
-            const COLS = 6;
-            const visibleBadges = showAllBadges
-              ? badges
-              : badges.slice(0, COLS * 2);
-            return (
-              <div
-                className="card"
-                style={{
-                  padding: "10px 12px",
-                  flex: 1,
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
+              <span
+                style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}
               >
-                {/* ヘッダー */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 6,
-                    flexShrink: 0,
-                  }}
-                >
-                  <span
-                    style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}
-                  >
-                    バッジ
-                  </span>
+                {doneCount}/{tabMissions.length}
+              </span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                overflowX: "auto",
+                flexWrap: "wrap",
+              }}
+            >
+              {tabMissions.map((m) => {
+                const pct = Math.min(
+                  Math.round((m.progress / m.goal) * 100),
+                  100,
+                );
+                const done = m.completed;
+                return (
                   <div
-                    style={{ display: "flex", gap: 8, alignItems: "center" }}
-                  >
-                    {(["bronze", "silver", "gold"] as const).map((t) => (
-                      <span
-                        key={t}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 3,
-                          fontSize: 9,
-                          color: "#6b7280",
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
-                            background: TIER_STYLE[t].bg,
-                            display: "inline-block",
-                          }}
-                        />
-                        {TIER_STYLE[t].label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* グリッド */}
-                <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
-                  <div
+                    key={m.id}
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-                      gap: 7,
-                      alignContent: "start",
+                      opacity: done ? 0.72 : 1,
+                      flex: "1 1 0",
+                      minWidth: 180,
+                      background: done ? "#f9fafb" : "#fafafa",
+                      borderRadius: 8,
+                      padding: "8px 10px",
+                      border: "1px solid #e5e7eb",
                     }}
                   >
-                    {visibleBadges.map((b) => {
-                      const iconInfo = BADGE_ICON_MAP[b.name];
-                      const ts = b.tier ? TIER_STYLE[b.tier] : null;
-                      return (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 6,
+                        marginBottom: 4,
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <div
-                          key={b.id}
-                          title={`${b.name}${b.tier ? ` [${TIER_STYLE[b.tier].label}]` : ""}: ${b.description}`}
-                          onClick={() => setSelectedBadge(b)}
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: 4,
-                            cursor: "pointer",
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: done ? "#9ca3af" : "#1f2937",
+                            textDecoration: done ? "line-through" : "none",
+                            lineHeight: 1.3,
                           }}
                         >
-                          <div
-                            style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 10,
-                              border: `2px solid ${ts ? ts.border : "#e5e7eb"}`,
-                              background: ts ? ts.bg : "#f3f4f6",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              opacity: b.acquired ? 1 : 0.35,
-                            }}
-                          >
-                            {iconInfo ? (
-                              <iconInfo.Icon
-                                style={{
-                                  width: 18,
-                                  height: 18,
-                                  color: ts ? "white" : "#9ca3af",
-                                }}
-                              />
-                            ) : (
-                              <span style={{ fontSize: 16 }}>{b.icon}</span>
-                            )}
-                          </div>
+                          {m.title}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                          alignItems: "flex-end",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {m.reward > 0 && (
                           <span
                             style={{
                               fontSize: 9,
-                              fontWeight: 600,
-                              textAlign: "center",
-                              color: ts ? ts.labelColor : "#9ca3af",
+                              fontWeight: 800,
+                              color: "#ea580c",
+                              background: "#fff7ed",
+                              padding: "1px 6px",
+                              borderRadius: 99,
+                              whiteSpace: "nowrap",
                             }}
                           >
-                            {b.name}
+                            +{m.reward} XP
                           </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {/* 展開ボタン */}
-                  {badges.length > COLS * 2 && (
-                    <div style={{ textAlign: "center", marginTop: 4 }}>
-                      <button
-                        onClick={() => setShowAllBadges((v) => !v)}
+                        )}
+                        {(m.passExpReward ?? 0) > 0 && (
+                          <span
+                            style={{
+                              fontSize: 9,
+                              fontWeight: 700,
+                              color: "#1e40af",
+                              background: "#eff6ff",
+                              padding: "1px 6px",
+                              borderRadius: 99,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            +{m.passExpReward} PEXP
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        paddingLeft: 0,
+                      }}
+                    >
+                      <div
                         style={{
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "#9ca3af",
-                          padding: "2px 12px",
+                          flex: 1,
+                          height: 4,
+                          background: "#e5e7eb",
+                          borderRadius: 2,
+                          overflow: "hidden",
                         }}
                       >
-                        {showAllBadges ? (
-                          <HiChevronUp style={{ width: 14, height: 14 }} />
-                        ) : (
-                          <HiChevronDown style={{ width: 14, height: 14 }} />
-                        )}
-                      </button>
+                        <div
+                          style={{
+                            width: `${pct}%`,
+                            height: "100%",
+                            borderRadius: 2,
+                            background: done
+                              ? "#10b981"
+                              : "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                            transition: "width 0.3s",
+                          }}
+                        />
+                      </div>
+                      <span
+                        style={{
+                          fontSize: 8,
+                          color: "#9ca3af",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {m.progress}/{m.goal}
+                      </span>
                     </div>
-                  )}
+                  </div>
+                );
+              })}
+              {tabMissions.length === 0 && (
+                <div
+                  style={{
+                    fontSize: 10,
+                    color: "#9ca3af",
+                    textAlign: "center",
+                    padding: "8px 0",
+                    width: "100%",
+                  }}
+                >
+                  ミッションはありません
                 </div>
-              </div>
-            );
-          })()}
-        </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
       </div>
-
-      {/* バッジ詳細モーダル */}
-      {selectedBadge && (
-        <BadgeDetailModal
-          badge={selectedBadge}
-          onClose={() => setSelectedBadge(null)}
-        />
-      )}
 
       {/* タスク詳細モーダル */}
       {selectedTask && (
@@ -2452,8 +2423,8 @@ export default function Home() {
         <WorkResultModal
           workedMinutes={workedMinutes}
           completedCount={completedCount}
-          totalTasks={localRepoCas.length}
-          earnedXp={localRepoCas
+          totalTasks={todayRepoCas.length}
+          earnedXp={todayRepoCas
             .filter((r) => r.isCompleted)
             .reduce((s, r) => s + r.xp, 0)}
           onClose={() => setShowWorkResult(false)}

@@ -17,6 +17,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
   const currentTierIndex = badge.tier ? TIER_ORDER.indexOf(badge.tier) : -1;
   const nextTier = currentTierIndex >= 0 && currentTierIndex < TIER_ORDER.length - 1
     ? TIER_ORDER[currentTierIndex + 1] : null;
+  const isMaxTier = badge.tier === "gold";
   const hasProgress =
     badge.nextTierProgress !== undefined &&
     badge.nextTierGoal !== undefined &&
@@ -90,10 +91,10 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
 
         {/* EXP・説明 */}
         <div>
-          {badge.acquired && (
+          {badge.acquired && badge.exp !== undefined && (
             <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>
               EXP: <span style={{ fontWeight: 700, color: "#4f46e5" }}>
-                {badge.tier === "gold" ? 12000 : badge.tier === "silver" ? 6000 : 2000}
+                {badge.exp.toLocaleString()}
               </span>
             </div>
           )}
@@ -110,8 +111,8 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
           }}>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#374151" }}>
               {nextTier
-                ? `next: ${TIER_STYLE[nextTier].label}`
-                : badge.tier ? "全ティア取得済み" : "初回取得条件"
+                ? `next : ${TIER_STYLE[nextTier].label}`
+                : badge.tier ? "蓄積EXP" : "初回取得条件"
               }
             </span>
             {hasProgress && (
@@ -119,8 +120,13 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
                 {badge.nextTierProgress} / {badge.nextTierGoal}
               </span>
             )}
+            {isMaxTier && badge.exp !== undefined && (
+              <span style={{ fontSize: 10, color: "#6b7280" }}>
+                {badge.exp.toLocaleString()} EXP
+              </span>
+            )}
           </div>
-          {badge.nextTierCondition && (
+          {badge.nextTierCondition && !isMaxTier && (
             <div style={{ fontSize: 10, color: "#9ca3af", marginBottom: hasProgress ? 6 : 0 }}>
               {badge.nextTierCondition}
             </div>
@@ -131,6 +137,11 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
                 width: `${pct}%`, height: "100%", borderRadius: 3,
                 background: nextTier ? TIER_STYLE[nextTier].bg : "#10b981",
               }} />
+            </div>
+          )}
+          {isMaxTier && badge.exp !== undefined && (
+            <div style={{ fontSize: 10, color: "#10b981", marginTop: 4 }}>
+              ゴールド取得後も経験値を蓄積中
             </div>
           )}
         </div>
@@ -206,7 +217,7 @@ export default function MyPage() {
       {/* 2カラムボディ */}
       <div style={{
         flex: 1, overflow: "hidden",
-        display: "grid", gridTemplateColumns: "1fr 220px", gap: 0,
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0,
       }}>
 
         {/* ===== 左: バッジグリッド ===== */}

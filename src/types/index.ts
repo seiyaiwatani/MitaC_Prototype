@@ -58,6 +58,7 @@ export interface Badge {
   nextTierCondition?: string;
   nextTierProgress?: number;
   nextTierGoal?: number;
+  exp?: number;
 }
 
 export interface Mission {
