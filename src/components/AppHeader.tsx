@@ -17,7 +17,7 @@ const AVATAR_SRC: Record<string, string> = {
 };
 
 export default function AppHeader() {
-  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume } = useAvatar();
+  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume, omamori, setOmamori } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
   const [editorOpen, setEditorOpen] = useState(false);
   const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
@@ -158,13 +158,16 @@ export default function AppHeader() {
 
       {editorOpen && (
         <AvatarEditor
-          avatar={avatarKey}
-          avatarSrc={avatarSrc}
-          headCostume={headCostume}
-          bodyCostume={bodyCostume}
-          onAvatarChange={setAvatarKey}
-          onHeadChange={setHeadCostume}
-          onBodyChange={setBodyCostume}
+          initialAvatar={avatarKey}
+          initialHeadCostume={headCostume}
+          initialBodyCostume={bodyCostume}
+          initialOmamori={omamori}
+          onConfirm={(a, h, b, o) => {
+            setAvatarKey(a);
+            setHeadCostume(h);
+            setBodyCostume(b);
+            setOmamori(o);
+          }}
           onClose={() => setEditorOpen(false)}
         />
       )}

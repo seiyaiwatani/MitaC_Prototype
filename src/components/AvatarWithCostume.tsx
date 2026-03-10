@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 
 export type HeadCostume = "crown" | null;
 export type BodyCostume = "medals" | "tie" | null;
+export type OmamorType = "omamori_lucky" | "omamori_study" | null;
 
 interface CostumeStyle {
   top: string;
@@ -19,11 +20,10 @@ const COSTUME_STYLES: Record<string, CostumeStyle> = {
   tie:    { top: "46%",  left: "50%", width: "42%", transform: "translateX(-50%)" },
 };
 
-/** コスチュームごとの効果 */
-export const COSTUME_EFFECTS: Record<string, { label: string; color: string }> = {
-  crown:  { label: "EXP +15%", color: "#4f46e5" },
-  medals: { label: "EXP +10%", color: "#8b5cf6" },
-  tie:    { label: "EXP +5%",  color: "#10b981" },
+/** おまもりごとの効果 */
+export const OMAMORI_EFFECTS: Record<string, { label: string; color: string; emoji: string; name: string }> = {
+  omamori_lucky: { label: "EXP +15%", color: "#f59e0b", emoji: "🧧", name: "幸運のおまもり" },
+  omamori_study: { label: "EXP +10%", color: "#10b981", emoji: "🎴", name: "学業のおまもり" },
 };
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";

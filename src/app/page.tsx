@@ -6,7 +6,7 @@ import { currentUser, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
-import type { SeasonRewardType } from "@/types";
+import type { SeasonRewardType, RepoCa } from "@/types";
 import {
   HiFlag,
   HiCheck,
@@ -19,7 +19,7 @@ import {
 } from "react-icons/hi";
 import {
   AvatarWithCostume,
-  COSTUME_EFFECTS,
+  OMAMORI_EFFECTS,
 } from "@/components/AvatarWithCostume";
 import type { HeadCostume, BodyCostume } from "@/components/AvatarWithCostume";
 import { useAvatar } from "@/contexts/AvatarContext";
@@ -494,18 +494,12 @@ export default function Home() {
     rewards,
   } = useSeasonPass();
   const [attendance, setAttendance] = useState<AttendanceState>("idle");
-  const {
-    avatarKey,
-    setAvatarKey,
-    headCostume,
-    setHeadCostume,
-    bodyCostume,
-    setBodyCostume,
-  } = useAvatar();
+  const { avatarKey, headCostume, bodyCostume, omamori } = useAvatar();
   const {
     allRepoCas,
     addTodayRepoCa,
     toggleTodayRepoCa,
+    updateRepoCa,
     hasStartReported,
     hasOvertimeReported,
     hasEndReported,
@@ -516,7 +510,7 @@ export default function Home() {
   >("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
-  const [hoveredTask, setHoveredTask] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
   const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
   const [workedMinutes, setWorkedMinutes] = useState(0);
@@ -555,10 +549,12 @@ export default function Home() {
   const [taskFilter, setTaskFilter] = useState<FilterType>("全て");
 
   const toggleTask = (id: string) => {
+    const target = localRepoCas.find((r) => r.id === id);
+    if (!target) return;
+    const newCompleted = !target.isCompleted;
+    updateRepoCa(id, { isCompleted: newCompleted });
     setLocalRepoCas((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, isCompleted: !r.isCompleted } : r,
-      ),
+      prev.map((r) => r.id === id ? { ...r, isCompleted: newCompleted } : r),
     );
     toggleTodayRepoCa(id);
   };
@@ -574,23 +570,10 @@ export default function Home() {
   const acquiredBadges = badges.filter((b) => b.acquired).length;
   const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const avatarSrc = AVATAR_MAP[avatarKey] ?? AVATAR_MAP.fox;
-  // 装備中コスチュームの効果チップ（頭=紫、胴体=緑）
-  const activeEffectChips = [
-    headCostume
-      ? {
-          key: headCostume,
-          color: "#4f46e5",
-          label: `効果: ${COSTUME_EFFECTS[headCostume].label}`,
-        }
-      : null,
-    bodyCostume
-      ? {
-          key: bodyCostume,
-          color: "#10b981",
-          label: `効果: ${COSTUME_EFFECTS[bodyCostume].label}`,
-        }
-      : null,
-  ].filter(Boolean) as { key: string; color: string; label: string }[];
+  // おまもりの効果チップ
+  const activeEffectChips = omamori
+    ? [{ key: omamori, color: OMAMORI_EFFECTS[omamori].color, label: `効果: ${OMAMORI_EFFECTS[omamori].label}` }]
+    : [];
 
   return (
     <div className="page-root">
@@ -1130,67 +1113,18 @@ export default function Home() {
                 return (
                   <div
                     key={rc.id}
-                    onClick={() => toggleTask(rc.id)}
-                    onMouseEnter={() => setHoveredTask(rc.id)}
-                    onMouseLeave={() => setHoveredTask(null)}
                     style={{
                       display: "flex",
                       alignItems: "flex-start",
                       gap: 8,
                       padding: "7px 4px",
                       borderBottom: "1px solid #f3f4f6",
-                      cursor: "pointer",
                       position: "relative",
                     }}
                   >
-                    {hoveredTask === rc.id && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "calc(100% + 4px)",
-                          left: 0,
-                          right: 0,
-                          background: "#1a1a2e",
-                          color: "white",
-                          borderRadius: 10,
-                          padding: "10px 12px",
-                          zIndex: 50,
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-                          pointerEvents: "none",
-                        }}
-                      >
-                        <p
-                          style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            margin: "0 0 8px",
-                            lineHeight: 1.4,
-                          }}
-                        >
-                          {rc.content}
-                        </p>
-                        {[
-                          { label: "種別", value: rc.taskType },
-                          { label: "ラベル", value: rc.label },
-                          { label: "範囲", value: rc.implScope },
-                          { label: "XP", value: `+${rc.xp} XP` },
-                        ].map(({ label, value }) => (
-                          <div
-                            key={label}
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              fontSize: 10,
-                              marginBottom: 3,
-                            }}
-                          >
-                            <span style={{ color: "#9ca3af" }}>{label}</span>
-                            <span style={{ fontWeight: 600 }}>{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {/* チェックボックス */}
                     <div
+                      onClick={() => toggleTask(rc.id)}
                       style={{
                         width: 18,
                         height: 18,
@@ -1204,27 +1138,33 @@ export default function Home() {
                         justifyContent: "center",
                         color: "white",
                         transition: "all 0.15s",
+                        cursor: "pointer",
                       }}
                     >
                       {rc.isCompleted && (
                         <HiCheck style={{ width: 11, height: 11 }} />
                       )}
                     </div>
+                    {/* コンテンツ */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 12,
-                          margin: 0,
-                          fontWeight: 500,
-                          lineHeight: 1.35,
-                          color: rc.isCompleted ? "#9ca3af" : "#1f2937",
-                          textDecoration: rc.isCompleted
-                            ? "line-through"
-                            : "none",
-                        }}
-                      >
-                        {rc.content}
-                      </p>
+                      {/* タイトル → XP */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                        <p
+                          style={{
+                            fontSize: 12,
+                            margin: 0,
+                            fontWeight: 500,
+                            lineHeight: 1.35,
+                            color: rc.isCompleted ? "#9ca3af" : "#1f2937",
+                            textDecoration: rc.isCompleted ? "line-through" : "none",
+                          }}
+                        >
+                          {rc.content}
+                        </p>
+                        <span style={{ fontSize: 10, color: "#10b981", fontWeight: 700, whiteSpace: "nowrap" }}>
+                          → +{rc.xp}XP
+                        </span>
+                      </div>
                       <div
                         style={{
                           display: "flex",
@@ -1257,17 +1197,23 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <span
+                    {/* ⋯ ボタン */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSelectedTask(rc); }}
                       style={{
-                        fontSize: 10,
-                        color: "#10b981",
-                        fontWeight: 700,
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#6b7280",
+                        fontSize: 22,
+                        lineHeight: 1,
+                        padding: "0 4px",
                         flexShrink: 0,
-                        marginTop: 1,
+                        letterSpacing: 1,
                       }}
                     >
-                      +{rc.xp}XP
-                    </span>
+                      ···
+                    </button>
                   </div>
                 );
               })
@@ -2451,6 +2397,15 @@ export default function Home() {
         />
       )}
 
+      {/* タスク詳細モーダル */}
+      {selectedTask && (
+        <TaskDetailModal
+          rc={selectedTask}
+          proj={projects.find((p) => p.id === selectedTask.projectId)}
+          onClose={() => setSelectedTask(null)}
+        />
+      )}
+
       {/* 退勤結果モーダル */}
       {showWorkResult && (
         <WorkResultModal
@@ -2463,6 +2418,93 @@ export default function Home() {
           onClose={() => setShowWorkResult(false)}
         />
       )}
+    </div>
+  );
+}
+
+// ---- タスク詳細モーダル ----
+type ProjectInfo = { name: string; color: string; textColor: string; icon: string };
+
+function TaskDetailModal({
+  rc, proj, onClose,
+}: {
+  rc: RepoCa;
+  proj: ProjectInfo | undefined;
+  onClose: () => void;
+}) {
+  const rows = [
+    { label: "プロジェクト", value: proj?.name ?? "—" },
+    { label: "タスク種別",   value: rc.taskType },
+    { label: "ラベル",       value: rc.label },
+    { label: "実装スコープ", value: rc.implScope },
+    { label: "工数",         value: rc.duration > 0 ? `${rc.duration}分` : "未記入" },
+    { label: "獲得XP",       value: `+${rc.xp} XP` },
+    { label: "ステータス",   value: rc.isCompleted ? "✓ 完了" : "未完了" },
+  ];
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.5)", zIndex: 500,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: "white", borderRadius: 16, width: 320, maxWidth: "92vw",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ヘッダー */}
+        <div style={{
+          background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+          padding: "14px 18px",
+        }}>
+          {proj && (
+            <span style={{
+              fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+              background: proj.color, color: proj.textColor, marginBottom: 6, display: "inline-block",
+            }}>
+              {proj.icon} {proj.name}
+            </span>
+          )}
+          <p style={{ fontSize: 14, fontWeight: 800, color: "white", margin: "4px 0 0", lineHeight: 1.4 }}>
+            {rc.content}
+          </p>
+        </div>
+        {/* 詳細テーブル */}
+        <div style={{ padding: "12px 18px 8px" }}>
+          {rows.map((r) => (
+            <div key={r.label} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12,
+            }}>
+              <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
+              <span style={{
+                color: r.label === "ステータス" ? (rc.isCompleted ? "#10b981" : "#9ca3af") :
+                       r.label === "獲得XP"     ? "#4f46e5" : "#1f2937",
+                fontWeight: r.label === "獲得XP" ? 700 : 500,
+              }}>
+                {r.value}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding: "8px 18px 16px" }}>
+          <button
+            onClick={onClose}
+            style={{
+              width: "100%", padding: "10px 0", borderRadius: 10,
+              border: "none", background: "#f3f4f6",
+              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+            }}
+          >
+            閉じる
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

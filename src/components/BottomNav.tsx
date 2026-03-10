@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HiHome, HiCollection, HiClipboardList, HiBadgeCheck, HiCog, HiChartBar } from "react-icons/hi";
+import { HiHome, HiCollection, HiClipboardList, HiBadgeCheck, HiCog } from "react-icons/hi";
 
 const navItems = [
-  { href: "/",       label: "ホーム",  Icon: HiHome },
-  { href: "/repoca", label: "RepoCa", Icon: HiCollection },
-  { href: "/report", label: "報告",   Icon: HiClipboardList },
-  { href: "/mypage", label: "バッジ", Icon: HiBadgeCheck },
-  { href: "/settings", label: "設定", Icon: HiCog },
-  { href: "/admin",    label: "管理",   Icon: HiChartBar },
+  { href: "/",         label: "ホーム",    Icon: HiHome },
+  { href: "/repoca",   label: "RepoCa/PJ", Icon: HiCollection },
+  { href: "/report",   label: "報告",      Icon: HiClipboardList },
+  { href: "/mypage",   label: "バッジ",    Icon: HiBadgeCheck },
+  { href: "/settings", label: "設定",      Icon: HiCog },
 ];
 
 export default function BottomNav() {

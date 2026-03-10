@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { HiArrowLeft } from "react-icons/hi";
 import Link from "next/link";
 
-type Tab = "アカウント" | "フレックス" | "利用規約" | "外部連携" | "その他";
+type Tab = "アカウント" | "フレックス" | "利用規約" | "外部連携" | "管理者ページ" | "その他";
 
-const TABS: Tab[] = ["アカウント", "フレックス", "利用規約", "外部連携", "その他"];
+const TABS: Tab[] = ["アカウント", "フレックス", "利用規約", "外部連携", "管理者ページ", "その他"];
 
 function AccountTab() {
   const [startNotif, setStartNotif] = useState<"on" | "off">("on");
@@ -124,6 +125,11 @@ function TextTab({ title, content }: { title: string; content: string }) {
   );
 }
 
+
+function OtherTab() {
+  return <TextTab title="その他" content="テキストテキストテキストテキストテキストテキスト" />;
+}
+
 function ExternalTab() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -144,13 +150,13 @@ function TabContent({ tab }: { tab: Tab }) {
     case "利用規約":
       return <TextTab title="利用規約" content={"テキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト"} />;
     case "外部連携": return <ExternalTab />;
-    case "その他":
-      return <TextTab title="その他" content="テキストテキストテキストテキストテキストテキスト" />;
+    case "その他": return <OtherTab />;
   }
 }
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("アカウント");
+  const router = useRouter();
 
   return (
     <div className="page-root">
@@ -177,7 +183,7 @@ export default function SettingsPage() {
           {TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => tab === "管理者ページ" ? router.push("/admin") : setActiveTab(tab)}
               style={{
                 padding: "12px 10px",
                 borderRadius: 8,

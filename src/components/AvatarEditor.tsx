@@ -1,6 +1,7 @@
 "use client";
 
-import { AvatarWithCostume, HeadCostume, BodyCostume, COSTUME_SRC, COSTUME_EFFECTS } from "./AvatarWithCostume";
+import { useState } from "react";
+import { AvatarWithCostume, HeadCostume, BodyCostume, OmamorType, COSTUME_SRC, OMAMORI_EFFECTS } from "./AvatarWithCostume";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -10,43 +11,57 @@ const AVATAR_OPTIONS: { key: string; label: string; src: string }[] = [
   { key: "doragon", label: "ドラゴン",   src: `${BASE}/avatars/avatar_doragon.svg` },
 ];
 
-const HEAD_OPTIONS: { key: HeadCostume; label: string; effect: string | null }[] = [
-  { key: null,    label: "なし", effect: null },
-  { key: "crown", label: "王冠", effect: COSTUME_EFFECTS.crown.label },
+const HEAD_OPTIONS: { key: HeadCostume; label: string }[] = [
+  { key: null,    label: "なし" },
+  { key: "crown", label: "王冠" },
 ];
 
-const BODY_OPTIONS: { key: BodyCostume; label: string; effect: string | null }[] = [
-  { key: null,     label: "なし",    effect: null },
-  { key: "medals", label: "メダル",  effect: COSTUME_EFFECTS.medals.label },
-  { key: "tie",    label: "ネクタイ", effect: COSTUME_EFFECTS.tie.label },
+const BODY_OPTIONS: { key: BodyCostume; label: string }[] = [
+  { key: null,     label: "なし" },
+  { key: "medals", label: "メダル" },
+  { key: "tie",    label: "ネクタイ" },
+];
+
+const OMAMORI_OPTIONS: { key: OmamorType; label: string }[] = [
+  { key: null,             label: "なし" },
+  { key: "omamori_lucky",  label: OMAMORI_EFFECTS.omamori_lucky.name },
+  { key: "omamori_study",  label: OMAMORI_EFFECTS.omamori_study.name },
 ];
 
 interface Props {
-  avatar: string;
-  avatarSrc: string;
-  headCostume: HeadCostume;
-  bodyCostume: BodyCostume;
-  onAvatarChange: (v: string) => void;
-  onHeadChange: (v: HeadCostume) => void;
-  onBodyChange: (v: BodyCostume) => void;
+  initialAvatar: string;
+  initialHeadCostume: HeadCostume;
+  initialBodyCostume: BodyCostume;
+  initialOmamori: OmamorType;
+  onConfirm: (avatar: string, head: HeadCostume, body: BodyCostume, omamori: OmamorType) => void;
   onClose: () => void;
 }
 
 export function AvatarEditor({
-  avatar,
-  avatarSrc,
-  headCostume,
-  bodyCostume,
-  onAvatarChange,
-  onHeadChange,
-  onBodyChange,
+  initialAvatar,
+  initialHeadCostume,
+  initialBodyCostume,
+  initialOmamori,
+  onConfirm,
   onClose,
 }: Props) {
-  // 装備中の効果一覧
-  const activeEffects = [
-    headCostume ? { key: headCostume, ...COSTUME_EFFECTS[headCostume] } : null,
-    bodyCostume ? { key: bodyCostume, ...COSTUME_EFFECTS[bodyCostume] } : null,
-  ].filter(Boolean) as { key: string; label: string; color: string }[];
+  const [draftAvatar, setDraftAvatar]   = useState(initialAvatar);
+  const [draftHead, setDraftHead]       = useState<HeadCostume>(initialHeadCostume);
+  const [draftBody, setDraftBody]       = useState<BodyCostume>(initialBodyCostume);
+  const [draftOmamori, setDraftOmamori] = useState<OmamorType>(initialOmamori);
+
+  const draftAvatarSrc = AVATAR_OPTIONS.find((o) => o.key === draftAvatar)?.src
+    ?? AVATAR_OPTIONS[0].src;
+
+  // おまもりの効果チップ
+  const activeEffects = draftOmamori
+    ? [{ key: draftOmamori, ...OMAMORI_EFFECTS[draftOmamori] }]
+    : [];
+
+  const handleConfirm = () => {
+    onConfirm(draftAvatar, draftHead, draftBody, draftOmamori);
+    onClose();
+  };
 
   return (
     <div
@@ -85,19 +100,19 @@ export function AvatarEditor({
           background: "linear-gradient(135deg,#f0f4ff,#e0e7ff)", borderRadius: 12, padding: "20px 0 12px",
         }}>
           <AvatarWithCostume
-            avatarSrc={avatarSrc}
-            headCostume={headCostume}
-            bodyCostume={bodyCostume}
+            avatarSrc={draftAvatarSrc}
+            headCostume={draftHead}
+            bodyCostume={draftBody}
             size={140}
           />
-          {(headCostume || bodyCostume) && (
+          {(draftHead || draftBody) && (
             <div style={{ marginTop: 8, fontSize: 10, color: "#4f46e5", fontWeight: 700 }}>
               ✨ 装備中
             </div>
           )}
         </div>
 
-        {/* アクティブ効果 */}
+        {/* アクティブ効果（おまもりのみ） */}
         <div style={{
           display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap",
           minHeight: 24, marginBottom: 14,
@@ -112,7 +127,7 @@ export function AvatarEditor({
                 borderRadius: 99, padding: "2px 10px",
                 border: `1px solid ${eff.color}44`,
               }}>
-                {eff.label}
+                {eff.emoji} {eff.label}
               </span>
             ))
           )}
@@ -125,11 +140,11 @@ export function AvatarEditor({
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             {AVATAR_OPTIONS.map((opt) => {
-              const selected = avatar === opt.key;
+              const selected = draftAvatar === opt.key;
               return (
                 <button
                   key={opt.key}
-                  onClick={() => onAvatarChange(opt.key)}
+                  onClick={() => setDraftAvatar(opt.key)}
                   style={{
                     flex: 1, padding: "8px 4px", borderRadius: 12,
                     border: `2px solid ${selected ? "#4f46e5" : "#e5e7eb"}`,
@@ -157,13 +172,13 @@ export function AvatarEditor({
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             {HEAD_OPTIONS.map((opt) => {
-              const selected = headCostume === opt.key;
+              const selected = draftHead === opt.key;
               return (
                 <button
                   key={String(opt.key)}
-                  onClick={() => onHeadChange(opt.key)}
+                  onClick={() => setDraftHead(opt.key)}
                   style={{
-                    width: 64, height: 72, borderRadius: 12,
+                    width: 64, height: 64, borderRadius: 12,
                     border: `2px solid ${selected ? "#4f46e5" : "#e5e7eb"}`,
                     background: selected ? "#eef2ff" : "#f9fafb",
                     display: "flex", flexDirection: "column",
@@ -185,11 +200,6 @@ export function AvatarEditor({
                   <span style={{ fontSize: 9, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
                     {opt.label}
                   </span>
-                  {opt.effect && (
-                    <span style={{ fontSize: 8, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af", lineHeight: 1 }}>
-                      {opt.effect}
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -197,19 +207,19 @@ export function AvatarEditor({
         </div>
 
         {/* 胴体パーツ */}
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
             胴体
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             {BODY_OPTIONS.map((opt) => {
-              const selected = bodyCostume === opt.key;
+              const selected = draftBody === opt.key;
               return (
                 <button
                   key={String(opt.key)}
-                  onClick={() => onBodyChange(opt.key)}
+                  onClick={() => setDraftBody(opt.key)}
                   style={{
-                    width: 64, height: 72, borderRadius: 12,
+                    width: 64, height: 64, borderRadius: 12,
                     border: `2px solid ${selected ? "#4f46e5" : "#e5e7eb"}`,
                     background: selected ? "#eef2ff" : "#f9fafb",
                     display: "flex", flexDirection: "column",
@@ -231,9 +241,44 @@ export function AvatarEditor({
                   <span style={{ fontSize: 9, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
                     {opt.label}
                   </span>
-                  {opt.effect && (
-                    <span style={{ fontSize: 8, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af", lineHeight: 1 }}>
-                      {opt.effect}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* おまもり */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
+            おまもり
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {OMAMORI_OPTIONS.map((opt) => {
+              const selected = draftOmamori === opt.key;
+              const eff = opt.key ? OMAMORI_EFFECTS[opt.key] : null;
+              return (
+                <button
+                  key={String(opt.key)}
+                  onClick={() => setDraftOmamori(opt.key)}
+                  style={{
+                    flex: 1, minWidth: 0, height: 72, borderRadius: 12,
+                    border: `2px solid ${selected ? (eff?.color ?? "#4f46e5") : "#e5e7eb"}`,
+                    background: selected ? (eff ? eff.color + "18" : "#eef2ff") : "#f9fafb",
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", gap: 3, padding: 4,
+                    transition: "border-color 0.15s, background 0.15s",
+                  }}
+                >
+                  <span style={{ fontSize: eff ? 26 : 22, color: eff ? undefined : "#d1d5db" }}>
+                    {eff ? eff.emoji : "—"}
+                  </span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: selected ? (eff?.color ?? "#4f46e5") : "#9ca3af", lineHeight: 1.2, textAlign: "center" }}>
+                    {opt.label}
+                  </span>
+                  {eff && (
+                    <span style={{ fontSize: 8, fontWeight: 700, color: eff.color, lineHeight: 1 }}>
+                      {eff.label}
                     </span>
                   )}
                 </button>
@@ -244,7 +289,7 @@ export function AvatarEditor({
 
         {/* 決定ボタン */}
         <button
-          onClick={onClose}
+          onClick={handleConfirm}
           style={{
             width: "100%", padding: "11px 0",
             borderRadius: 10, border: "none",
