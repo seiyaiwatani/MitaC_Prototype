@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { repoCas } from "@/lib/mock-data";
 import { TaskType, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiStar, HiOutlineStar, HiTrash, HiChevronUp, HiChevronDown } from "react-icons/hi";
 import { useProjects } from "@/contexts/ProjectContext";
+import { useRepoCa } from "@/contexts/RepoCaContext";
 
 type Tab = "開発" | "その他";
 
@@ -23,6 +23,7 @@ interface DraftCard {
 export default function NewRepoCa() {
   const router = useRouter();
   const { projects } = useProjects();
+  const { allRepoCas } = useRepoCa();
 
   const initDraft = (): DraftCard => ({
     id: Date.now().toString(),
@@ -180,13 +181,13 @@ export default function NewRepoCa() {
               </button>
               <select
                 onChange={(e) => {
-                  const fav = repoCas.find((r) => r.id === e.target.value);
+                  const fav = allRepoCas.find((r) => r.id === e.target.value);
                   if (fav) setDraft((d) => ({ ...d, projectId: fav.projectId, label: fav.label, implScope: fav.implScope, content: fav.content }));
                 }}
                 style={{ fontSize: 10, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 6px", color: "#374151" }}
               >
                 <option value="">お気に入りから選択 ▼</option>
-                {repoCas.filter((r) => r.isFavorite).map((r) => (
+                {allRepoCas.filter((r) => r.isFavorite).map((r) => (
                   <option key={r.id} value={r.id}>{r.content}</option>
                 ))}
               </select>

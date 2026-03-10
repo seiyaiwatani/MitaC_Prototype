@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { HiArrowLeft, HiCheck } from "react-icons/hi";
 import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
+import { useProjects } from "@/contexts/ProjectContext";
 
 /** バーグラフ用の短い時間表示 (例: 1h15m, 30分, 2h) */
 function shortDur(min: number): string {
@@ -19,7 +19,8 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports } = useRepoCa();
+  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds } = useRepoCa();
+  const { projects } = useProjects();
 
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
   const [durations, setDurations] = useState<Record<string, number>>(
@@ -28,15 +29,15 @@ export default function EndReport() {
   const [completed, setCompleted] = useState<Record<string, boolean>>(
     Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]))
   );
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
   const totalMin = selectedRepoCas.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0);
 
   // サイドバー用
-  const unfinished = repoCas.filter((r) => !r.isCompleted && !selectedRepoCas.find((s) => s.id === r.id));
-  const favorites  = repoCas.filter((r) => r.isFavorite  && !selectedRepoCas.find((s) => s.id === r.id));
+  const unfinished = allRepoCas.filter((r) => !r.isCompleted && !selectedRepoCas.find((s) => s.id === r.id));
+  const favorites  = allRepoCas.filter((r) => favoriteIds.includes(r.id) && !selectedRepoCas.find((s) => s.id === r.id));
 
   const addToList = (rc: RepoCa) => {
     setSelectedRepoCas((prev) => [...prev, rc]);
@@ -61,6 +62,62 @@ export default function EndReport() {
     totalMin: cards.reduce((s, rc) => s + (durations[rc.id] ?? 0), 0),
     proj: projects.find((p) => p.id === pjId)!,
   }));
+
+  /* ── 終業報告済み: 日付によって表示を切り替え ── */
+  const todayStr = new Date().toDateString();
+  const isEndReportedToday = endReportedDate === todayStr;
+
+  // 同日中に終業報告ページを再訪した場合 → 完了メッセージ
+  if (!hasStartReported && isEndReportedToday) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <HiArrowLeft style={{ width: 20, height: 20 }} />
+          </Link>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 56 }}>🎉</div>
+          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            提出完了。お疲れ様でした！
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+            本日の全報告が完了しています。
+          </p>
+          <Link href="/">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // 日付が変わった後に終業報告ページを訪れた場合 → 始業報告を促す
+  if (!hasStartReported && endReportedDate && endReportedDate !== todayStr) {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <HiArrowLeft style={{ width: 20, height: 20 }} />
+          </Link>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 48 }}>📋</div>
+          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            始業報告を行ってください
+          </p>
+          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+            新しい日が始まりました。<br />まずは始業報告を提出しましょう。
+          </p>
+          <Link href="/report/start">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   /* ── 始業未報告ブロック画面 ── */
   if (!hasStartReported) {
@@ -124,7 +181,7 @@ export default function EndReport() {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
           <div style={{ fontSize: 56 }}>🎉</div>
           <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            本日の報告が完了しました！
+            提出完了。お疲れ様でした！
           </p>
           <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             お疲れ様でした。<br />
@@ -138,47 +195,6 @@ export default function EndReport() {
           <Link href="/">
             <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
           </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 確認画面 ── */
-  if (showConfirm) {
-    const completedCount = Object.values(completed).filter(Boolean).length;
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <button onClick={() => setShowConfirm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#f59e0b", padding: 0, display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </button>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#f59e0b" }}>終業報告 — 確認</span>
-        </div>
-        <div style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-          <div className="card" style={{ padding: 12 }}>
-            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10 }}>確認ステータス</div>
-            {[{ label: "始業報告", ok: true }, { label: "終業報告", ok: true }, { label: "残業報告", ok: false }].map((r) => (
-              <div key={r.label} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0", borderBottom: "1px solid #f3f4f6" }}>
-                <span>{r.label}</span>
-                <span className={r.ok ? "status-ok" : "status-ng"}>{r.ok ? "確認済" : "未確認"}</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0", borderBottom: "1px solid #f3f4f6" }}>
-              <span>完了タスク</span>
-              <span style={{ fontWeight: 700 }}>{completedCount}/{selectedRepoCas.length}</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "5px 0" }}>
-              <span>総工数</span>
-              <span style={{ fontWeight: 700 }}>{fmtDuration(totalMin)}</span>
-            </div>
-          </div>
-        </div>
-        <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
-          <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirm(false)}>修正</button>
-          <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
-            onClick={() => { setHasEndReported(true); resetDailyReports(); setShowCompleted(true); }}>
-            送信
-          </button>
         </div>
       </div>
     );
@@ -455,11 +471,66 @@ export default function EndReport() {
         <button
           className="btn"
           style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
-          onClick={() => setShowConfirm(true)}
+          onClick={() => setShowConfirmModal(true)}
         >
           提出
         </button>
       </div>
+
+      {/* 確認モーダル */}
+      {showConfirmModal && (() => {
+        const completedCount = Object.values(completed).filter(Boolean).length;
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setShowConfirmModal(false)}
+          >
+            <div
+              style={{ background: "white", borderRadius: 16, width: 380, maxWidth: "92vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", padding: "16px 20px" }}>
+                <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>終業報告の確認</p>
+              </div>
+              <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
+                {[
+                  { label: "完了タスク", value: `${completedCount}/${selectedRepoCas.length}` },
+                  { label: "総工数", value: fmtDuration(totalMin) },
+                ].map((r) => (
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12 }}>
+                    <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
+                    <span style={{ color: "#1f2937", fontWeight: 700 }}>{r.value}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>RepoCa一覧</div>
+                {selectedRepoCas.map((rc) => {
+                  const proj = projects.find((p) => p.id === rc.projectId);
+                  const done = completed[rc.id] ?? false;
+                  const dur = durations[rc.id] ?? 0;
+                  return (
+                    <div key={rc.id} style={{ display: "flex", gap: 6, alignItems: "center", padding: "5px 0", borderBottom: "1px solid #f9fafb" }}>
+                      <span style={{
+                        width: 10, height: 10, borderRadius: 2, flexShrink: 0,
+                        background: done ? "#10b981" : "#d1d5db",
+                      }} />
+                      <span className="chip" style={{ fontSize: 8, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
+                      <span style={{ fontSize: 11, color: "#374151", flex: 1 }}>{rc.content}</span>
+                      <span style={{ fontSize: 10, color: dur > 0 ? "#1f2937" : "#ef4444", fontWeight: 600, flexShrink: 0 }}>{fmtDuration(dur)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
+                <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
+                <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
+                  onClick={() => { setShowConfirmModal(false); setHasEndReported(true); setEndReportedDate(new Date().toDateString()); resetDailyReports(); setShowCompleted(true); }}>
+                  送信
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

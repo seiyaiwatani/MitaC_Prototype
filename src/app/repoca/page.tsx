@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { fmtDuration } from "@/lib/utils";
 import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiCheck } from "react-icons/hi";
+import { useRepoCa } from "@/contexts/RepoCaContext";
+import { useProjects } from "@/contexts/ProjectContext";
 
 const SCOPE_COLOR: Record<string, string> = {
   フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
@@ -21,11 +22,13 @@ const FILTERS = [
 ] as const;
 
 export default function RepoCaList() {
+  const { allRepoCas } = useRepoCa();
+  const { projects } = useProjects();
   const [filter, setFilter]           = useState<"all" | "favorite" | "incomplete" | "completed">("all");
   const [search, setSearch]           = useState("");
   const [selectedRc, setSelectedRc]   = useState<RepoCa | null>(null);
 
-  const filtered = repoCas.filter((rc) => {
+  const filtered = allRepoCas.filter((rc) => {
     const proj = projects.find((p) => p.id === rc.projectId);
     const matchSearch =
       search === "" ||
@@ -40,9 +43,9 @@ export default function RepoCaList() {
   });
 
   const stats = [
-    { label: "作成済み", value: repoCas.length,                                     Icon: HiCollection,  color: "#4f46e5" },
-    { label: "完了",     value: repoCas.filter((r) => r.isCompleted).length,        Icon: HiCheckCircle, color: "#10b981" },
-    { label: "総XP",    value: `${repoCas.reduce((s, r) => s + r.xp, 0)}XP`,       Icon: HiStar,        color: "#f59e0b" },
+    { label: "作成済み", value: allRepoCas.length,                                     Icon: HiCollection,  color: "#4f46e5" },
+    { label: "完了",     value: allRepoCas.filter((r) => r.isCompleted).length,        Icon: HiCheckCircle, color: "#10b981" },
+    { label: "総XP",    value: `${allRepoCas.reduce((s, r) => s + r.xp, 0)}XP`,       Icon: HiStar,        color: "#f59e0b" },
   ];
 
   return (
@@ -146,6 +149,7 @@ export default function RepoCaList() {
 }
 
 function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
+  const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
   return (
     <div
@@ -189,6 +193,7 @@ function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
 }
 
 function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void }) {
+  const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
   const rows: { label: string; value: string }[] = [
     { label: "プロジェクト",   value: proj?.name ?? "—" },

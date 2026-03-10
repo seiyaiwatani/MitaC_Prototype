@@ -3,22 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { HiClipboardList, HiCheck, HiX, HiStar, HiOutlineStar } from "react-icons/hi";
-import { repoCas, projects } from "@/lib/mock-data";
 import { RepoCa } from "@/types";
 import { fmtDuration } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
+import { useProjects } from "@/contexts/ProjectContext";
 
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
 
 export default function ReportIndex() {
-  const { hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
+  const { allRepoCas, hasStartReported, hasOvertimeReported, hasEndReported } = useRepoCa();
+  const { projects } = useProjects();
   const reportStatus = [
     { key: "start",    label: "始業報告", done: hasStartReported,    href: "/report/start" },
     { key: "overtime", label: "残業報告", done: hasOvertimeReported, href: "/report/overtime" },
     { key: "end",      label: "終業報告", done: hasEndReported,      href: "/report/end" },
   ];
   const [localRepoCas, setLocalRepoCas] = useState<RepoCa[]>(
-    repoCas.filter((r) => ["rc1","rc2","rc3","rc4","rc5"].includes(r.id))
+    allRepoCas.filter((r) => ["rc1","rc2","rc3","rc4","rc5"].includes(r.id))
   );
   const [selectedRc, setSelectedRc] = useState<RepoCa | null>(null);
 
