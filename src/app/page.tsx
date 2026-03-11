@@ -495,7 +495,16 @@ export default function Home() {
     rewards,
   } = useSeasonPass();
   const [attendance, setAttendance] = useState<AttendanceState>("idle");
-  const { avatarKey, setAvatarKey, headCostume, setHeadCostume, bodyCostume, setBodyCostume, omamori, setOmamori } = useAvatar();
+  const {
+    avatarKey,
+    setAvatarKey,
+    headCostume,
+    setHeadCostume,
+    bodyCostume,
+    setBodyCostume,
+    omamori,
+    setOmamori,
+  } = useAvatar();
   const [editorOpen, setEditorOpen] = useState(false);
   const {
     allRepoCas,
@@ -508,11 +517,10 @@ export default function Home() {
     hasEndReported,
   } = useRepoCa();
   const { missions } = useMission();
-  const [missionTab, setMissionTab] = useState<
-    "daily" | "monthly" | "unlimited"
-  >("daily");
   const [showAllBadges, setShowAllBadges] = useState(false);
-  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(badges[0] ?? null);
+  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(
+    badges[0] ?? null,
+  );
   const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
   const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
@@ -563,7 +571,13 @@ export default function Home() {
   const avatarSrc = AVATAR_MAP[avatarKey] ?? AVATAR_MAP.fox;
   // おまもりの効果チップ
   const activeEffectChips = omamori
-    ? [{ key: omamori, color: OMAMORI_EFFECTS[omamori].color, label: `効果: ${OMAMORI_EFFECTS[omamori].label}` }]
+    ? [
+        {
+          key: omamori,
+          color: OMAMORI_EFFECTS[omamori].color,
+          label: `効果: ${OMAMORI_EFFECTS[omamori].label}`,
+        },
+      ]
     : [];
 
   return (
@@ -1141,7 +1155,14 @@ export default function Home() {
                     {/* コンテンツ */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {/* タイトル → XP */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <p
                           style={{
                             fontSize: 12,
@@ -1149,12 +1170,21 @@ export default function Home() {
                             fontWeight: 500,
                             lineHeight: 1.35,
                             color: rc.isCompleted ? "#9ca3af" : "#1f2937",
-                            textDecoration: rc.isCompleted ? "line-through" : "none",
+                            textDecoration: rc.isCompleted
+                              ? "line-through"
+                              : "none",
                           }}
                         >
                           {rc.content}
                         </p>
-                        <span style={{ fontSize: 10, color: "#10b981", fontWeight: 700, whiteSpace: "nowrap" }}>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: "#10b981",
+                            fontWeight: 700,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           → +{rc.xp}XP
                         </span>
                       </div>
@@ -1192,7 +1222,10 @@ export default function Home() {
                     </div>
                     {/* ⋯ ボタン */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); setSelectedTask(rc); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTask(rc);
+                      }}
                       style={{
                         background: "none",
                         border: "none",
@@ -1211,78 +1244,6 @@ export default function Home() {
                 );
               })
             )}
-          </div>
-
-          {/* 今日のミッション */}
-          <div
-            style={{
-              padding: "6px 10px",
-              borderTop: "1px solid #e5e7eb",
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontSize: 10,
-                fontWeight: 700,
-                color: "#6b7280",
-                marginBottom: 5,
-              }}
-            >
-              <HiFlag style={{ width: 11, height: 11, color: "#4f46e5" }} />
-              今日のミッション
-            </div>
-            {dailyMissions.map((m) => {
-              const pct = Math.min(
-                Math.round((m.progress / m.goal) * 100),
-                100,
-              );
-              return (
-                <div key={m.id} style={{ marginBottom: 6 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: 10,
-                      marginBottom: 2,
-                    }}
-                  >
-                    <span style={{ fontWeight: 600, color: "#374151" }}>
-                      {m.title}
-                    </span>
-                    <span style={{ color: "#f59e0b", fontWeight: 700 }}>
-                      +{m.reward}
-                    </span>
-                  </div>
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 5 }}
-                  >
-                    <div className="xp-bar" style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          width: `${pct}%`,
-                          height: "100%",
-                          background: "linear-gradient(90deg,#10b981,#059669)",
-                          borderRadius: 3,
-                        }}
-                      />
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 9,
-                        color: "#9ca3af",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {m.progress}/{m.goal}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
           </div>
 
           {/* ボタン */}
@@ -1341,675 +1302,675 @@ export default function Home() {
         </div>
 
         {/* ====== 中央: ユーザーステータス ====== */}
-          <div
-            className="card"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              padding: 0,
-              gridRow: "1 / -1",
-            }}
-          >
-            {/* ゲームシーン */}
-            {attendance !== "working" ? (
-              /* ホームシーン (idle / departing / returning) */
+        <div
+          className="card"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            padding: 0,
+            gridRow: "1 / -1",
+          }}
+        >
+          {/* ゲームシーン */}
+          {attendance !== "working" ? (
+            /* ホームシーン (idle / departing / returning) */
+            <div
+              className="avatar-game-wrap"
+              style={{
+                height: 160,
+                flex: "none",
+                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+              }}
+            >
+              {/* 天気の雲（速度・種類は天気に応じて変わる） */}
               <div
-                className="avatar-game-wrap"
                 style={{
-                  height: 160,
-                  flex: "none",
-                  background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+                  position: "absolute",
+                  top: "5%",
+                  left: 0,
+                  right: 0,
+                  overflow: "hidden",
+                  height: 26,
+                  pointerEvents: "none",
                 }}
               >
-                {/* 天気の雲（速度・種類は天気に応じて変わる） */}
                 <div
                   style={{
-                    position: "absolute",
-                    top: "5%",
-                    left: 0,
-                    right: 0,
-                    overflow: "hidden",
-                    height: 26,
-                    pointerEvents: "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 180,
-                      animation: `scroll-left-loop ${weather.cloudSpeed}s linear infinite`,
-                      width: "max-content",
-                    }}
-                  >
-                    {weather.clouds.map((c, i) => (
-                      <span
-                        key={i}
-                        style={{ fontSize: 18, flexShrink: 0, opacity: 0.85 }}
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* 天気バッジ */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 6,
-                    right: 10,
-                    fontSize: 9,
-                    fontWeight: 700,
-                    color: "#1a1a2e",
-                    background: "rgba(255,255,255,0.78)",
-                    borderRadius: 6,
-                    padding: "2px 7px",
                     display: "flex",
-                    alignItems: "center",
-                    gap: 3,
-                    zIndex: 2,
+                    gap: 180,
+                    animation: `scroll-left-loop ${weather.cloudSpeed}s linear infinite`,
+                    width: "max-content",
                   }}
                 >
-                  <span>{weather.icon}</span>
-                  <span>{weather.label}</span>
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "33%",
-                    left: "5%",
-                    fontSize: 28,
-                  }}
-                >
-                  🌲
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "31%",
-                    left: "16%",
-                    fontSize: 22,
-                  }}
-                >
-                  🌲
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "29%",
-                    left: "25%",
-                    fontSize: 16,
-                  }}
-                >
-                  🌿
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "31%",
-                    right: "6%",
-                    fontSize: 40,
-                  }}
-                >
-                  🏠
-                </div>
-                {/* アバター (中央揃えラッパー) */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "30%",
-                    left: 0,
-                    right: 0,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  {attendance === "departing" ? (
-                    <DepartAvatar
-                      avatarSrc={avatarSrc}
-                      headCostume={headCostume}
-                      bodyCostume={bodyCostume}
-                      onComplete={() => setAttendance("working")}
-                    />
-                  ) : attendance === "returning" ? (
-                    <ReturnAvatar
-                      avatarSrc={avatarSrc}
-                      headCostume={headCostume}
-                      bodyCostume={bodyCostume}
-                      onComplete={() => {
-                        const mins = workStartTime
-                          ? Math.round(
-                              (Date.now() - workStartTime.getTime()) / 60000,
-                            )
-                          : 0;
-                        setWorkedMinutes(mins);
-                        setAttendance("idle");
-                        setShowWorkResult(true);
-                      }}
-                    />
-                  ) : (
-                    <BobAvatar
-                      avatarSrc={avatarSrc}
-                      headCostume={headCostume}
-                      bodyCostume={bodyCostume}
-                    />
-                  )}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "30%",
-                    background: "#5a8a3c",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 8,
-                    left: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                    zIndex: 2,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: 800,
-                      fontSize: 14,
-                      color: "#1a1a2e",
-                      background: "rgba(255,255,255,0.75)",
-                      padding: "2px 8px",
-                      borderRadius: 6,
-                    }}
-                  >
-                    {currentUser.name}
-                  </span>
-                  <button
-                    onClick={() => setEditorOpen(true)}
-                    style={{
-                      background: "rgba(255,255,255,0.75)",
-                      border: "none",
-                      borderRadius: 6,
-                      padding: "3px 6px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 3,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      color: "#4f46e5",
-                    }}
-                  >
-                    <HiPencilAlt style={{ width: 11, height: 11 }} />
-                    編集
-                  </button>
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 32,
-                    right: 10,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    gap: 3,
-                    zIndex: 2,
-                  }}
-                >
-                  {activeEffectChips.map((eff) => (
+                  {weather.clouds.map((c, i) => (
                     <span
-                      key={eff.key}
-                      style={{
-                        fontSize: 8,
-                        fontWeight: 700,
-                        background: "rgba(255,255,255,0.88)",
-                        color: eff.color,
-                        borderRadius: 99,
-                        padding: "1px 6px",
-                      }}
+                      key={i}
+                      style={{ fontSize: 18, flexShrink: 0, opacity: 0.85 }}
                     >
-                      {eff.label}
+                      {c}
                     </span>
                   ))}
                 </div>
               </div>
-            ) : (
-              /* 冒険シーン (working) */
+              {/* 天気バッジ */}
               <div
-                className="avatar-game-wrap"
                 style={{
-                  height: 160,
-                  flex: "none",
-                  background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+                  position: "absolute",
+                  top: 6,
+                  right: 10,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "#1a1a2e",
+                  background: "rgba(255,255,255,0.78)",
+                  borderRadius: 6,
+                  padding: "2px 7px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 3,
+                  zIndex: 2,
                 }}
               >
-                {/* 天気の雲（冒険シーンは少し速め） */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "6%",
-                    left: 0,
-                    right: 0,
-                    overflow: "hidden",
-                    height: 32,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 120,
-                      animation: `scroll-left-loop ${Math.max(12, weather.cloudSpeed * 0.7)}s linear infinite`,
-                      width: "max-content",
+                <span>{weather.icon}</span>
+                <span>{weather.label}</span>
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "33%",
+                  left: "5%",
+                  fontSize: 28,
+                }}
+              >
+                🌲
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "31%",
+                  left: "16%",
+                  fontSize: 22,
+                }}
+              >
+                🌲
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "29%",
+                  left: "25%",
+                  fontSize: 16,
+                }}
+              >
+                🌿
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "31%",
+                  right: "6%",
+                  fontSize: 40,
+                }}
+              >
+                🏠
+              </div>
+              {/* アバター (中央揃えラッパー) */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "30%",
+                  left: 0,
+                  right: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {attendance === "departing" ? (
+                  <DepartAvatar
+                    avatarSrc={avatarSrc}
+                    headCostume={headCostume}
+                    bodyCostume={bodyCostume}
+                    onComplete={() => setAttendance("working")}
+                  />
+                ) : attendance === "returning" ? (
+                  <ReturnAvatar
+                    avatarSrc={avatarSrc}
+                    headCostume={headCostume}
+                    bodyCostume={bodyCostume}
+                    onComplete={() => {
+                      const mins = workStartTime
+                        ? Math.round(
+                            (Date.now() - workStartTime.getTime()) / 60000,
+                          )
+                        : 0;
+                      setWorkedMinutes(mins);
+                      setAttendance("idle");
+                      setShowWorkResult(true);
                     }}
-                  >
-                    {weather.clouds.map((c, i) => (
-                      <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* 天気バッジ */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 6,
-                    right: 10,
-                    fontSize: 9,
-                    fontWeight: 700,
-                    color: "#1a1a2e",
-                    background: "rgba(255,255,255,0.78)",
-                    borderRadius: 6,
-                    padding: "2px 7px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 3,
-                    zIndex: 2,
-                  }}
-                >
-                  <span>{weather.icon}</span>
-                  <span>{weather.label}</span>
-                </div>
-                {/* 遠景の山（ゆっくりスクロール・視差） */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "46%",
-                    left: 0,
-                    right: 0,
-                    overflow: "hidden",
-                    height: 30,
-                    opacity: 0.35,
-                    pointerEvents: "none",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 90,
-                      alignItems: "flex-end",
-                      animation: "scroll-left-loop 16s linear infinite",
-                      width: "max-content",
-                    }}
-                  >
-                    {[
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                      "🏔️",
-                      "⛰️",
-                    ].map((t, i) => (
-                      <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* スクロールする木（前景） */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "28%",
-                    left: 0,
-                    right: 0,
-                    overflow: "hidden",
-                    height: 52,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 70,
-                      alignItems: "flex-end",
-                      animation: "scroll-left-loop 7s linear infinite",
-                      width: "max-content",
-                    }}
-                  >
-                    {[
-                      "🌲",
-                      "🌿",
-                      "🌲",
-                      "🌲",
-                      "🌿",
-                      "🌲",
-                      "🌲",
-                      "🌿",
-                      "🌲",
-                      "🌿",
-                      "🌲",
-                      "🌲",
-                      "🌿",
-                      "🌲",
-                      "🌲",
-                      "🌿",
-                    ].map((t, i) => (
-                      <span key={i} style={{ fontSize: 28, flexShrink: 0 }}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* 地面 */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "30%",
-                    background: "#5a8a3c",
-                  }}
-                />
-                {/* 歩くアバター */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "30%",
-                    left: 0,
-                    right: 0,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <WalkAvatar
+                  />
+                ) : (
+                  <BobAvatar
                     avatarSrc={avatarSrc}
                     headCostume={headCostume}
                     bodyCostume={bodyCostume}
                   />
-                </div>
-                {/* 出勤中バッジ */}
-                <div
+                )}
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "30%",
+                  background: "#5a8a3c",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  left: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  zIndex: 2,
+                }}
+              >
+                <span
                   style={{
-                    position: "absolute",
-                    top: 8,
-                    left: 10,
+                    fontWeight: 800,
+                    fontSize: 14,
+                    color: "#1a1a2e",
+                    background: "rgba(255,255,255,0.75)",
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                  }}
+                >
+                  {currentUser.name}
+                </span>
+                <button
+                  onClick={() => setEditorOpen(true)}
+                  style={{
+                    background: "rgba(255,255,255,0.75)",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "3px 6px",
+                    cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: 6,
-                    zIndex: 2,
+                    gap: 3,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: "#4f46e5",
                   }}
                 >
+                  <HiPencilAlt style={{ width: 11, height: 11 }} />
+                  編集
+                </button>
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 32,
+                  right: 10,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 3,
+                  zIndex: 2,
+                }}
+              >
+                {activeEffectChips.map((eff) => (
                   <span
+                    key={eff.key}
                     style={{
-                      fontWeight: 800,
-                      fontSize: 14,
-                      color: "#1a1a2e",
-                      background: "rgba(255,255,255,0.75)",
-                      padding: "2px 8px",
-                      borderRadius: 6,
-                    }}
-                  >
-                    {currentUser.name}
-                  </span>
-                  <button
-                    onClick={() => setEditorOpen(true)}
-                    style={{
-                      background: "rgba(255,255,255,0.75)",
-                      border: "none",
-                      borderRadius: 6,
-                      padding: "3px 6px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 3,
-                      fontSize: 10,
+                      fontSize: 8,
                       fontWeight: 700,
-                      color: "#4f46e5",
-                    }}
-                  >
-                    <HiPencilAlt style={{ width: 11, height: 11 }} />
-                    編集
-                  </button>
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: 11,
-                      color: "white",
-                      background: "#10b981",
-                      padding: "2px 10px",
+                      background: "rgba(255,255,255,0.88)",
+                      color: eff.color,
                       borderRadius: 99,
+                      padding: "1px 6px",
                     }}
                   >
-                    🏃 出勤中
+                    {eff.label}
                   </span>
-                </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* 冒険シーン (working) */
+            <div
+              className="avatar-game-wrap"
+              style={{
+                height: 160,
+                flex: "none",
+                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+              }}
+            >
+              {/* 天気の雲（冒険シーンは少し速め） */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "6%",
+                  left: 0,
+                  right: 0,
+                  overflow: "hidden",
+                  height: 32,
+                }}
+              >
                 <div
                   style={{
-                    position: "absolute",
-                    bottom: 32,
-                    right: 10,
                     display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    gap: 3,
-                    zIndex: 2,
+                    gap: 120,
+                    animation: `scroll-left-loop ${Math.max(12, weather.cloudSpeed * 0.7)}s linear infinite`,
+                    width: "max-content",
                   }}
                 >
-                  {activeEffectChips.map((eff) => (
-                    <span
-                      key={eff.key}
-                      style={{
-                        fontSize: 8,
-                        fontWeight: 700,
-                        background: "rgba(255,255,255,0.88)",
-                        color: eff.color,
-                        borderRadius: 99,
-                        padding: "1px 6px",
-                      }}
-                    >
-                      {eff.label}
+                  {weather.clouds.map((c, i) => (
+                    <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>
+                      {c}
                     </span>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* XPバー + コスチューム効果 */}
-            <div
-              style={{
-                padding: "8px 14px",
-                background: "#f9fafb",
-                borderBottom: "1px solid #e5e7eb",
-                flexShrink: 0,
-              }}
-            >
+              {/* 天気バッジ */}
               <div
                 style={{
+                  position: "absolute",
+                  top: 6,
+                  right: 10,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "#1a1a2e",
+                  background: "rgba(255,255,255,0.78)",
+                  borderRadius: 6,
+                  padding: "2px 7px",
                   display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 10,
-                  color: "#6b7280",
-                  marginBottom: 3,
+                  alignItems: "center",
+                  gap: 3,
+                  zIndex: 2,
                 }}
               >
-                <span style={{ fontWeight: 600 }}>EXP</span>
-                <span>
-                  {currentUser.xp} / {currentUser.xpToNext}
+                <span>{weather.icon}</span>
+                <span>{weather.label}</span>
+              </div>
+              {/* 遠景の山（ゆっくりスクロール・視差） */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "46%",
+                  left: 0,
+                  right: 0,
+                  overflow: "hidden",
+                  height: 30,
+                  opacity: 0.35,
+                  pointerEvents: "none",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 90,
+                    alignItems: "flex-end",
+                    animation: "scroll-left-loop 16s linear infinite",
+                    width: "max-content",
+                  }}
+                >
+                  {[
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                    "🏔️",
+                    "⛰️",
+                  ].map((t, i) => (
+                    <span key={i} style={{ fontSize: 20, flexShrink: 0 }}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              {/* スクロールする木（前景） */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "28%",
+                  left: 0,
+                  right: 0,
+                  overflow: "hidden",
+                  height: 52,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 70,
+                    alignItems: "flex-end",
+                    animation: "scroll-left-loop 7s linear infinite",
+                    width: "max-content",
+                  }}
+                >
+                  {[
+                    "🌲",
+                    "🌿",
+                    "🌲",
+                    "🌲",
+                    "🌿",
+                    "🌲",
+                    "🌲",
+                    "🌿",
+                    "🌲",
+                    "🌿",
+                    "🌲",
+                    "🌲",
+                    "🌿",
+                    "🌲",
+                    "🌲",
+                    "🌿",
+                  ].map((t, i) => (
+                    <span key={i} style={{ fontSize: 28, flexShrink: 0 }}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              {/* 地面 */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "30%",
+                  background: "#5a8a3c",
+                }}
+              />
+              {/* 歩くアバター */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "30%",
+                  left: 0,
+                  right: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <WalkAvatar
+                  avatarSrc={avatarSrc}
+                  headCostume={headCostume}
+                  bodyCostume={bodyCostume}
+                />
+              </div>
+              {/* 出勤中バッジ */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  left: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  zIndex: 2,
+                }}
+              >
+                <span
+                  style={{
+                    fontWeight: 800,
+                    fontSize: 14,
+                    color: "#1a1a2e",
+                    background: "rgba(255,255,255,0.75)",
+                    padding: "2px 8px",
+                    borderRadius: 6,
+                  }}
+                >
+                  {currentUser.name}
+                </span>
+                <button
+                  onClick={() => setEditorOpen(true)}
+                  style={{
+                    background: "rgba(255,255,255,0.75)",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "3px 6px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 3,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: "#4f46e5",
+                  }}
+                >
+                  <HiPencilAlt style={{ width: 11, height: 11 }} />
+                  編集
+                </button>
+                <span
+                  style={{
+                    fontWeight: 700,
+                    fontSize: 11,
+                    color: "white",
+                    background: "#10b981",
+                    padding: "2px 10px",
+                    borderRadius: 99,
+                  }}
+                >
+                  🏃 出勤中
                 </span>
               </div>
               <div
                 style={{
-                  height: 7,
-                  background: "#e5e7eb",
-                  borderRadius: 4,
-                  overflow: "hidden",
+                  position: "absolute",
+                  bottom: 32,
+                  right: 10,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 3,
+                  zIndex: 2,
                 }}
               >
-                <div
-                  style={{
-                    width: `${xpPct}%`,
-                    height: "100%",
-                    background: "linear-gradient(90deg,#6366f1,#a855f7)",
-                    borderRadius: 4,
-                  }}
-                />
-              </div>
-              {/* 装備中コスチュームの効果 */}
-              {activeEffectChips.length > 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 4,
-                    marginTop: 5,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {activeEffectChips.map((eff) => (
-                    <span
-                      key={eff.key}
-                      style={{
-                        fontSize: 9,
-                        fontWeight: 700,
-                        background: eff.color + "22",
-                        color: eff.color,
-                        borderRadius: 99,
-                        padding: "1px 7px",
-                        border: `1px solid ${eff.color}44`,
-                      }}
-                    >
-                      {eff.label}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 本日の進捗サマリー */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
-                flexShrink: 0,
-              }}
-            >
-              {[
-                {
-                  Icon: HiClipboardList,
-                  label: "本日タスク",
-                  value: `${completedCount}/${todayRepoCas.length}`,
-                  color: "#4f46e5",
-                },
-                {
-                  Icon: HiBadgeCheck,
-                  label: "バッジ",
-                  value: `${acquiredBadges}個`,
-                  color: "#10b981",
-                },
-                {
-                  Icon: HiStar,
-                  label: "レベル",
-                  value: `Lv.${currentUser.level}`,
-                  color: "#f59e0b",
-                },
-              ].map(({ Icon, label, value, color }, i) => (
-                <div
-                  key={label}
-                  style={{
-                    padding: "10px 8px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 3,
-                    borderRight: i < 2 ? "1px solid #e5e7eb" : "none",
-                    borderBottom: "1px solid #e5e7eb",
-                  }}
-                >
-                  <Icon style={{ width: 16, height: 16, color }} />
+                {activeEffectChips.map((eff) => (
                   <span
-                    style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}
+                    key={eff.key}
+                    style={{
+                      fontSize: 8,
+                      fontWeight: 700,
+                      background: "rgba(255,255,255,0.88)",
+                      color: eff.color,
+                      borderRadius: 99,
+                      padding: "1px 6px",
+                    }}
                   >
-                    {value}
+                    {eff.label}
                   </span>
-                  <span style={{ fontSize: 9, color: "#6b7280" }}>{label}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+          )}
 
-            {/* 出退勤ボタン */}
+          {/* XPバー + コスチューム効果 */}
+          <div
+            style={{
+              padding: "8px 14px",
+              background: "#f9fafb",
+              borderBottom: "1px solid #e5e7eb",
+              flexShrink: 0,
+            }}
+          >
             <div
               style={{
-                padding: "14px 20px 16px",
                 display: "flex",
-                gap: 12,
-                borderTop: "1px solid #e5e7eb",
-                flexShrink: 0,
+                justifyContent: "space-between",
+                fontSize: 10,
+                color: "#6b7280",
+                marginBottom: 3,
               }}
             >
-              <button
-                onClick={handleCheckIn}
-                disabled={attendance !== "idle"}
-                style={{
-                  flex: 1,
-                  padding: "13px 0",
-                  borderRadius: 10,
-                  border: "none",
-                  background: attendance === "idle" ? "#fef9c3" : "#f3f4f6",
-                  color: attendance === "idle" ? "#78350f" : "#9ca3af",
-                  fontWeight: 800,
-                  fontSize: 15,
-                  letterSpacing: 0.5,
-                  cursor: attendance === "idle" ? "pointer" : "not-allowed",
-                  transition: "background 0.2s, color 0.2s",
-                }}
-              >
-                {attendance === "departing" ? "出発中…" : "出 勤"}
-              </button>
-              <button
-                onClick={handleCheckOut}
-                disabled={attendance !== "working"}
-                style={{
-                  flex: 1,
-                  padding: "13px 0",
-                  borderRadius: 10,
-                  border: "none",
-                  background: attendance === "working" ? "#dbeafe" : "#f3f4f6",
-                  color: attendance === "working" ? "#1e40af" : "#9ca3af",
-                  fontWeight: 800,
-                  fontSize: 15,
-                  letterSpacing: 0.5,
-                  cursor: attendance === "working" ? "pointer" : "not-allowed",
-                  transition: "background 0.2s, color 0.2s",
-                }}
-              >
-                {attendance === "returning" ? "帰宅中…" : "退 勤"}
-              </button>
+              <span style={{ fontWeight: 600 }}>EXP</span>
+              <span>
+                {currentUser.xp} / {currentUser.xpToNext}
+              </span>
             </div>
+            <div
+              style={{
+                height: 7,
+                background: "#e5e7eb",
+                borderRadius: 4,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${xpPct}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg,#6366f1,#a855f7)",
+                  borderRadius: 4,
+                }}
+              />
+            </div>
+            {/* 装備中コスチュームの効果 */}
+            {activeEffectChips.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  marginTop: 5,
+                  flexWrap: "wrap",
+                }}
+              >
+                {activeEffectChips.map((eff) => (
+                  <span
+                    key={eff.key}
+                    style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      background: eff.color + "22",
+                      color: eff.color,
+                      borderRadius: 99,
+                      padding: "1px 7px",
+                      border: `1px solid ${eff.color}44`,
+                    }}
+                  >
+                    {eff.label}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* 本日の進捗サマリー */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr",
+              flexShrink: 0,
+            }}
+          >
+            {[
+              {
+                Icon: HiClipboardList,
+                label: "本日タスク",
+                value: `${completedCount}/${todayRepoCas.length}`,
+                color: "#4f46e5",
+              },
+              {
+                Icon: HiBadgeCheck,
+                label: "バッジ",
+                value: `${acquiredBadges}個`,
+                color: "#10b981",
+              },
+              {
+                Icon: HiStar,
+                label: "レベル",
+                value: `Lv.${currentUser.level}`,
+                color: "#f59e0b",
+              },
+            ].map(({ Icon, label, value, color }, i) => (
+              <div
+                key={label}
+                style={{
+                  padding: "10px 8px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 3,
+                  borderRight: i < 2 ? "1px solid #e5e7eb" : "none",
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                <Icon style={{ width: 16, height: 16, color }} />
+                <span
+                  style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}
+                >
+                  {value}
+                </span>
+                <span style={{ fontSize: 9, color: "#6b7280" }}>{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 出退勤ボタン */}
+          <div
+            style={{
+              padding: "14px 20px 16px",
+              display: "flex",
+              gap: 12,
+              borderTop: "1px solid #e5e7eb",
+              flexShrink: 0,
+            }}
+          >
+            <button
+              onClick={handleCheckIn}
+              disabled={attendance !== "idle"}
+              style={{
+                flex: 1,
+                padding: "13px 0",
+                borderRadius: 10,
+                border: "none",
+                background: attendance === "idle" ? "#fef9c3" : "#f3f4f6",
+                color: attendance === "idle" ? "#78350f" : "#9ca3af",
+                fontWeight: 800,
+                fontSize: 15,
+                letterSpacing: 0.5,
+                cursor: attendance === "idle" ? "pointer" : "not-allowed",
+                transition: "background 0.2s, color 0.2s",
+              }}
+            >
+              {attendance === "departing" ? "出発中…" : "出 勤"}
+            </button>
+            <button
+              onClick={handleCheckOut}
+              disabled={attendance !== "working"}
+              style={{
+                flex: 1,
+                padding: "13px 0",
+                borderRadius: 10,
+                border: "none",
+                background: attendance === "working" ? "#dbeafe" : "#f3f4f6",
+                color: attendance === "working" ? "#1e40af" : "#9ca3af",
+                fontWeight: 800,
+                fontSize: 15,
+                letterSpacing: 0.5,
+                cursor: attendance === "working" ? "pointer" : "not-allowed",
+                transition: "background 0.2s, color 0.2s",
+              }}
+            >
+              {attendance === "returning" ? "帰宅中…" : "退 勤"}
+            </button>
+          </div>
+        </div>
 
         {/* ====== 右: バッジ ====== */}
         <div
@@ -2018,19 +1979,55 @@ export default function Home() {
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             overflow: "hidden",
+            minHeight: 292,
           }}
         >
           {/* 左: バッジ一覧 */}
-          <div style={{ padding: "10px 12px", overflow: "hidden", display: "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb" }}>
+          <div
+            style={{
+              padding: "10px 12px",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              borderRight: "1px solid #e5e7eb",
+            }}
+          >
             {/* ヘッダー */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexShrink: 0 }}>
-              <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>バッジ一覧</span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 6,
+                flexShrink: 0,
+              }}
+            >
+              <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>
+                バッジ一覧
+              </span>
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                 {(["bronze", "silver", "gold"] as const).map((t) => {
                   const cnt = badges.filter((b) => b.tier === t).length;
                   return (
-                    <span key={t} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 9, color: "#6b7280" }}>
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: TIER_STYLE[t].bg, display: "inline-block" }} />
+                    <span
+                      key={t}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 3,
+                        fontSize: 9,
+                        color: "#6b7280",
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: TIER_STYLE[t].bg,
+                          display: "inline-block",
+                        }}
+                      />
                       {cnt}
                     </span>
                   );
@@ -2041,10 +2038,19 @@ export default function Home() {
             <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
               {(() => {
                 const COLS = 4;
-                const visibleBadges = showAllBadges ? badges : badges.slice(0, COLS * 3);
+                const visibleBadges = showAllBadges
+                  ? badges
+                  : badges.slice(0, COLS * 3);
                 return (
                   <>
-                    <div style={{ display: "grid", gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 7, alignContent: "start" }}>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+                        gap: 7,
+                        alignContent: "start",
+                      }}
+                    >
                       {visibleBadges.map((b) => {
                         const iconInfo = BADGE_ICON_MAP[b.name];
                         const ts = b.tier ? TIER_STYLE[b.tier] : null;
@@ -2055,27 +2061,53 @@ export default function Home() {
                             title={`${b.name}${b.tier ? ` [${TIER_STYLE[b.tier].label}]` : ""}: ${b.description}`}
                             onClick={() => setSelectedBadge(b)}
                             style={{
-                              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                              cursor: "pointer", padding: 3, borderRadius: 8,
-                              background: isSelected ? "rgba(79,70,229,0.08)" : "transparent",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: 4,
+                              cursor: "pointer",
+                              padding: 3,
+                              borderRadius: 8,
+                              background: isSelected
+                                ? "rgba(79,70,229,0.08)"
+                                : "transparent",
                               border: `2px solid ${isSelected ? "#4f46e5" : "transparent"}`,
                               transition: "all 0.15s",
                             }}
                           >
-                            <div style={{
-                              width: 36, height: 36, borderRadius: 10,
-                              border: `2px solid ${ts ? ts.border : "#e5e7eb"}`,
-                              background: ts ? ts.bg : "#f3f4f6",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              opacity: b.acquired ? 1 : 0.35,
-                            }}>
+                            <div
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
+                                border: `2px solid ${ts ? ts.border : "#e5e7eb"}`,
+                                background: ts ? ts.bg : "#f3f4f6",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                opacity: b.acquired ? 1 : 0.35,
+                              }}
+                            >
                               {iconInfo ? (
-                                <iconInfo.Icon style={{ width: 18, height: 18, color: ts ? "white" : "#9ca3af" }} />
+                                <iconInfo.Icon
+                                  style={{
+                                    width: 18,
+                                    height: 18,
+                                    color: ts ? "white" : "#9ca3af",
+                                  }}
+                                />
                               ) : (
                                 <span style={{ fontSize: 16 }}>{b.icon}</span>
                               )}
                             </div>
-                            <span style={{ fontSize: 9, fontWeight: 600, textAlign: "center", color: ts ? ts.labelColor : "#9ca3af" }}>
+                            <span
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 600,
+                                textAlign: "center",
+                                color: ts ? ts.labelColor : "#9ca3af",
+                              }}
+                            >
                               {b.name}
                             </span>
                           </div>
@@ -2086,7 +2118,13 @@ export default function Home() {
                       <div style={{ textAlign: "center", marginTop: 4 }}>
                         <button
                           onClick={() => setShowAllBadges((v) => !v)}
-                          style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "2px 12px" }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#9ca3af",
+                            padding: "2px 12px",
+                          }}
                         >
                           {showAllBadges ? (
                             <HiChevronUp style={{ width: 14, height: 14 }} />
@@ -2103,309 +2141,442 @@ export default function Home() {
           </div>
 
           {/* 右: バッジ詳細 */}
-          <div style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-            {selectedBadge ? (() => {
-              const b = selectedBadge;
-              const iconInfo = BADGE_ICON_MAP[b.name];
-              const currentTierStyle = b.tier ? TIER_STYLE[b.tier] : null;
-              const currentTierIndex = b.tier ? TIER_ORDER.indexOf(b.tier) : -1;
-              const nextTier = currentTierIndex >= 0 && currentTierIndex < TIER_ORDER.length - 1
-                ? TIER_ORDER[currentTierIndex + 1] : null;
-              const isMaxTier = b.tier === "gold";
-              const hasProgress = b.nextTierProgress !== undefined && b.nextTierGoal !== undefined && b.nextTierGoal > 0 && nextTier !== null;
-              const pct = hasProgress ? Math.min(Math.round((b.nextTierProgress! / b.nextTierGoal!) * 100), 100) : 0;
-              return (
-                <>
-                  {/* ヘッダー */}
-                  <div style={{
-                    background: currentTierStyle ? currentTierStyle.bg : "#f3f4f6",
-                    padding: "12px 14px", flexShrink: 0,
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                  }}>
-                    {b.acquired && b.exp !== undefined && (
-                      <div style={{ alignSelf: "flex-start", fontSize: 10, color: "rgba(255,255,255,0.8)" }}>
-                        EXP: {b.exp.toLocaleString()}
-                      </div>
-                    )}
-                    {currentTierStyle && (
-                      <span style={{ alignSelf: "flex-end", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.9)" }}>
-                        {currentTierStyle.label}
-                      </span>
-                    )}
-                    {iconInfo && (
-                      <iconInfo.Icon style={{ width: 32, height: 32, color: "white" }} />
-                    )}
-                    <div style={{ fontWeight: 800, fontSize: 14, color: "white", textShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>
-                      {b.name}
-                    </div>
-                  </div>
-                  {/* コンテンツ */}
-                  <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
-                    {/* 次ティアへの進捗 */}
-                    <div style={{ background: "#f9fafb", borderRadius: 8, padding: "8px 10px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#374151" }}>
-                          {nextTier ? `next : ${TIER_STYLE[nextTier].label}` : isMaxTier ? "蓄積EXP" : "初回取得条件"}
+          <div
+            style={{
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {selectedBadge ? (
+              (() => {
+                const b = selectedBadge;
+                const iconInfo = BADGE_ICON_MAP[b.name];
+                const currentTierStyle = b.tier ? TIER_STYLE[b.tier] : null;
+                const currentTierIndex = b.tier
+                  ? TIER_ORDER.indexOf(b.tier)
+                  : -1;
+                const nextTier =
+                  currentTierIndex >= 0 &&
+                  currentTierIndex < TIER_ORDER.length - 1
+                    ? TIER_ORDER[currentTierIndex + 1]
+                    : null;
+                const isMaxTier = b.tier === "gold";
+                const hasProgress =
+                  b.nextTierProgress !== undefined &&
+                  b.nextTierGoal !== undefined &&
+                  b.nextTierGoal > 0 &&
+                  nextTier !== null;
+                const pct = hasProgress
+                  ? Math.min(
+                      Math.round((b.nextTierProgress! / b.nextTierGoal!) * 100),
+                      100,
+                    )
+                  : 0;
+                return (
+                  <>
+                    {/* ヘッダー */}
+                    <div
+                      style={{
+                        background: currentTierStyle
+                          ? currentTierStyle.bg
+                          : "#f3f4f6",
+                        padding: "12px 14px",
+                        flexShrink: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      {b.acquired && b.exp !== undefined && (
+                        <div
+                          style={{
+                            alignSelf: "flex-start",
+                            fontSize: 10,
+                            color: "rgba(255,255,255,0.8)",
+                          }}
+                        >
+                          EXP: {b.exp.toLocaleString()}
+                        </div>
+                      )}
+                      {currentTierStyle && (
+                        <span
+                          style={{
+                            alignSelf: "flex-end",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            color: "rgba(255,255,255,0.9)",
+                          }}
+                        >
+                          {currentTierStyle.label}
                         </span>
+                      )}
+                      {iconInfo && (
+                        <iconInfo.Icon
+                          style={{ width: 32, height: 32, color: "white" }}
+                        />
+                      )}
+                      <div
+                        style={{
+                          fontWeight: 800,
+                          fontSize: 14,
+                          color: "white",
+                          textShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        {b.name}
+                      </div>
+                    </div>
+                    {/* コンテンツ */}
+                    <div
+                      style={{
+                        flex: 1,
+                        overflowY: "auto",
+                        padding: "10px 12px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                      }}
+                    >
+                      {/* 次ティアへの進捗 */}
+                      <div
+                        style={{
+                          background: "#f9fafb",
+                          borderRadius: 8,
+                          padding: "8px 10px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 3,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: "#374151",
+                            }}
+                          >
+                            {nextTier
+                              ? `next : ${TIER_STYLE[nextTier].label}`
+                              : isMaxTier
+                                ? "蓄積EXP"
+                                : "初回取得条件"}
+                          </span>
+                          {hasProgress && (
+                            <span style={{ fontSize: 9, color: "#6b7280" }}>
+                              {b.nextTierProgress}/{b.nextTierGoal}
+                            </span>
+                          )}
+                          {isMaxTier && b.exp !== undefined && (
+                            <span style={{ fontSize: 9, color: "#6b7280" }}>
+                              {b.exp.toLocaleString()} EXP
+                            </span>
+                          )}
+                        </div>
                         {hasProgress && (
-                          <span style={{ fontSize: 9, color: "#6b7280" }}>{b.nextTierProgress}/{b.nextTierGoal}</span>
+                          <div
+                            style={{
+                              height: 5,
+                              background: "#e5e7eb",
+                              borderRadius: 3,
+                              overflow: "hidden",
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: `${pct}%`,
+                                height: "100%",
+                                borderRadius: 3,
+                                background: nextTier
+                                  ? TIER_STYLE[nextTier].bg
+                                  : "#10b981",
+                              }}
+                            />
+                          </div>
                         )}
-                        {isMaxTier && b.exp !== undefined && (
-                          <span style={{ fontSize: 9, color: "#6b7280" }}>{b.exp.toLocaleString()} EXP</span>
+                        {isMaxTier && (
+                          <div
+                            style={{
+                              fontSize: 9,
+                              color: "#10b981",
+                              marginTop: 3,
+                            }}
+                          >
+                            ゴールド取得後も経験値を蓄積中
+                          </div>
                         )}
                       </div>
-                      {hasProgress && (
-                        <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden" }}>
-                          <div style={{ width: `${pct}%`, height: "100%", borderRadius: 3, background: nextTier ? TIER_STYLE[nextTier].bg : "#10b981" }} />
+                      {/* 取得履歴 */}
+                      {b.tierHistory && b.tierHistory.length > 0 && (
+                        <div>
+                          <div
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: "#6b7280",
+                              marginBottom: 4,
+                            }}
+                          >
+                            取得履歴
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 3,
+                            }}
+                          >
+                            {[...b.tierHistory].reverse().map((h, i) => {
+                              const ts = TIER_STYLE[h.tier];
+                              return (
+                                <div
+                                  key={i}
+                                  style={{
+                                    padding: "4px 6px",
+                                    borderRadius: 5,
+                                    background: "#f9fafb",
+                                    borderLeft: `3px solid ${ts.bg}`,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 6,
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        flex: 1,
+                                        fontSize: 10,
+                                        fontWeight: 600,
+                                        color: ts.labelColor,
+                                      }}
+                                    >
+                                      {ts.label}バッジ取得
+                                    </span>
+                                    <span
+                                      style={{ fontSize: 9, color: "#9ca3af" }}
+                                    >
+                                      {h.date}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      )}
-                      {isMaxTier && (
-                        <div style={{ fontSize: 9, color: "#10b981", marginTop: 3 }}>ゴールド取得後も経験値を蓄積中</div>
                       )}
                     </div>
-                    {/* 取得履歴 */}
-                    {b.tierHistory && b.tierHistory.length > 0 && (
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", marginBottom: 4 }}>取得履歴</div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                          {[...b.tierHistory].reverse().map((h, i) => {
-                            const ts = TIER_STYLE[h.tier];
-                            return (
-                              <div key={i} style={{ padding: "4px 6px", borderRadius: 5, background: "#f9fafb", borderLeft: `3px solid ${ts.bg}` }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <span style={{ flex: 1, fontSize: 10, fontWeight: 600, color: ts.labelColor }}>{ts.label}バッジ取得</span>
-                                  <span style={{ fontSize: 9, color: "#9ca3af" }}>{h.date}</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </>
-              );
-            })() : (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#9ca3af", fontSize: 11 }}>
+                  </>
+                );
+              })()
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  color: "#9ca3af",
+                  fontSize: 11,
+                }}
+              >
                 バッジを選択してください
               </div>
             )}
           </div>
         </div>
 
-      {/* ====== ミッション（横長） ====== */}
-      {(() => {
-        const tabMissions = missions.filter((m) => m.type === missionTab);
-        const doneCount = tabMissions.filter((m) => m.completed).length;
-        const TABS: {
-          key: "daily" | "monthly" | "unlimited";
-          label: string;
-        }[] = [
-          { key: "daily", label: "日" },
-          { key: "monthly", label: "月" },
-          { key: "unlimited", label: "無期限" },
-        ];
-        return (
-          <div
-            className="card"
-            style={{
-              padding: "10px 16px",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-              minHeight: 0,
-              gridColumn: "3",
-            }}
-          >
+        {/* ====== ミッション（横長） ====== */}
+        {(() => {
+          const tabMissions = missions.filter((m) => m.type === "daily");
+          const doneCount = tabMissions.filter((m) => m.completed).length;
+          return (
             <div
+              className="card"
               style={{
+                padding: "10px 16px",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 6,
+                flexDirection: "column",
+                overflow: "hidden",
+                minHeight: 0,
+                gridColumn: "3",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                }}
+              >
                 <span
                   style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}
                 >
-                  ミッション
+                  デイリーミッション
                 </span>
-                <div style={{ display: "flex", gap: 4 }}>
-                  {TABS.map(({ key, label }) => (
-                    <button
-                      key={key}
-                      onClick={() => setMissionTab(key)}
-                      style={{
-                        padding: "2px 10px",
-                        borderRadius: 99,
-                        border: "none",
-                        fontSize: 10,
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        background: missionTab === key ? "#ef4444" : "#f3f4f6",
-                        color: missionTab === key ? "white" : "#6b7280",
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
+                <span
+                  style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}
+                >
+                  {doneCount}/{tabMissions.length}
+                </span>
               </div>
-              <span
-                style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  overflowX: "auto",
+                  flexWrap: "wrap",
+                }}
               >
-                {doneCount}/{tabMissions.length}
-              </span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                overflowX: "auto",
-                flexWrap: "wrap",
-              }}
-            >
-              {tabMissions.map((m) => {
-                const pct = Math.min(
-                  Math.round((m.progress / m.goal) * 100),
-                  100,
-                );
-                const done = m.completed;
-                return (
-                  <div
-                    key={m.id}
-                    style={{
-                      opacity: done ? 0.72 : 1,
-                      flex: "1 1 0",
-                      minWidth: 180,
-                      background: done ? "#f9fafb" : "#fafafa",
-                      borderRadius: 8,
-                      padding: "8px 10px",
-                      border: "1px solid #e5e7eb",
-                    }}
-                  >
+                {tabMissions.map((m) => {
+                  const pct = Math.min(
+                    Math.round((m.progress / m.goal) * 100),
+                    100,
+                  );
+                  const done = m.completed;
+                  return (
                     <div
+                      key={m.id}
                       style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 6,
-                        marginBottom: 4,
+                        opacity: done ? 0.72 : 1,
+                        flex: "1 1 0",
+                        minWidth: 180,
+                        background: done ? "#f9fafb" : "#fafafa",
+                        borderRadius: 8,
+                        padding: "8px 10px",
+                        border: "1px solid #e5e7eb",
                       }}
                     >
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 6,
+                          marginBottom: 4,
+                        }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 700,
+                              color: done ? "#9ca3af" : "#1f2937",
+                              textDecoration: done ? "line-through" : "none",
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            {m.title}
+                          </div>
+                        </div>
                         <div
                           style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            color: done ? "#9ca3af" : "#1f2937",
-                            textDecoration: done ? "line-through" : "none",
-                            lineHeight: 1.3,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                            alignItems: "flex-end",
+                            flexShrink: 0,
                           }}
                         >
-                          {m.title}
+                          {m.reward > 0 && (
+                            <span
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 800,
+                                color: "#ea580c",
+                                background: "#fff7ed",
+                                padding: "1px 6px",
+                                borderRadius: 99,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              +{m.reward} XP
+                            </span>
+                          )}
+                          {(m.passExpReward ?? 0) > 0 && (
+                            <span
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                color: "#1e40af",
+                                background: "#eff6ff",
+                                padding: "1px 6px",
+                                borderRadius: 99,
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              +{m.passExpReward} PEXP
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div
                         style={{
                           display: "flex",
-                          flexDirection: "column",
-                          gap: 2,
-                          alignItems: "flex-end",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {m.reward > 0 && (
-                          <span
-                            style={{
-                              fontSize: 9,
-                              fontWeight: 800,
-                              color: "#ea580c",
-                              background: "#fff7ed",
-                              padding: "1px 6px",
-                              borderRadius: 99,
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            +{m.reward} XP
-                          </span>
-                        )}
-                        {(m.passExpReward ?? 0) > 0 && (
-                          <span
-                            style={{
-                              fontSize: 9,
-                              fontWeight: 700,
-                              color: "#1e40af",
-                              background: "#eff6ff",
-                              padding: "1px 6px",
-                              borderRadius: 99,
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            +{m.passExpReward} PEXP
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 5,
-                        paddingLeft: 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 4,
-                          background: "#e5e7eb",
-                          borderRadius: 2,
-                          overflow: "hidden",
+                          alignItems: "center",
+                          gap: 5,
+                          paddingLeft: 0,
                         }}
                       >
                         <div
                           style={{
-                            width: `${pct}%`,
-                            height: "100%",
+                            flex: 1,
+                            height: 4,
+                            background: "#e5e7eb",
                             borderRadius: 2,
-                            background: done
-                              ? "#10b981"
-                              : "linear-gradient(90deg,#4f46e5,#7c3aed)",
-                            transition: "width 0.3s",
+                            overflow: "hidden",
                           }}
-                        />
+                        >
+                          <div
+                            style={{
+                              width: `${pct}%`,
+                              height: "100%",
+                              borderRadius: 2,
+                              background: done
+                                ? "#10b981"
+                                : "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                              transition: "width 0.3s",
+                            }}
+                          />
+                        </div>
+                        <span
+                          style={{
+                            fontSize: 8,
+                            color: "#9ca3af",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {m.progress}/{m.goal}
+                        </span>
                       </div>
-                      <span
-                        style={{
-                          fontSize: 8,
-                          color: "#9ca3af",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {m.progress}/{m.goal}
-                      </span>
                     </div>
+                  );
+                })}
+                {tabMissions.length === 0 && (
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "#9ca3af",
+                      textAlign: "center",
+                      padding: "8px 0",
+                      width: "100%",
+                    }}
+                  >
+                    ミッションはありません
                   </div>
-                );
-              })}
-              {tabMissions.length === 0 && (
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: "#9ca3af",
-                    textAlign: "center",
-                    padding: "8px 0",
-                    width: "100%",
-                  }}
-                >
-                  ミッションはありません
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
       </div>
 
       {/* タスク詳細モーダル */}
@@ -2451,10 +2622,17 @@ export default function Home() {
 }
 
 // ---- タスク詳細モーダル ----
-type ProjectInfo = { name: string; color: string; textColor: string; icon: string };
+type ProjectInfo = {
+  name: string;
+  color: string;
+  textColor: string;
+  icon: string;
+};
 
 function TaskDetailModal({
-  rc, proj, onClose,
+  rc,
+  proj,
+  onClose,
 }: {
   rc: RepoCa;
   proj: ProjectInfo | undefined;
@@ -2462,59 +2640,102 @@ function TaskDetailModal({
 }) {
   const rows = [
     { label: "プロジェクト", value: proj?.name ?? "—" },
-    { label: "タスク種別",   value: rc.taskType },
-    { label: "ラベル",       value: rc.label },
+    { label: "タスク種別", value: rc.taskType },
+    { label: "ラベル", value: rc.label },
     { label: "実装スコープ", value: rc.implScope },
-    { label: "工数",         value: rc.duration > 0 ? `${rc.duration}分` : "未記入" },
-    { label: "獲得XP",       value: `+${rc.xp} XP` },
-    { label: "ステータス",   value: rc.isCompleted ? "✓ 完了" : "未完了" },
+    { label: "工数", value: rc.duration > 0 ? `${rc.duration}分` : "未記入" },
+    { label: "獲得XP", value: `+${rc.xp} XP` },
+    { label: "ステータス", value: rc.isCompleted ? "✓ 完了" : "未完了" },
   ];
   return (
     <div
       style={{
-        position: "fixed", inset: 0,
-        background: "rgba(0,0,0,0.5)", zIndex: 500,
-        display: "flex", alignItems: "center", justifyContent: "center",
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.5)",
+        zIndex: 500,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
       onClick={onClose}
     >
       <div
         style={{
-          background: "white", borderRadius: 16, width: 320, maxWidth: "92vw",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden",
+          background: "white",
+          borderRadius: 16,
+          width: 320,
+          maxWidth: "92vw",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+          overflow: "hidden",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー */}
-        <div style={{
-          background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
-          padding: "14px 18px",
-        }}>
+        <div
+          style={{
+            background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+            padding: "14px 18px",
+          }}
+        >
           {proj && (
-            <span style={{
-              fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
-              background: proj.color, color: proj.textColor, marginBottom: 6, display: "inline-block",
-            }}>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 99,
+                background: proj.color,
+                color: proj.textColor,
+                marginBottom: 6,
+                display: "inline-block",
+              }}
+            >
               {proj.icon} {proj.name}
             </span>
           )}
-          <p style={{ fontSize: 14, fontWeight: 800, color: "white", margin: "4px 0 0", lineHeight: 1.4 }}>
+          <p
+            style={{
+              fontSize: 14,
+              fontWeight: 800,
+              color: "white",
+              margin: "4px 0 0",
+              lineHeight: 1.4,
+            }}
+          >
             {rc.content}
           </p>
         </div>
         {/* 詳細テーブル */}
         <div style={{ padding: "12px 18px 8px" }}>
           {rows.map((r) => (
-            <div key={r.label} style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12,
-            }}>
-              <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
-              <span style={{
-                color: r.label === "ステータス" ? (rc.isCompleted ? "#10b981" : "#9ca3af") :
-                       r.label === "獲得XP"     ? "#4f46e5" : "#1f2937",
-                fontWeight: r.label === "獲得XP" ? 700 : 500,
-              }}>
+            <div
+              key={r.label}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "5px 0",
+                borderBottom: "1px solid #f3f4f6",
+                fontSize: 12,
+              }}
+            >
+              <span style={{ color: "#6b7280", fontWeight: 600 }}>
+                {r.label}
+              </span>
+              <span
+                style={{
+                  color:
+                    r.label === "ステータス"
+                      ? rc.isCompleted
+                        ? "#10b981"
+                        : "#9ca3af"
+                      : r.label === "獲得XP"
+                        ? "#4f46e5"
+                        : "#1f2937",
+                  fontWeight: r.label === "獲得XP" ? 700 : 500,
+                }}
+              >
                 {r.value}
               </span>
             </div>
@@ -2524,9 +2745,15 @@ function TaskDetailModal({
           <button
             onClick={onClose}
             style={{
-              width: "100%", padding: "10px 0", borderRadius: 10,
-              border: "none", background: "#f3f4f6",
-              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+              width: "100%",
+              padding: "10px 0",
+              borderRadius: 10,
+              border: "none",
+              background: "#f3f4f6",
+              fontWeight: 700,
+              fontSize: 13,
+              cursor: "pointer",
+              color: "#374151",
             }}
           >
             閉じる

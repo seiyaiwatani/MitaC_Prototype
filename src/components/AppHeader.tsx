@@ -52,21 +52,8 @@ export default function AppHeader() {
         </span>
       </Link>
 
-      {/* 中央: ナビ */}
-      <nav style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5vw", overflow: "hidden", padding: "0 1vw" }}>
-        {[
-          { href: "/mypage/rewards", label: "報酬交換" },
-          { href: "/admin",          label: "プロジェクト" },
-        ].map((item) => (
-          <Link key={item.href} href={item.href} style={{
-            padding: "5px clamp(8px, 1.2vw, 18px)", borderRadius: 99, textDecoration: "none",
-            fontSize: "clamp(11px, 1vw, 13px)", color: "#374151", fontWeight: 700,
-            background: "white", border: "1px solid #e5e7eb", whiteSpace: "nowrap",
-          }}>
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {/* 中央: スペーサー */}
+      <div style={{ flex: 1 }} />
 
       {/* 右: アバター + ユーザー情報 */}
       <div
