@@ -95,6 +95,13 @@ const PROJECT_DETAILS: Record<string, ProjectDetail> = {
   },
 };
 
+type SortKey = "kana" | "project" | "created";
+const SORTS: { key: SortKey; label: string }[] = [
+  { key: "created",  label: "作成順" },
+  { key: "kana",     label: "五十音" },
+  { key: "project",  label: "PJごと" },
+];
+
 export default function RepoCaList() {
   const { allRepoCas } = useRepoCa();
   const { projects } = useProjects();
@@ -102,20 +109,41 @@ export default function RepoCaList() {
   const [filter, setFilter]             = useState<"all" | "favorite" | "incomplete" | "completed">("all");
   const [search, setSearch]             = useState("");
   const [selectedRc, setSelectedRc]     = useState<RepoCa | null>(null);
+  const [sortBy, setSortBy]             = useState<SortKey>("created");
 
-  const filtered = allRepoCas.filter((rc) => {
-    const proj = projects.find((p) => p.id === rc.projectId);
-    const matchSearch =
-      search === "" ||
-      rc.content.toLowerCase().includes(search.toLowerCase()) ||
-      (proj?.name ?? "").includes(search);
-    const matchFilter =
-      filter === "all" ||
-      (filter === "favorite"   && rc.isFavorite) ||
-      (filter === "completed"  && rc.isCompleted) ||
-      (filter === "incomplete" && !rc.isCompleted);
-    return matchSearch && matchFilter;
-  });
+  const filtered = allRepoCas
+    .filter((rc) => {
+      const proj = projects.find((p) => p.id === rc.projectId);
+      const matchSearch =
+        search === "" ||
+        rc.content.toLowerCase().includes(search.toLowerCase()) ||
+        (proj?.name ?? "").includes(search);
+      const matchFilter =
+        filter === "all" ||
+        (filter === "favorite"   && rc.isFavorite) ||
+        (filter === "completed"  && rc.isCompleted) ||
+        (filter === "incomplete" && !rc.isCompleted);
+      return matchSearch && matchFilter;
+    })
+    .sort((a, b) => {
+      // 常に未完了を先頭に
+      const completedDiff = Number(a.isCompleted) - Number(b.isCompleted);
+      if (sortBy === "kana") {
+        const diff = a.content.localeCompare(b.content, "ja");
+        return completedDiff !== 0 ? completedDiff : diff;
+      }
+      if (sortBy === "project") {
+        const pa = projects.find((p) => p.id === a.projectId)?.name ?? "";
+        const pb = projects.find((p) => p.id === b.projectId)?.name ?? "";
+        const diff = pa.localeCompare(pb, "ja");
+        return completedDiff !== 0 ? completedDiff : diff;
+      }
+      if (sortBy === "created") {
+        const diff = a.createdAt.localeCompare(b.createdAt);
+        return completedDiff !== 0 ? completedDiff : diff;
+      }
+      return completedDiff;
+    });
 
   const stats = [
     { label: "作成済み", value: allRepoCas.length,                               Icon: HiCollection,  color: "#4f46e5" },
@@ -220,6 +248,37 @@ export default function RepoCaList() {
               ))}
             </div>
 
+            {/* ソート + 新規作成ボタン */}
+            <div style={{ flexShrink: 0, display: "flex", gap: 6, alignItems: "center" }}>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
+                style={{
+                  width: 110, flexShrink: 0, padding: "7px 4px", borderRadius: 8,
+                  border: "1.5px solid #d1d5db", fontSize: 11, fontWeight: 600,
+                  color: "#374151", background: "white", cursor: "pointer",
+                  textAlign: "center", textAlignLast: "center",
+                }}
+              >
+                {SORTS.map((s) => (
+                  <option key={s.key} value={s.key}>{s.label}</option>
+                ))}
+              </select>
+              <Link
+                href="/repoca/new"
+                style={{
+                  flex: 2, display: "flex", alignItems: "center", justifyContent: "center",
+                  gap: 6, padding: "9px 0", borderRadius: 10,
+                  background: "linear-gradient(135deg,#10b981,#059669)",
+                  color: "white", fontWeight: 700, fontSize: 13,
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(16,185,129,0.35)",
+                }}
+              >
+                <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> 新規作成
+              </Link>
+            </div>
+
             {/* カードリスト */}
             <div className="scroll-y" style={{ flex: 1 }}>
               {filtered.length === 0 ? (
@@ -238,21 +297,6 @@ export default function RepoCaList() {
           <ProjectsContent />
         )}
       </div>
-
-      {/* フローティング作成ボタン（RepoCaタブのみ） */}
-      {mainTab === "repoca" && (
-        <Link href="/repoca/new" style={{
-          position: "fixed", right: 20, bottom: 24,
-          width: 56, height: 56, borderRadius: "50%",
-          background: "linear-gradient(135deg,#10b981,#059669)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(16,185,129,0.5)",
-          textDecoration: "none", fontSize: 28, color: "white",
-          zIndex: 100,
-        }}>
-          +
-        </Link>
-      )}
 
       {/* 詳細モーダル */}
       {selectedRc && (

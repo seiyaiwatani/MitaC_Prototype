@@ -23,7 +23,7 @@ interface DraftCard {
 export default function NewRepoCa() {
   const router = useRouter();
   const { projects } = useProjects();
-  const { allRepoCas } = useRepoCa();
+  const { allRepoCas, addRepoCa, addTodayRepoCa } = useRepoCa();
 
   const initDraft = (): DraftCard => ({
     id: Date.now().toString(),
@@ -48,12 +48,24 @@ export default function NewRepoCa() {
     setDraft(initDraft());
   };
 
+  const buildRepoCa = (d: DraftCard): import("@/types").RepoCa => ({
+    ...d,
+    isCompleted: false,
+    duration: 0,
+    xp: d.taskType === "開発" || d.taskType === "実装" ? 50 : 20,
+    createdAt: new Date().toISOString(),
+  });
+
   const addAndReport = () => {
     if (!isValid) return;
     const all = [...created, { ...draft, id: Date.now().toString() }];
     setCreated(all);
     setDraft(initDraft());
-    alert(`${all.length}件のRepoCaを作成して業務報告に追加しました！`);
+    all.forEach((d) => {
+      const rc = buildRepoCa(d);
+      addRepoCa(rc);
+      addTodayRepoCa(rc);
+    });
     router.push("/report/start");
   };
 
@@ -65,7 +77,11 @@ export default function NewRepoCa() {
     const all = draft.content.trim()
       ? [...created, { ...draft, id: Date.now().toString() }]
       : created;
-    alert(`${all.length}件のRepoCaを新規作成しました！`);
+    all.forEach((d) => {
+      const rc = buildRepoCa(d);
+      addRepoCa(rc);
+      addTodayRepoCa(rc);
+    });
     router.push("/repoca");
   };
 
