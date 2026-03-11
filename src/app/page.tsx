@@ -760,19 +760,36 @@ export default function Home() {
                     {seasonName}
                   </div>
                 </div>
-                <div
-                  style={{
-                    background: "#f59e0b",
-                    color: "#78350f",
-                    fontSize: 10,
-                    fontWeight: 800,
-                    padding: "3px 9px",
-                    borderRadius: 99,
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                  }}
-                >
-                  残り {daysLeft}日（{endLabel}まで）
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, flexShrink: 0 }}>
+                  <div
+                    style={{
+                      background: "#f59e0b",
+                      color: "#78350f",
+                      fontSize: 10,
+                      fontWeight: 800,
+                      padding: "3px 9px",
+                      borderRadius: 99,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    残り {daysLeft}日（{endLabel}まで）
+                  </div>
+                  <Link
+                    href="/mypage/rewards"
+                    style={{
+                      padding: "3px 9px",
+                      borderRadius: 99,
+                      background: "rgba(255,255,255,0.2)",
+                      color: "white",
+                      fontSize: 10,
+                      fontWeight: 700,
+                      textDecoration: "none",
+                      whiteSpace: "nowrap",
+                      border: "1px solid rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    報酬一覧
+                  </Link>
                 </div>
                 <div
                   style={{
@@ -974,24 +991,6 @@ export default function Home() {
                     );
                   })}
                 </div>
-                <Link
-                  href="/mypage/rewards"
-                  style={{
-                    flexShrink: 0,
-                    alignSelf: "center",
-                    margin: "0 12px",
-                    padding: "7px 14px",
-                    borderRadius: 99,
-                    background: "#4f46e5",
-                    color: "white",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    textDecoration: "none",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  報酬一覧
-                </Link>
               </div>
             </div>
           </div>

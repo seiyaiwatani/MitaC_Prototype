@@ -5,8 +5,8 @@ import { HiArrowLeft } from "react-icons/hi";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import type { SeasonRewardType } from "@/types";
 
-const NODE_W = 60;
-const MILESTONE_W = 88;
+const NODE_W      = 40;
+const MILESTONE_W = 72;
 
 const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
   avatar_costume: { label: "衣装",    bg: "#ede9fe", color: "#5b21b6" },
@@ -20,29 +20,28 @@ function getDaysRemaining(endDate: string) {
 export default function SeasonPassPage() {
   const { passLevel, passExp, passExpToNext, maxPassLevel, seasonName, endDate, rewards } = useSeasonPass();
 
-  const expPct      = Math.round((passExp / passExpToNext) * 100);
-  const daysLeft    = getDaysRemaining(endDate);
-  const endLabel    = new Date(endDate).toLocaleDateString("ja-JP", { month: "long", day: "numeric" });
-  const rewardMap   = Object.fromEntries(rewards.map((r) => [r.level, r]));
-  const levels      = Array.from({ length: maxPassLevel }, (_, i) => i + 1);
+  const expPct    = Math.round((passExp / passExpToNext) * 100);
+  const daysLeft  = getDaysRemaining(endDate);
+  const endLabel  = new Date(endDate).toLocaleDateString("ja-JP", { month: "long", day: "numeric" });
+  const rewardMap = Object.fromEntries(rewards.map((r) => [r.level, r]));
+  const levels    = Array.from({ length: maxPassLevel }, (_, i) => i + 1);
 
-  // トラック幅計算（ミリストーンノードは広め）
+  // トラック総幅
   const totalTrackW = levels.reduce((sum, lv) => sum + (rewardMap[lv] ? MILESTONE_W : NODE_W), 0);
 
-  // 進捗ラインの幅（左端から現在レベルノードの中心まで）
+  // 最終ノードの半幅（ラインをそこで止める）
+  const lastNodeHalfW = (rewardMap[maxPassLevel] ? MILESTONE_W : NODE_W) / 2;
+
+  // 進捗ラインの幅（左端～現在レベルノードの中心）
   let progressLineW = 0;
   let accumulated   = 0;
   for (const lv of levels) {
     const w = rewardMap[lv] ? MILESTONE_W : NODE_W;
-    if (lv < passLevel) {
-      accumulated += w;
-      progressLineW = accumulated - w / 2;
-    } else if (lv === passLevel) {
+    if (lv <= passLevel) {
       progressLineW = accumulated + w / 2;
-      break;
-    } else {
-      break;
     }
+    accumulated += w;
+    if (lv === passLevel) break;
   }
 
   return (
@@ -67,12 +66,22 @@ export default function SeasonPassPage() {
               <div style={{ fontSize: 9, opacity: 0.75, letterSpacing: 1, marginBottom: 4 }}>SEASON PASS</div>
               <div style={{ fontSize: 16, fontWeight: 800 }}>{seasonName}</div>
             </div>
-            <div style={{
-              background: "#f59e0b", color: "#78350f",
-              fontSize: 11, fontWeight: 800,
-              padding: "5px 12px", borderRadius: 99, whiteSpace: "nowrap",
-            }}>
-              残り {daysLeft}日（{endLabel}まで）
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+              <div style={{
+                background: "#f59e0b", color: "#78350f",
+                fontSize: 11, fontWeight: 800,
+                padding: "5px 12px", borderRadius: 99, whiteSpace: "nowrap",
+              }}>
+                残り {daysLeft}日（{endLabel}まで）
+              </div>
+              <button style={{
+                background: "rgba(255,255,255,0.2)", color: "white",
+                fontSize: 11, fontWeight: 700,
+                padding: "4px 12px", borderRadius: 99, border: "1px solid rgba(255,255,255,0.4)",
+                cursor: "pointer", whiteSpace: "nowrap",
+              }}>
+                報酬一覧
+              </button>
             </div>
           </div>
 
@@ -116,29 +125,29 @@ export default function SeasonPassPage() {
             }}>
               {/* トラックライン（背景） */}
               <div style={{
-                position: "absolute", top: 40, left: 32,
-                width: totalTrackW, height: 3,
+                position: "absolute", top: 40, left: 16, right: 16 + lastNodeHalfW,
+                height: 3,
                 background: "#e5e7eb", zIndex: 0,
               }} />
               {/* トラックライン（進捗） */}
               {progressLineW > 0 && (
                 <div style={{
-                  position: "absolute", top: 40, left: 32,
+                  position: "absolute", top: 40, left: 16,
                   width: progressLineW, height: 3,
                   background: "linear-gradient(90deg, #4f46e5, #7c3aed)",
                   zIndex: 1,
                 }} />
               )}
 
-              {/* レベルノード */}
+              {/* 全レベルノード */}
               {levels.map((lv) => {
-                const reward    = rewardMap[lv];
+                const reward      = rewardMap[lv];
                 const isMilestone = !!reward;
-                const claimed   = lv <= passLevel;
-                const isCurrent = lv === passLevel + 1;
-                const nodeW     = isMilestone ? MILESTONE_W : NODE_W;
-                const circleSize = isMilestone ? 44 : 32;
-                const chip      = reward ? TYPE_CHIP[reward.type] : undefined;
+                const claimed     = lv <= passLevel;
+                const isCurrent   = lv === passLevel + 1;
+                const nodeW       = isMilestone ? MILESTONE_W : NODE_W;
+                const circleSize  = isMilestone ? 40 : 28;
+                const chip        = reward ? TYPE_CHIP[reward.type] : undefined;
 
                 return (
                   <div key={lv} style={{
@@ -155,7 +164,7 @@ export default function SeasonPassPage() {
                         ? "3px solid #4f46e5"
                         : (claimed ? "none" : `2px solid ${isMilestone ? "#c4b5fd" : "#e5e7eb"}`),
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: claimed ? (isMilestone ? 18 : 13) : (isMilestone ? 20 : 11),
+                      fontSize: claimed ? (isMilestone ? 16 : 11) : (isMilestone ? 18 : 9),
                       color: claimed ? "white" : isCurrent ? "#4f46e5" : "#9ca3af",
                       boxShadow: isCurrent ? "0 0 0 4px #e0e7ff" : (isMilestone && !claimed ? "0 0 0 3px #ede9fe" : "none"),
                       fontWeight: !reward ? 600 : undefined,
@@ -164,16 +173,16 @@ export default function SeasonPassPage() {
                     </div>
 
                     <span style={{
-                      fontSize: 9, marginTop: 4,
+                      fontSize: 8, marginTop: 3,
                       fontWeight: isCurrent || isMilestone ? 700 : 400,
-                      color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#9ca3af"),
+                      color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#b0b7c3"),
                     }}>
-                      Lv.{lv}
+                      {isMilestone || isCurrent ? `Lv.${lv}` : ""}
                     </span>
 
                     {chip && (
                       <span style={{
-                        fontSize: 8, padding: "1px 5px", borderRadius: 4, marginTop: 2,
+                        fontSize: 7, padding: "1px 4px", borderRadius: 4, marginTop: 1,
                         background: chip.bg, color: chip.color, fontWeight: 700,
                       }}>
                         {chip.label}
@@ -182,7 +191,7 @@ export default function SeasonPassPage() {
 
                     {reward && (
                       <span style={{
-                        fontSize: 9, textAlign: "center", marginTop: 2,
+                        fontSize: 8, textAlign: "center", marginTop: 1,
                         color: claimed ? "#9ca3af" : "#374151",
                         lineHeight: 1.3, maxWidth: MILESTONE_W - 8,
                         display: "-webkit-box",
