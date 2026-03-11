@@ -1091,17 +1091,9 @@ export default function Home() {
                   color: "#9ca3af",
                 }}
               >
-                <p style={{ fontSize: 11, marginBottom: 8 }}>
+                <p style={{ fontSize: 11 }}>
                   本日の始業報告はされていません。
                 </p>
-                <Link href="/report/start">
-                  <button
-                    className="btn btn-primary"
-                    style={{ fontSize: 11, padding: "5px 12px" }}
-                  >
-                    始業報告
-                  </button>
-                </Link>
               </div>
             ) : filteredRepoCas.length === 0 ? (
               <div
