@@ -149,8 +149,8 @@ export default function ReportIndex() {
       }}>
         {[
           { href: "/report/start",    label: "始業報告" },
-          { href: "/report/end",      label: "終業報告" },
           { href: "/report/overtime", label: "残業報告" },
+          { href: "/report/end",      label: "終業報告" },
         ].map((btn) => (
           <Link key={btn.href} href={btn.href}>
             <button className="btn" style={{
