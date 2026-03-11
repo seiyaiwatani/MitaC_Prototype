@@ -106,7 +106,7 @@ export function AvatarEditor({
             size={140}
           />
           {(draftHead || draftBody) && (
-            <div style={{ marginTop: 8, fontSize: 10, color: "#4f46e5", fontWeight: 700 }}>
+            <div style={{ marginTop: 8, fontSize: 14, color: "#4f46e5", fontWeight: 700 }}>
               ✨ 装備中
             </div>
           )}
@@ -118,11 +118,11 @@ export function AvatarEditor({
           minHeight: 24, marginBottom: 14,
         }}>
           {activeEffects.length === 0 ? (
-            <span style={{ fontSize: 10, color: "#9ca3af" }}>効果なし</span>
+            <span style={{ fontSize: 14, color: "#9ca3af" }}>効果なし</span>
           ) : (
             activeEffects.map((eff) => (
               <span key={eff.key} style={{
-                fontSize: 10, fontWeight: 700,
+                fontSize: 14, fontWeight: 700,
                 background: eff.color + "22", color: eff.color,
                 borderRadius: 99, padding: "2px 10px",
                 border: `1px solid ${eff.color}44`,
@@ -135,7 +135,7 @@ export function AvatarEditor({
 
         {/* アバター選択 */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
             アバター
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -156,7 +156,7 @@ export function AvatarEditor({
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={opt.src} alt={opt.label} style={{ width: 44, height: 44, objectFit: "contain", imageRendering: "pixelated" }} />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
                     {opt.label}
                   </span>
                 </button>
@@ -167,7 +167,7 @@ export function AvatarEditor({
 
         {/* 頭パーツ */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
             頭
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -197,7 +197,7 @@ export function AvatarEditor({
                   ) : (
                     <span style={{ fontSize: 22, color: "#d1d5db" }}>—</span>
                   )}
-                  <span style={{ fontSize: 9, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
                     {opt.label}
                   </span>
                 </button>
@@ -208,7 +208,7 @@ export function AvatarEditor({
 
         {/* 胴体パーツ */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
             胴体
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -238,7 +238,7 @@ export function AvatarEditor({
                   ) : (
                     <span style={{ fontSize: 22, color: "#d1d5db" }}>—</span>
                   )}
-                  <span style={{ fontSize: 9, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
                     {opt.label}
                   </span>
                 </button>
@@ -249,7 +249,7 @@ export function AvatarEditor({
 
         {/* おまもり */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 8, letterSpacing: "0.05em" }}>
             おまもり
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -273,11 +273,11 @@ export function AvatarEditor({
                   <span style={{ fontSize: eff ? 26 : 22, color: eff ? undefined : "#d1d5db" }}>
                     {eff ? eff.emoji : "—"}
                   </span>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: selected ? (eff?.color ?? "#4f46e5") : "#9ca3af", lineHeight: 1.2, textAlign: "center" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: selected ? (eff?.color ?? "#4f46e5") : "#9ca3af", lineHeight: 1.2, textAlign: "center" }}>
                     {opt.label}
                   </span>
                   {eff && (
-                    <span style={{ fontSize: 8, fontWeight: 700, color: eff.color, lineHeight: 1 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: eff.color, lineHeight: 1 }}>
                       {eff.label}
                     </span>
                   )}
@@ -294,7 +294,7 @@ export function AvatarEditor({
             width: "100%", padding: "11px 0",
             borderRadius: 10, border: "none",
             background: "#4f46e5", color: "white",
-            fontWeight: 700, fontSize: 13, cursor: "pointer",
+            fontWeight: 700, fontSize: 14, cursor: "pointer",
             letterSpacing: "0.05em",
           }}
         >

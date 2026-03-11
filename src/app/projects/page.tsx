@@ -70,7 +70,7 @@ const SECTION_LABEL: React.CSSProperties = {
 };
 
 const SECTION_TEXT: React.CSSProperties = {
-  fontSize: 13, color: "#6b7280", lineHeight: 1.7,
+  fontSize: 14, color: "#6b7280", lineHeight: 1.7,
 };
 
 const DIVIDER: React.CSSProperties = {
@@ -99,15 +99,15 @@ function MemberSection({ memberList }: { memberList: MemberEntry[] }) {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600, textAlign: "left", paddingBottom: 6, width: "50%" }}>名前</th>
-              <th style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600, textAlign: "left", paddingBottom: 6 }}>役割</th>
+              <th style={{ fontSize: 14, color: "#9ca3af", fontWeight: 600, textAlign: "left", paddingBottom: 6, width: "50%" }}>名前</th>
+              <th style={{ fontSize: 14, color: "#9ca3af", fontWeight: 600, textAlign: "left", paddingBottom: 6 }}>役割</th>
             </tr>
           </thead>
           <tbody>
             {memberList.map((m, i) => (
               <tr key={i} style={{ borderTop: "1px solid #e5e7eb" }}>
-                <td style={{ fontSize: 13, color: "#374151", padding: "6px 0" }}>{m.name}</td>
-                <td style={{ fontSize: 13, color: "#6b7280", padding: "6px 0" }}>{m.role}</td>
+                <td style={{ fontSize: 14, color: "#374151", padding: "6px 0" }}>{m.name}</td>
+                <td style={{ fontSize: 14, color: "#6b7280", padding: "6px 0" }}>{m.role}</td>
               </tr>
             ))}
           </tbody>
@@ -235,7 +235,7 @@ export default function ProjectsPage() {
 
             </div>
           ) : (
-            <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center", marginTop: 40 }}>
+            <div style={{ color: "#9ca3af", fontSize: 14, textAlign: "center", marginTop: 40 }}>
               プロジェクトを選択してください
             </div>
           )}

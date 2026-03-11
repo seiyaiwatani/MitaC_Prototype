@@ -101,7 +101,7 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
           {/* 現ティアラベル */}
           {currentTierStyle && (
             <span style={{
-              fontSize: 11, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               background: "rgba(255,255,255,0.35)",
               color: "white",
               padding: "2px 10px", borderRadius: 99,
@@ -114,14 +114,14 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
         {/* ボディ */}
         <div style={{ padding: "16px 20px 20px" }}>
           {/* 説明文 */}
-          <p style={{ fontSize: 12, color: "#374151", margin: "0 0 14px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#374151", margin: "0 0 14px", lineHeight: 1.6 }}>
             {badge.description}
           </p>
 
           {/* 次のティアへの進捗 */}
           <div style={{ marginBottom: 14 }}>
             <div style={{
-              fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 5,
+              fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 5,
               display: "flex", justifyContent: "space-between", alignItems: "center",
             }}>
               <span>
@@ -131,13 +131,13 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
                 }
               </span>
               {hasProgress && (
-                <span style={{ fontSize: 10, color: "#374151" }}>
+                <span style={{ fontSize: 14, color: "#374151" }}>
                   {badge.nextTierProgress} / {badge.nextTierGoal}
                 </span>
               )}
             </div>
             {badge.nextTierCondition && (
-              <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: hasProgress ? 6 : 0 }}>
+              <div style={{ fontSize: 14, color: "#9ca3af", marginBottom: hasProgress ? 6 : 0 }}>
                 {badge.nextTierCondition}
               </div>
             )}
@@ -155,7 +155,7 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
           {/* 取得履歴 */}
           {badge.tierHistory && badge.tierHistory.length > 0 && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>
                 取得履歴
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -172,13 +172,13 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
                           width: 10, height: 10, borderRadius: "50%",
                           background: ts.bg, flexShrink: 0, display: "inline-block",
                         }} />
-                        <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: ts.labelColor }}>
+                        <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: ts.labelColor }}>
                           {ts.label}バッジ取得
                         </span>
-                        <span style={{ fontSize: 10, color: "#9ca3af" }}>{h.date}</span>
+                        <span style={{ fontSize: 14, color: "#9ca3af" }}>{h.date}</span>
                       </div>
                       {h.note && (
-                        <p style={{ margin: "0 0 0 18px", fontSize: 10, color: "#6b7280", lineHeight: 1.4 }}>
+                        <p style={{ margin: "0 0 0 18px", fontSize: 14, color: "#6b7280", lineHeight: 1.4 }}>
                           {h.note}
                         </p>
                       )}
@@ -197,7 +197,7 @@ export function BadgeDetailModal({ badge, onClose }: Props) {
             style={{
               width: "100%", padding: "10px 0", borderRadius: 10,
               border: "none", background: "#f3f4f6",
-              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+              fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151",
             }}
           >
             閉じる

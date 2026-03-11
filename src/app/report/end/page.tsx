@@ -82,7 +82,7 @@ export default function EndReport() {
           <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             提出完了。お疲れ様でした！
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             本日の全報告が完了しています。
           </p>
           <Link href="/">
@@ -108,7 +108,7 @@ export default function EndReport() {
           <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             始業報告を行ってください
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
             新しい日が始まりました。<br />まずは始業報告を提出しましょう。
           </p>
           <Link href="/report/start">
@@ -134,7 +134,7 @@ export default function EndReport() {
           <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             始業報告が提出されていません
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
             終業報告は始業報告を提出した後に<br />行うことができます
           </p>
           <Link href="/report/start">
@@ -160,7 +160,7 @@ export default function EndReport() {
           <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             残業報告が提出されていません
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
             終業報告は残業報告を提出した後に<br />行うことができます
           </p>
           <Link href="/report/overtime">
@@ -183,12 +183,12 @@ export default function EndReport() {
           <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             提出完了。お疲れ様でした！
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             お疲れ様でした。<br />
             総工数: {fmtDuration(totalMin)}
           </p>
           <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ecfdf5", border: "2px solid #10b981", textAlign: "center" }}>
-            <p style={{ fontSize: 12, color: "#047857", margin: 0, fontWeight: 600 }}>
+            <p style={{ fontSize: 14, color: "#047857", margin: 0, fontWeight: 600 }}>
               ✅ 始業・残業・終業すべての報告が完了
             </p>
           </div>
@@ -209,7 +209,7 @@ export default function EndReport() {
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        <span style={{ marginLeft: "auto", fontSize: 11, color: "#6b7280" }}>
+        <span style={{ marginLeft: "auto", fontSize: 14, color: "#6b7280" }}>
           総工数: {fmtDuration(totalMin)}
         </span>
       </div>
@@ -264,7 +264,7 @@ export default function EndReport() {
                             boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                             pointerEvents: "none",
                           }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{rc.content}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{rc.content}</p>
                             {[
                               { label: "種別",   value: rc.taskType },
                               { label: "ラベル", value: rc.label },
@@ -272,7 +272,7 @@ export default function EndReport() {
                               { label: "XP",     value: `+${rc.xp} XP` },
                               { label: "作成",   value: new Date(rc.createdAt).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }) },
                             ].map(({ label, value }) => (
-                              <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 3 }}>
+                              <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 3 }}>
                                 <span style={{ color: "#9ca3af" }}>{label}</span>
                                 <span style={{ fontWeight: 600 }}>{value}</span>
                               </div>
@@ -280,12 +280,12 @@ export default function EndReport() {
                           </div>
                         )}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                          <span className="chip" style={{ fontSize: 9, background: proj.color, color: proj.textColor }}>{rc.taskType}</span>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
+                          <span className="chip" style={{ fontSize: 14, background: proj.color, color: proj.textColor }}>{rc.taskType}</span>
+                          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
                             ★
                           </button>
                         </div>
-                        <p style={{ fontSize: 11, margin: "0 0 6px", fontWeight: 500, color: dur === 0 ? "#ef4444" : "#1f2937", lineHeight: 1.3 }}>
+                        <p style={{ fontSize: 14, margin: "0 0 6px", fontWeight: 500, color: dur === 0 ? "#ef4444" : "#1f2937", lineHeight: 1.3 }}>
                           {rc.content}
                         </p>
                         {/* 工数セレクト */}
@@ -294,7 +294,7 @@ export default function EndReport() {
                             value={dur}
                             onChange={(e) => setDurations((p) => ({ ...p, [rc.id]: Number(e.target.value) }))}
                             style={{
-                              flex: 1, fontSize: 10, border: "1px solid #e5e7eb",
+                              flex: 1, fontSize: 14, border: "1px solid #e5e7eb",
                               borderRadius: 4, padding: "2px 3px",
                             }}
                           >
@@ -309,7 +309,7 @@ export default function EndReport() {
                           style={{
                             display: "flex", alignItems: "center", gap: 4,
                             background: "none", border: "none", cursor: "pointer",
-                            padding: "3px 0 0", fontSize: 10,
+                            padding: "3px 0 0", fontSize: 14,
                           }}
                         >
                           <span style={{
@@ -317,7 +317,7 @@ export default function EndReport() {
                             border: `1.5px solid ${done ? "#10b981" : "#d1d5db"}`,
                             background: done ? "#10b981" : "white",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            color: "white", fontSize: 8,
+                            color: "white", fontSize: 14,
                           }}>
                             {done && <HiCheck style={{ width: 9, height: 9 }} />}
                           </span>
@@ -345,7 +345,7 @@ export default function EndReport() {
         }}>
           {totalMin === 0 ? (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 9, color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>工数<br />未入力</span>
+              <span style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>工数<br />未入力</span>
             </div>
           ) : (
             <div style={{ flex: 1, display: "flex", flexDirection: "row", gap: 2, alignItems: "stretch", overflow: "hidden" }}>
@@ -366,7 +366,7 @@ export default function EndReport() {
                           top: `${pct}%`,
                           right: 0,
                           transform: "translateY(-50%)",
-                          fontSize: 7,
+                          fontSize: 14,
                           color: "#9ca3af",
                           whiteSpace: "nowrap",
                           lineHeight: 1,
@@ -398,7 +398,7 @@ export default function EndReport() {
               </div>
             </div>
           )}
-          <div style={{ fontSize: 9, color: "#6b7280", textAlign: "center", flexShrink: 0, marginTop: 4, lineHeight: 1.3 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", textAlign: "center", flexShrink: 0, marginTop: 4, lineHeight: 1.3 }}>
             合計<br />{fmtDuration(totalMin)}
           </div>
         </div>
@@ -407,22 +407,22 @@ export default function EndReport() {
         <div className="split-col" style={{ width: 200, flexShrink: 0 }}>
 
           {/* 未完了のRepoCa */}
-          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             未完了のRepoCa
           </div>
           <div style={{ flex: "0 0 auto", maxHeight: "32%", overflowY: "auto", padding: "6px 8px", borderBottom: "1px solid #e5e7eb" }}>
             {unfinished.length === 0 ? (
-              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
+              <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
               unfinished.map((rc) => {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
-                      <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.icon} {proj?.name}</span>
+                      <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
-                    <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
+                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
                   </div>
                 );
               })
@@ -430,22 +430,22 @@ export default function EndReport() {
           </div>
 
           {/* お気に入りのRepoCa */}
-          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             お気に入りのRepoCa
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "6px 8px" }}>
             {favorites.length === 0 ? (
-              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
+              <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
               favorites.map((rc) => {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
-                      <span className="chip chip-yellow" style={{ fontSize: 9 }}>⭐ お気に入り</span>
+                      <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
-                    <span style={{ fontSize: 9, color: "#9ca3af" }}>{proj?.name}</span>
+                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
                   </div>
                 );
               })
@@ -455,7 +455,7 @@ export default function EndReport() {
           {/* 新しいRepoCaを作成 */}
           <div style={{ padding: "8px", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
             <Link href="/repoca/new">
-              <button className="btn btn-ghost" style={{ width: "100%", fontSize: 11, padding: "6px" }}>
+              <button className="btn btn-ghost" style={{ width: "100%", fontSize: 14, padding: "6px" }}>
                 + 新しいRepoCaを作成
               </button>
             </Link>
@@ -497,12 +497,12 @@ export default function EndReport() {
                   { label: "完了タスク", value: `${completedCount}/${selectedRepoCas.length}` },
                   { label: "総工数", value: fmtDuration(totalMin) },
                 ].map((r) => (
-                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12 }}>
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6", fontSize: 14 }}>
                     <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
                     <span style={{ color: "#1f2937", fontWeight: 700 }}>{r.value}</span>
                   </div>
                 ))}
-                <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>RepoCa一覧</div>
+                <div style={{ marginTop: 10, fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>RepoCa一覧</div>
                 {selectedRepoCas.map((rc) => {
                   const proj = projects.find((p) => p.id === rc.projectId);
                   const done = completed[rc.id] ?? false;
@@ -513,9 +513,9 @@ export default function EndReport() {
                         width: 10, height: 10, borderRadius: 2, flexShrink: 0,
                         background: done ? "#10b981" : "#d1d5db",
                       }} />
-                      <span className="chip" style={{ fontSize: 8, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
-                      <span style={{ fontSize: 11, color: "#374151", flex: 1 }}>{rc.content}</span>
-                      <span style={{ fontSize: 10, color: dur > 0 ? "#1f2937" : "#ef4444", fontWeight: 600, flexShrink: 0 }}>{fmtDuration(dur)}</span>
+                      <span className="chip" style={{ fontSize: 14, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
+                      <span style={{ fontSize: 14, color: "#374151", flex: 1 }}>{rc.content}</span>
+                      <span style={{ fontSize: 14, color: dur > 0 ? "#1f2937" : "#ef4444", fontWeight: 600, flexShrink: 0 }}>{fmtDuration(dur)}</span>
                     </div>
                   );
                 })}

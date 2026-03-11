@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { currentUser, badges } from "@/lib/mock-data";
 import { useMission } from "@/contexts/MissionContext";
@@ -32,6 +33,11 @@ import type { Badge } from "@/types";
 import { fmtDuration } from "@/lib/utils";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
+  avatar_costume: { label: "衣装",    bg: "#ede9fe", color: "#5b21b6" },
+  physical:       { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
+};
 
 const AVATAR_MAP: Record<string, string> = {
   fox: `${BASE}/avatars/avatar_fox.svg`,
@@ -322,7 +328,7 @@ function WorkResultModal({
           >
             お疲れ様でした！
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", margin: 0 }}>
             本日も一日お疲れ様でした
           </p>
         </div>
@@ -362,7 +368,7 @@ function WorkResultModal({
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 16 }}>{icon}</span>
-                <span style={{ fontSize: 13, color: "#6b7280" }}>{label}</span>
+                <span style={{ fontSize: 14, color: "#6b7280" }}>{label}</span>
               </div>
               <span style={{ fontSize: 14, fontWeight: 800, color }}>
                 {value}
@@ -517,6 +523,7 @@ export default function Home() {
     hasEndReported,
   } = useRepoCa();
   const { missions } = useMission();
+  const [showRewardModal, setShowRewardModal] = useState(false);
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(
     badges[0] ?? null,
@@ -586,7 +593,7 @@ export default function Home() {
       <div className="news-ticker">
         <span
           style={{
-            fontSize: 10,
+            fontSize: 14,
             fontWeight: 700,
             color: "#4f46e5",
             flexShrink: 0,
@@ -620,7 +627,7 @@ export default function Home() {
         >
           <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span
-            style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}
+            style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
             本日の始業報告がまだ提出されていません
           </span>
@@ -631,7 +638,7 @@ export default function Home() {
                 color: "white",
                 border: "none",
                 borderRadius: 99,
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: 700,
                 padding: "3px 12px",
                 cursor: "pointer",
@@ -656,7 +663,7 @@ export default function Home() {
         >
           <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span
-            style={{ fontSize: 12, fontWeight: 700, color: "#4c1d95", flex: 1 }}
+            style={{ fontSize: 14, fontWeight: 700, color: "#4c1d95", flex: 1 }}
           >
             残業報告がまだ提出されていません
           </span>
@@ -667,7 +674,7 @@ export default function Home() {
                 color: "white",
                 border: "none",
                 borderRadius: 99,
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: 700,
                 padding: "3px 12px",
                 cursor: "pointer",
@@ -692,7 +699,7 @@ export default function Home() {
         >
           <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span
-            style={{ fontSize: 12, fontWeight: 700, color: "#92400e", flex: 1 }}
+            style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
             終業報告がまだ提出されていません
           </span>
@@ -703,7 +710,7 @@ export default function Home() {
                 color: "white",
                 border: "none",
                 borderRadius: 99,
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: 700,
                 padding: "3px 12px",
                 cursor: "pointer",
@@ -734,12 +741,6 @@ export default function Home() {
           month: "long",
           day: "numeric",
         });
-        const TYPE_CHIP: Partial<
-          Record<SeasonRewardType, { label: string; bg: string; color: string }>
-        > = {
-          avatar_costume: { label: "衣装", bg: "#ede9fe", color: "#5b21b6" },
-          physical: { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
-        };
         let progressLineW = 0,
           accumulated = 0;
         for (const lv of levels) {
@@ -767,10 +768,10 @@ export default function Home() {
                 }}
               >
                 <div style={{ flexShrink: 0 }}>
-                  <div style={{ fontSize: 8, opacity: 0.7, letterSpacing: 1 }}>
+                  <div style={{ fontSize: 14, opacity: 0.7, letterSpacing: 1 }}>
                     SEASON PASS
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800 }}>
                     {seasonName}
                   </div>
                 </div>
@@ -779,7 +780,7 @@ export default function Home() {
                     style={{
                       background: "#f59e0b",
                       color: "#78350f",
-                      fontSize: 10,
+                      fontSize: 14,
                       fontWeight: 800,
                       padding: "3px 9px",
                       borderRadius: 99,
@@ -788,22 +789,22 @@ export default function Home() {
                   >
                     残り {daysLeft}日（{endLabel}まで）
                   </div>
-                  <Link
-                    href="/mypage/rewards"
+                  <button
+                    onClick={() => setShowRewardModal(true)}
                     style={{
                       padding: "3px 9px",
                       borderRadius: 99,
                       background: "rgba(255,255,255,0.2)",
                       color: "white",
-                      fontSize: 10,
+                      fontSize: 14,
                       fontWeight: 700,
-                      textDecoration: "none",
                       whiteSpace: "nowrap",
                       border: "1px solid rgba(255,255,255,0.4)",
+                      cursor: "pointer",
                     }}
                   >
-                    報酬一覧
-                  </Link>
+                    シーズン報酬一覧
+                  </button>
                 </div>
                 <div
                   style={{
@@ -814,7 +815,7 @@ export default function Home() {
                     flexShrink: 0,
                   }}
                 >
-                  <div style={{ fontSize: 8, opacity: 0.8 }}>パスLv.</div>
+                  <div style={{ fontSize: 14, opacity: 0.8 }}>パスLv.</div>
                   <div
                     style={{ fontSize: 18, fontWeight: 900, lineHeight: 1.1 }}
                   >
@@ -829,8 +830,8 @@ export default function Home() {
                       marginBottom: 3,
                     }}
                   >
-                    <span style={{ fontSize: 9, opacity: 0.8 }}>パスEXP</span>
-                    <span style={{ fontSize: 9, opacity: 0.8 }}>
+                    <span style={{ fontSize: 14, opacity: 0.8 }}>パスEXP</span>
+                    <span style={{ fontSize: 14, opacity: 0.8 }}>
                       {passExp} / {passExpToNext}
                     </span>
                   </div>
@@ -852,7 +853,7 @@ export default function Home() {
                     />
                   </div>
                 </div>
-                <div style={{ fontSize: 10, opacity: 0.7, flexShrink: 0 }}>
+                <div style={{ fontSize: 14, opacity: 0.7, flexShrink: 0 }}>
                   → Lv.{passLevel + 1}
                 </div>
               </div>
@@ -958,7 +959,7 @@ export default function Home() {
                         </div>
                         <span
                           style={{
-                            fontSize: 8,
+                            fontSize: 14,
                             marginTop: 3,
                             fontWeight: 700,
                             color: isCur
@@ -973,7 +974,7 @@ export default function Home() {
                         {chip && (
                           <span
                             style={{
-                              fontSize: 7,
+                              fontSize: 14,
                               padding: "1px 3px",
                               borderRadius: 3,
                               marginTop: 1,
@@ -987,7 +988,7 @@ export default function Home() {
                         )}
                         <span
                           style={{
-                            fontSize: 8,
+                            fontSize: 14,
                             textAlign: "center",
                             marginTop: 1,
                             color: claimed ? "#9ca3af" : "#374151",
@@ -1050,10 +1051,10 @@ export default function Home() {
                 marginBottom: 6,
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: 13 }}>
+              <span style={{ fontWeight: 700, fontSize: 14 }}>
                 本日のタスク
               </span>
-              <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>
+              <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>
                 {completedCount}/{todayRepoCas.length} 完了
               </span>
             </div>
@@ -1068,7 +1069,7 @@ export default function Home() {
                     padding: "4px 0",
                     borderRadius: 99,
                     border: "none",
-                    fontSize: 10,
+                    fontSize: 14,
                     fontWeight: 700,
                     cursor: "pointer",
                     background: taskFilter === f ? "#4f46e5" : "#f3f4f6",
@@ -1091,7 +1092,7 @@ export default function Home() {
                   color: "#9ca3af",
                 }}
               >
-                <p style={{ fontSize: 11 }}>
+                <p style={{ fontSize: 14 }}>
                   本日の始業報告はされていません。
                 </p>
               </div>
@@ -1101,7 +1102,7 @@ export default function Home() {
                   textAlign: "center",
                   padding: "16px 8px",
                   color: "#9ca3af",
-                  fontSize: 11,
+                  fontSize: 14,
                 }}
               >
                 該当するタスクがありません
@@ -1157,7 +1158,7 @@ export default function Home() {
                       >
                         <p
                           style={{
-                            fontSize: 12,
+                            fontSize: 14,
                             margin: 0,
                             fontWeight: 500,
                             lineHeight: 1.35,
@@ -1171,7 +1172,7 @@ export default function Home() {
                         </p>
                         <span
                           style={{
-                            fontSize: 10,
+                            fontSize: 14,
                             color: "#10b981",
                             fontWeight: 700,
                             whiteSpace: "nowrap",
@@ -1191,7 +1192,7 @@ export default function Home() {
                         {proj && (
                           <span
                             style={{
-                              fontSize: 9,
+                              fontSize: 14,
                               fontWeight: 600,
                               padding: "1px 6px",
                               borderRadius: 99,
@@ -1202,11 +1203,11 @@ export default function Home() {
                             {proj.name}
                           </span>
                         )}
-                        <span style={{ fontSize: 9, color: "#9ca3af" }}>
+                        <span style={{ fontSize: 14, color: "#9ca3af" }}>
                           {rc.label}
                         </span>
                         {rc.duration > 0 && (
-                          <span style={{ fontSize: 9, color: "#9ca3af" }}>
+                          <span style={{ fontSize: 14, color: "#9ca3af" }}>
                             {fmtDuration(rc.duration)}
                           </span>
                         )}
@@ -1251,7 +1252,7 @@ export default function Home() {
             <Link href="/report/start" style={{ flex: 1 }}>
               <button
                 className="btn btn-primary"
-                style={{ width: "100%", fontSize: 11, padding: "7px 4px" }}
+                style={{ width: "100%", fontSize: 14, padding: "7px 4px" }}
               >
                 始業報告
               </button>
@@ -1262,7 +1263,7 @@ export default function Home() {
                   className="btn"
                   style={{
                     width: "100%",
-                    fontSize: 11,
+                    fontSize: 14,
                     padding: "7px 4px",
                     background: "#f59e0b",
                     color: "white",
@@ -1279,7 +1280,7 @@ export default function Home() {
                   title="始業報告後に終業報告できます"
                   style={{
                     width: "100%",
-                    fontSize: 11,
+                    fontSize: 14,
                     padding: "7px 4px",
                     background: "#e5e7eb",
                     color: "#9ca3af",
@@ -1351,7 +1352,7 @@ export default function Home() {
                   position: "absolute",
                   top: 6,
                   right: 10,
-                  fontSize: 9,
+                  fontSize: 14,
                   fontWeight: 700,
                   color: "#1a1a2e",
                   background: "rgba(255,255,255,0.78)",
@@ -1492,7 +1493,7 @@ export default function Home() {
                     display: "flex",
                     alignItems: "center",
                     gap: 3,
-                    fontSize: 10,
+                    fontSize: 14,
                     fontWeight: 700,
                     color: "#4f46e5",
                   }}
@@ -1517,7 +1518,7 @@ export default function Home() {
                   <span
                     key={eff.key}
                     style={{
-                      fontSize: 8,
+                      fontSize: 14,
                       fontWeight: 700,
                       background: "rgba(255,255,255,0.88)",
                       color: eff.color,
@@ -1572,7 +1573,7 @@ export default function Home() {
                   position: "absolute",
                   top: 6,
                   right: 10,
-                  fontSize: 9,
+                  fontSize: 14,
                   fontWeight: 700,
                   color: "#1a1a2e",
                   background: "rgba(255,255,255,0.78)",
@@ -1740,7 +1741,7 @@ export default function Home() {
                     display: "flex",
                     alignItems: "center",
                     gap: 3,
-                    fontSize: 10,
+                    fontSize: 14,
                     fontWeight: 700,
                     color: "#4f46e5",
                   }}
@@ -1751,7 +1752,7 @@ export default function Home() {
                 <span
                   style={{
                     fontWeight: 700,
-                    fontSize: 11,
+                    fontSize: 14,
                     color: "white",
                     background: "#10b981",
                     padding: "2px 10px",
@@ -1777,7 +1778,7 @@ export default function Home() {
                   <span
                     key={eff.key}
                     style={{
-                      fontSize: 8,
+                      fontSize: 14,
                       fontWeight: 700,
                       background: "rgba(255,255,255,0.88)",
                       color: eff.color,
@@ -1805,7 +1806,7 @@ export default function Home() {
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                fontSize: 10,
+                fontSize: 14,
                 color: "#6b7280",
                 marginBottom: 3,
               }}
@@ -1846,7 +1847,7 @@ export default function Home() {
                   <span
                     key={eff.key}
                     style={{
-                      fontSize: 9,
+                      fontSize: 14,
                       fontWeight: 700,
                       background: eff.color + "22",
                       color: eff.color,
@@ -1908,7 +1909,7 @@ export default function Home() {
                 >
                   {value}
                 </span>
-                <span style={{ fontSize: 9, color: "#6b7280" }}>{label}</span>
+                <span style={{ fontSize: 14, color: "#6b7280" }}>{label}</span>
               </div>
             ))}
           </div>
@@ -1994,7 +1995,7 @@ export default function Home() {
                 flexShrink: 0,
               }}
             >
-              <span style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}>
+              <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>
                 バッジ一覧
               </span>
               <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -2007,7 +2008,7 @@ export default function Home() {
                         display: "flex",
                         alignItems: "center",
                         gap: 3,
-                        fontSize: 9,
+                        fontSize: 14,
                         color: "#6b7280",
                       }}
                     >
@@ -2094,7 +2095,7 @@ export default function Home() {
                             </div>
                             <span
                               style={{
-                                fontSize: 9,
+                                fontSize: 14,
                                 fontWeight: 600,
                                 textAlign: "center",
                                 color: ts ? ts.labelColor : "#9ca3af",
@@ -2185,7 +2186,7 @@ export default function Home() {
                         <div
                           style={{
                             alignSelf: "flex-start",
-                            fontSize: 10,
+                            fontSize: 14,
                             color: "rgba(255,255,255,0.8)",
                           }}
                         >
@@ -2196,7 +2197,7 @@ export default function Home() {
                         <span
                           style={{
                             alignSelf: "flex-end",
-                            fontSize: 10,
+                            fontSize: 14,
                             fontWeight: 700,
                             color: "rgba(255,255,255,0.9)",
                           }}
@@ -2249,7 +2250,7 @@ export default function Home() {
                         >
                           <span
                             style={{
-                              fontSize: 10,
+                              fontSize: 14,
                               fontWeight: 700,
                               color: "#374151",
                             }}
@@ -2261,12 +2262,12 @@ export default function Home() {
                                 : "初回取得条件"}
                           </span>
                           {hasProgress && (
-                            <span style={{ fontSize: 9, color: "#6b7280" }}>
+                            <span style={{ fontSize: 14, color: "#6b7280" }}>
                               {b.nextTierProgress}/{b.nextTierGoal}
                             </span>
                           )}
                           {isMaxTier && b.exp !== undefined && (
-                            <span style={{ fontSize: 9, color: "#6b7280" }}>
+                            <span style={{ fontSize: 14, color: "#6b7280" }}>
                               {b.exp.toLocaleString()} EXP
                             </span>
                           )}
@@ -2295,7 +2296,7 @@ export default function Home() {
                         {isMaxTier && (
                           <div
                             style={{
-                              fontSize: 9,
+                              fontSize: 14,
                               color: "#10b981",
                               marginTop: 3,
                             }}
@@ -2309,7 +2310,7 @@ export default function Home() {
                         <div>
                           <div
                             style={{
-                              fontSize: 10,
+                              fontSize: 14,
                               fontWeight: 700,
                               color: "#6b7280",
                               marginBottom: 4,
@@ -2346,7 +2347,7 @@ export default function Home() {
                                     <span
                                       style={{
                                         flex: 1,
-                                        fontSize: 10,
+                                        fontSize: 14,
                                         fontWeight: 600,
                                         color: ts.labelColor,
                                       }}
@@ -2354,7 +2355,7 @@ export default function Home() {
                                       {ts.label}バッジ取得
                                     </span>
                                     <span
-                                      style={{ fontSize: 9, color: "#9ca3af" }}
+                                      style={{ fontSize: 14, color: "#9ca3af" }}
                                     >
                                       {h.date}
                                     </span>
@@ -2377,7 +2378,7 @@ export default function Home() {
                   justifyContent: "center",
                   height: "100%",
                   color: "#9ca3af",
-                  fontSize: 11,
+                  fontSize: 14,
                 }}
               >
                 バッジを選択してください
@@ -2411,12 +2412,12 @@ export default function Home() {
                 }}
               >
                 <span
-                  style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e" }}
+                  style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}
                 >
                   デイリーミッション
                 </span>
                 <span
-                  style={{ fontSize: 10, fontWeight: 700, color: "#6b7280" }}
+                  style={{ fontSize: 14, fontWeight: 700, color: "#6b7280" }}
                 >
                   {doneCount}/{tabMissions.length}
                 </span>
@@ -2459,7 +2460,7 @@ export default function Home() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
-                              fontSize: 11,
+                              fontSize: 14,
                               fontWeight: 700,
                               color: done ? "#9ca3af" : "#1f2937",
                               textDecoration: done ? "line-through" : "none",
@@ -2481,7 +2482,7 @@ export default function Home() {
                           {m.reward > 0 && (
                             <span
                               style={{
-                                fontSize: 9,
+                                fontSize: 14,
                                 fontWeight: 800,
                                 color: "#ea580c",
                                 background: "#fff7ed",
@@ -2496,7 +2497,7 @@ export default function Home() {
                           {(m.passExpReward ?? 0) > 0 && (
                             <span
                               style={{
-                                fontSize: 9,
+                                fontSize: 14,
                                 fontWeight: 700,
                                 color: "#1e40af",
                                 background: "#eff6ff",
@@ -2541,7 +2542,7 @@ export default function Home() {
                         </div>
                         <span
                           style={{
-                            fontSize: 8,
+                            fontSize: 14,
                             color: "#9ca3af",
                             whiteSpace: "nowrap",
                           }}
@@ -2555,7 +2556,7 @@ export default function Home() {
                 {tabMissions.length === 0 && (
                   <div
                     style={{
-                      fontSize: 10,
+                      fontSize: 14,
                       color: "#9ca3af",
                       textAlign: "center",
                       padding: "8px 0",
@@ -2609,6 +2610,90 @@ export default function Home() {
           onClose={() => setEditorOpen(false)}
         />
       )}
+
+      {/* シーズン報酬一覧モーダル */}
+      {showRewardModal && createPortal(
+        <div
+          onClick={() => setShowRewardModal(false)}
+          style={{
+            position: "fixed", top: 0, left: 0, width: "100vw", height: "100dvh",
+            background: "rgba(0,0,0,0.5)", zIndex: 300,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "0 16px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white", borderRadius: 20,
+              width: "100%", maxWidth: 480, maxHeight: "80dvh",
+              display: "flex", flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <div style={{
+              background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+              padding: "16px 20px", flexShrink: 0,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <div>
+                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", marginBottom: 2 }}>{seasonName}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: "white" }}>シーズン報酬一覧</div>
+              </div>
+              <button
+                onClick={() => setShowRewardModal(false)}
+                style={{
+                  background: "rgba(255,255,255,0.2)", border: "none",
+                  color: "white", borderRadius: "50%",
+                  width: 32, height: 32, fontSize: 16, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >✕</button>
+            </div>
+            <div style={{ overflowY: "auto", padding: "12px 16px 24px" }}>
+              {rewards.map((reward) => {
+                const chip = TYPE_CHIP[reward.type];
+                const claimed = reward.level <= passLevel;
+                return (
+                  <div key={reward.level} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "10px 12px", borderRadius: 10, marginBottom: 6,
+                    background: claimed ? "#f0fdf4" : "white",
+                    border: `1px solid ${claimed ? "#bbf7d0" : "#e5e7eb"}`,
+                    opacity: claimed ? 0.75 : 1,
+                  }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+                      background: claimed ? "#4f46e5" : "#ede9fe",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 22,
+                    }}>
+                      {claimed ? "✓" : reward.icon}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#4f46e5" }}>Lv.{reward.level}</span>
+                        {chip && (
+                          <span style={{
+                            fontSize: 14, fontWeight: 700, padding: "1px 6px", borderRadius: 4,
+                            background: chip.bg, color: chip.color,
+                          }}>{chip.label}</span>
+                        )}
+                        {claimed && (
+                          <span style={{ fontSize: 14, color: "#10b981", fontWeight: 700, marginLeft: "auto" }}>獲得済み</span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: 14, color: claimed ? "#6b7280" : "#1f2937", fontWeight: 500 }}>
+                        {reward.name}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      , document.body)}
     </div>
   );
 }
@@ -2673,7 +2758,7 @@ function TaskDetailModal({
           {proj && (
             <span
               style={{
-                fontSize: 9,
+                fontSize: 14,
                 fontWeight: 700,
                 padding: "2px 8px",
                 borderRadius: 99,
@@ -2709,7 +2794,7 @@ function TaskDetailModal({
                 alignItems: "center",
                 padding: "5px 0",
                 borderBottom: "1px solid #f3f4f6",
-                fontSize: 12,
+                fontSize: 14,
               }}
             >
               <span style={{ color: "#6b7280", fontWeight: 600 }}>
@@ -2743,7 +2828,7 @@ function TaskDetailModal({
               border: "none",
               background: "#f3f4f6",
               fontWeight: 700,
-              fontSize: 13,
+              fontSize: 14,
               cursor: "pointer",
               color: "#374151",
             }}

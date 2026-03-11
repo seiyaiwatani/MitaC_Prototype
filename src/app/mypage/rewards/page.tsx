@@ -47,8 +47,8 @@ export default function RewardsPage() {
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>報酬交換</span>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 4, background: "#fef9c3", padding: "3px 10px", borderRadius: 99 }}>
           <HiStar style={{ width: 14, height: 14, color: "#f59e0b" }} />
-          <span style={{ fontWeight: 800, fontSize: 13, color: "#78350f" }}>{coins.toLocaleString()}</span>
-          <span style={{ fontSize: 10, color: "#92400e" }}>コイン</span>
+          <span style={{ fontWeight: 800, fontSize: 14, color: "#78350f" }}>{coins.toLocaleString()}</span>
+          <span style={{ fontSize: 14, color: "#92400e" }}>コイン</span>
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export default function RewardsPage() {
               key={cat}
               onClick={() => setCategory(cat)}
               style={{
-                padding: "4px 12px", borderRadius: 99, border: "none", fontSize: 11, fontWeight: 700,
+                padding: "4px 12px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700,
                 cursor: "pointer",
                 background: category === cat ? "#f59e0b" : "#f3f4f6",
                 color:      category === cat ? "white"   : "#6b7280",
@@ -93,7 +93,7 @@ export default function RewardsPage() {
                   {done && (
                     <span style={{
                       display: "flex", alignItems: "center", gap: 3,
-                      fontSize: 10, fontWeight: 700, color: "#065f46",
+                      fontSize: 14, fontWeight: 700, color: "#065f46",
                       background: "#dcfce7", padding: "2px 8px", borderRadius: 99,
                     }}>
                       <HiCheck style={{ width: 10, height: 10 }} />
@@ -101,24 +101,24 @@ export default function RewardsPage() {
                     </span>
                   )}
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 12, color: "#1f2937", marginBottom: 4, lineHeight: 1.4 }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937", marginBottom: 4, lineHeight: 1.4 }}>
                   {item.name}
                 </div>
-                <div style={{ fontSize: 10, color: "#9ca3af", marginBottom: 8 }}>
+                <div style={{ fontSize: 14, color: "#9ca3af", marginBottom: 8 }}>
                   残り {item.stock} 個
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
                     <HiStar style={{ width: 12, height: 12, color: "#f59e0b" }} />
                     <span style={{ fontWeight: 800, fontSize: 14, color: "#f59e0b" }}>{item.cost}</span>
-                    <span style={{ fontSize: 9, color: "#9ca3af" }}>コイン</span>
+                    <span style={{ fontSize: 14, color: "#9ca3af" }}>コイン</span>
                   </div>
                   <button
                     disabled={done || !affordable}
                     onClick={() => setConfirmId(item.id)}
                     style={{
                       padding: "5px 12px", borderRadius: 8, border: "none",
-                      fontSize: 11, fontWeight: 700, cursor: done || !affordable ? "not-allowed" : "pointer",
+                      fontSize: 14, fontWeight: 700, cursor: done || !affordable ? "not-allowed" : "pointer",
                       background: done ? "#e5e7eb" : affordable ? "#f59e0b" : "#f3f4f6",
                       color: done ? "#9ca3af" : affordable ? "white" : "#9ca3af",
                     }}
@@ -133,14 +133,14 @@ export default function RewardsPage() {
 
         {/* コイン取得方法の案内 */}
         <div className="card" style={{ padding: "12px 14px", flexShrink: 0, background: "#fffbeb", border: "1px solid #fde68a" }}>
-          <div style={{ fontWeight: 700, fontSize: 12, color: "#78350f", marginBottom: 6 }}>💡 コインの取得方法</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#78350f", marginBottom: 6 }}>💡 コインの取得方法</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {[
               { action: "始業・終業報告の提出", coin: "+10" },
               { action: "RepoCaの完了",         coin: "+5"  },
               { action: "ミッション達成",        coin: "+報酬分" },
             ].map((r) => (
-              <div key={r.action} style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+              <div key={r.action} style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
                 <span style={{ color: "#92400e" }}>{r.action}</span>
                 <span style={{ fontWeight: 700, color: "#f59e0b" }}>{r.coin}</span>
               </div>
@@ -167,10 +167,10 @@ export default function RewardsPage() {
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 4 }}>
                   <HiStar style={{ width: 14, height: 14, color: "#f59e0b" }} />
                   <span style={{ fontWeight: 800, fontSize: 16, color: "#f59e0b" }}>{item.cost}</span>
-                  <span style={{ fontSize: 11, color: "#9ca3af" }}>コイン消費</span>
+                  <span style={{ fontSize: 14, color: "#9ca3af" }}>コイン消費</span>
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: "#6b7280", textAlign: "center", marginBottom: 16 }}>
+              <div style={{ fontSize: 14, color: "#6b7280", textAlign: "center", marginBottom: 16 }}>
                 交換後の残高: <strong style={{ color: "#1a1a2e" }}>{(coins - item.cost).toLocaleString()}</strong> コイン
               </div>
               <div style={{ display: "flex", gap: 8 }}>

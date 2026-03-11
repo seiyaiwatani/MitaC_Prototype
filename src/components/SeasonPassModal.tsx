@@ -85,12 +85,12 @@ export function SeasonPassModal({ onClose }: Props) {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
               <div>
-                <div style={{ fontSize: 9, opacity: 0.75, letterSpacing: 1, marginBottom: 3 }}>SEASON PASS</div>
+                <div style={{ fontSize: 14, opacity: 0.75, letterSpacing: 1, marginBottom: 3 }}>SEASON PASS</div>
                 <div style={{ fontSize: 15, fontWeight: 800 }}>{seasonName}</div>
               </div>
               <div style={{
                 background: "#f59e0b", color: "#78350f",
-                fontSize: 11, fontWeight: 800,
+                fontSize: 14, fontWeight: 800,
                 padding: "4px 10px", borderRadius: 99, whiteSpace: "nowrap",
               }}>
                 残り {daysLeft}日（{endLabel}まで）
@@ -98,27 +98,27 @@ export function SeasonPassModal({ onClose }: Props) {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "5px 10px", textAlign: "center", flexShrink: 0 }}>
-                <div style={{ fontSize: 9, opacity: 0.8 }}>パスLv.</div>
+                <div style={{ fontSize: 14, opacity: 0.8 }}>パスLv.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.1 }}>{passLevel}</div>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontSize: 10, opacity: 0.8 }}>パスEXP</span>
-                  <span style={{ fontSize: 10, opacity: 0.8 }}>{passExp} / {passExpToNext}</span>
+                  <span style={{ fontSize: 14, opacity: 0.8 }}>パスEXP</span>
+                  <span style={{ fontSize: 14, opacity: 0.8 }}>{passExp} / {passExpToNext}</span>
                 </div>
                 <div style={{ height: 8, background: "rgba(255,255,255,0.3)", borderRadius: 4, overflow: "hidden" }}>
                   <div style={{ width: `${expPct}%`, height: "100%", background: "linear-gradient(90deg,#facc15,#f59e0b)", borderRadius: 4, transition: "width 0.4s" }} />
                 </div>
               </div>
-              <div style={{ fontSize: 11, opacity: 0.7, flexShrink: 0 }}>→ Lv.{passLevel + 1}</div>
+              <div style={{ fontSize: 14, opacity: 0.7, flexShrink: 0 }}>→ Lv.{passLevel + 1}</div>
             </div>
           </div>
 
           {/* 報酬トラック */}
           <div className="card" style={{ padding: "12px 0 10px" }}>
             <div style={{ paddingLeft: 14, marginBottom: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#1a1a2e" }}>報酬トラック</span>
-              <span style={{ fontSize: 10, color: "#9ca3af", marginLeft: 8 }}>5レベルごとに報酬獲得</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>報酬トラック</span>
+              <span style={{ fontSize: 14, color: "#9ca3af", marginLeft: 8 }}>5レベルごとに報酬獲得</span>
             </div>
             <div style={{ overflowX: "auto" }}>
               <div style={{ display: "flex", minWidth: `${totalTrackW + 28}px`, position: "relative", padding: "16px 14px 6px" }}>
@@ -149,16 +149,16 @@ export function SeasonPassModal({ onClose }: Props) {
                       }}>
                         {claimed ? (isMilestone ? reward!.icon : "✓") : (reward ? reward.icon : lv)}
                       </div>
-                      <span style={{ fontSize: 8, marginTop: 4, fontWeight: isCurrent || isMilestone ? 700 : 400, color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#9ca3af") }}>
+                      <span style={{ fontSize: 14, marginTop: 4, fontWeight: isCurrent || isMilestone ? 700 : 400, color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#9ca3af") }}>
                         Lv.{lv}
                       </span>
                       {chip && (
-                        <span style={{ fontSize: 7, padding: "1px 4px", borderRadius: 3, marginTop: 2, background: chip.bg, color: chip.color, fontWeight: 700 }}>
+                        <span style={{ fontSize: 14, padding: "1px 4px", borderRadius: 3, marginTop: 2, background: chip.bg, color: chip.color, fontWeight: 700 }}>
                           {chip.label}
                         </span>
                       )}
                       {reward && (
-                        <span style={{ fontSize: 8, textAlign: "center", marginTop: 1, color: claimed ? "#9ca3af" : "#374151", lineHeight: 1.3, maxWidth: MILESTONE_W - 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        <span style={{ fontSize: 14, textAlign: "center", marginTop: 1, color: claimed ? "#9ca3af" : "#374151", lineHeight: 1.3, maxWidth: MILESTONE_W - 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                           {reward.name}
                         </span>
                       )}

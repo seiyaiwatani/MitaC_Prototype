@@ -24,7 +24,7 @@ function AccountTab() {
       <div style={{
         background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 13, color: "#374151" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 14, color: "#374151" }}>
           <span>始業通知</span>
           {(["on", "off"] as const).map((v) => (
             <label key={v} style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
@@ -61,8 +61,8 @@ function AccountTab() {
         background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
         display: "flex", flexDirection: "column", gap: 8,
       }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#374151" }}>ご意見フォーム</div>
-        <div style={{ fontSize: 12, color: "#6b7280" }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "#374151" }}>ご意見フォーム</div>
+        <div style={{ fontSize: 14, color: "#6b7280" }}>
           URL：https://www.テキストテキストテキストテキストテキストテキスト.com
         </div>
       </div>
@@ -72,8 +72,8 @@ function AccountTab() {
         background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
         display: "flex", flexDirection: "column", gap: 8,
       }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#374151" }}>クレジット</div>
-        <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "#374151" }}>クレジット</div>
+        <div style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.6 }}>
           テキストテキストテキストテキストテキストテキスト
         </div>
       </div>
@@ -88,26 +88,26 @@ function FlexTab() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#374151", marginBottom: 12 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 12 }}>
           フレックスタイム設定
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#374151" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "#374151" }}>
             <span style={{ width: 80 }}>始業時刻</span>
             <input
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 13 }}
+              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 14 }}
             />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "#374151" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "#374151" }}>
             <span style={{ width: 80 }}>終業時刻</span>
             <input
               type="time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
-              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 13 }}
+              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 14 }}
             />
           </div>
         </div>
@@ -119,8 +119,8 @@ function FlexTab() {
 function TextTab({ title, content }: { title: string; content: string }) {
   return (
     <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
-      <div style={{ fontWeight: 700, fontSize: 13, color: "#374151", marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.8 }}>{content}</div>
+      <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.8 }}>{content}</div>
     </div>
   );
 }
@@ -134,8 +134,8 @@ function ExternalTab() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#374151", marginBottom: 8 }}>外部連携</div>
-        <div style={{ fontSize: 12, color: "#6b7280" }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 8 }}>外部連携</div>
+        <div style={{ fontSize: 14, color: "#6b7280" }}>
           テキストテキストテキストテキストテキストテキスト
         </div>
       </div>
@@ -189,7 +189,7 @@ export default function SettingsPage() {
                 borderRadius: 8,
                 border: "none",
                 cursor: "pointer",
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: activeTab === tab ? 700 : 400,
                 textAlign: "left",
                 background: activeTab === tab ? "#d1d5db" : "transparent",

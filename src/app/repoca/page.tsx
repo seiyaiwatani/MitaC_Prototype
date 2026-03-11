@@ -174,7 +174,7 @@ export default function RepoCaList() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="検索..."
-              style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 12 }}
+              style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 14 }}
             />
           </div>
         )}
@@ -192,7 +192,7 @@ export default function RepoCaList() {
             style={{
               flex: 1, padding: "10px 0",
               border: "none", background: "none", cursor: "pointer",
-              fontSize: 13, fontWeight: mainTab === tab ? 700 : 500,
+              fontSize: 14, fontWeight: mainTab === tab ? 700 : 500,
               color: mainTab === tab ? "#10b981" : "#6b7280",
               borderBottom: `2px solid ${mainTab === tab ? "#10b981" : "transparent"}`,
               marginBottom: -2,
@@ -220,7 +220,7 @@ export default function RepoCaList() {
                     <s.Icon style={{ width: 20, height: 20, color: s.color }} />
                   </div>
                   <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937" }}>{s.value}</div>
-                  <div style={{ fontSize: 10, color: "#6b7280" }}>{s.label}</div>
+                  <div style={{ fontSize: 14, color: "#6b7280" }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -234,7 +234,7 @@ export default function RepoCaList() {
                   style={{
                     flex: 1, padding: "5px 2px", borderRadius: 20,
                     border: filter === f.key ? "1.5px solid #10b981" : "1.5px solid #d1d5db",
-                    fontSize: 10, fontWeight: 600, cursor: "pointer",
+                    fontSize: 14, fontWeight: 600, cursor: "pointer",
                     background: filter === f.key ? "#10b981" : "white",
                     color: filter === f.key ? "white" : "#6b7280",
                     boxShadow: filter === f.key
@@ -255,7 +255,7 @@ export default function RepoCaList() {
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
                 style={{
                   width: 110, flexShrink: 0, padding: "7px 4px", borderRadius: 8,
-                  border: "1.5px solid #d1d5db", fontSize: 11, fontWeight: 600,
+                  border: "1.5px solid #d1d5db", fontSize: 14, fontWeight: 600,
                   color: "#374151", background: "white", cursor: "pointer",
                   textAlign: "center", textAlignLast: "center",
                 }}
@@ -270,7 +270,7 @@ export default function RepoCaList() {
                   flex: 2, display: "flex", alignItems: "center", justifyContent: "center",
                   gap: 6, padding: "9px 0", borderRadius: 10,
                   background: "linear-gradient(135deg,#10b981,#059669)",
-                  color: "white", fontWeight: 700, fontSize: 13,
+                  color: "white", fontWeight: 700, fontSize: 14,
                   textDecoration: "none",
                   boxShadow: "0 2px 8px rgba(16,185,129,0.35)",
                 }}
@@ -284,7 +284,7 @@ export default function RepoCaList() {
               {filtered.length === 0 ? (
                 <div style={{ textAlign: "center", padding: 32, color: "#9ca3af" }}>
                   <div style={{ fontSize: 36, marginBottom: 8 }}>🃏</div>
-                  <p style={{ fontSize: 13 }}>RepoCaが見つかりませんでした</p>
+                  <p style={{ fontSize: 14 }}>RepoCaが見つかりませんでした</p>
                 </div>
               ) : (
                 filtered.map((rc) => (
@@ -325,22 +325,22 @@ function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* タグ */}
         <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 4 }}>
-          <span style={{ fontSize: 12 }}>{TASK_ICON[rc.taskType] ?? "📌"}</span>
-          <span className="chip chip-indigo" style={{ fontSize: 10, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontSize: 14 }}>{TASK_ICON[rc.taskType] ?? "📌"}</span>
+          <span className="chip chip-indigo" style={{ fontSize: 14, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis" }}>
             {proj?.name}
           </span>
-          <span className="chip" style={{ fontSize: 10, background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
+          <span className="chip" style={{ fontSize: 14, background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
             {rc.implScope}
           </span>
-          {rc.isFavorite && <span style={{ fontSize: 10 }}>⭐</span>}
+          {rc.isFavorite && <span style={{ fontSize: 14 }}>⭐</span>}
         </div>
-        <p style={{ fontSize: 12, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
+        <p style={{ fontSize: 14, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
         <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
-          <span className="chip chip-gray" style={{ fontSize: 9 }}>{rc.label}</span>
+          <span className="chip chip-gray" style={{ fontSize: 14 }}>{rc.label}</span>
           {rc.duration > 0 && (
-            <span style={{ fontSize: 9, color: "#6b7280" }}>{fmtDuration(rc.duration)}</span>
+            <span style={{ fontSize: 14, color: "#6b7280" }}>{fmtDuration(rc.duration)}</span>
           )}
-          <span style={{ fontSize: 10, color: "#4f46e5", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
+          <span style={{ fontSize: 14, color: "#4f46e5", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
         </div>
       </div>
     </div>
@@ -367,7 +367,7 @@ function ProjectsContent() {
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af" }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 36, marginBottom: 8 }}>🐾</div>
-          <p style={{ fontSize: 13 }}>プロジェクトがありません</p>
+          <p style={{ fontSize: 14 }}>プロジェクトがありません</p>
         </div>
       </div>
     );
@@ -413,7 +413,7 @@ function ProjectsContent() {
                   {project.name}
                 </div>
                 {d && (
-                  <div style={{ fontSize: 10, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ fontSize: 14, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {d.techStack.split(",").slice(0, 2).join(",")}
                   </div>
                 )}
@@ -429,18 +429,18 @@ function ProjectsContent() {
         <div style={{ flex: 1, overflowY: "auto", padding: "14px 18px" }}>
           {/* 概要 */}
           <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>概要</div>
-            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.description}</p>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>概要</div>
+            <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.description}</p>
           </div>
 
           {/* メンバー */}
           <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, marginBottom: 8 }}>メンバー</div>
+            <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600, marginBottom: 8 }}>メンバー</div>
             {/* 役割別サマリー */}
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
               {memberGroups.map((g) => (
                 <span key={g.role} style={{
-                  fontSize: 10, fontWeight: 600,
+                  fontSize: 14, fontWeight: 600,
                   background: "#f3f4f6", color: "#374151",
                   borderRadius: 99, padding: "2px 8px",
                 }}>
@@ -458,7 +458,7 @@ function ProjectsContent() {
                     padding: "6px 10px",
                     borderBottom: i < detail.memberList.length - 1 ? "1px solid #f3f4f6" : "none",
                     background: m.name.includes("自分") ? "#f0fdf4" : "white",
-                    fontSize: 11,
+                    fontSize: 14,
                   }}
                 >
                   <span style={{
@@ -469,7 +469,7 @@ function ProjectsContent() {
                   <span style={{
                     color: m.name.includes("自分") ? "#10b981" : "#6b7280",
                     fontWeight: m.name.includes("自分") ? 700 : 400,
-                    fontSize: 10,
+                    fontSize: 14,
                   }}>
                     {m.role}
                   </span>
@@ -480,28 +480,28 @@ function ProjectsContent() {
 
           {/* 主な仕様技術 */}
           <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, marginBottom: 5 }}>主な仕様技術</div>
-            <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, wordBreak: "break-word" }}>
+            <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600, marginBottom: 5 }}>主な仕様技術</div>
+            <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, wordBreak: "break-word" }}>
               {detail.techStack}
             </div>
           </div>
 
           {/* 役割 */}
           <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>役割</div>
-            <div style={{ fontSize: 12, color: "#374151" }}>{detail.role}</div>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>役割</div>
+            <div style={{ fontSize: 14, color: "#374151" }}>{detail.role}</div>
           </div>
 
           {/* 業務内容 */}
           <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>業務内容</div>
-            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.workContent}</p>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>業務内容</div>
+            <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0 }}>{detail.workContent}</p>
           </div>
 
           {/* アサイン日 */}
           <div>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>アサイン日</div>
-            <div style={{ fontSize: 12, color: "#374151" }}>{detail.assignedDate}</div>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 5, fontWeight: 600 }}>アサイン日</div>
+            <div style={{ fontSize: 14, color: "#374151" }}>{detail.assignedDate}</div>
           </div>
         </div>
       )}
@@ -550,19 +550,19 @@ function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void })
             <div style={{ display: "flex", gap: 6, marginBottom: 6, flexWrap: "wrap" }}>
               {proj && (
                 <span style={{
-                  fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+                  fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
                   background: proj.color, color: proj.textColor,
                 }}>
                   {proj.icon} {proj.name}
                 </span>
               )}
               <span style={{
-                fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
+                fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99,
                 background: "rgba(255,255,255,0.25)", color: "white",
               }}>
                 {rc.taskType}
               </span>
-              {rc.isFavorite && <span style={{ fontSize: 12 }}>⭐</span>}
+              {rc.isFavorite && <span style={{ fontSize: 14 }}>⭐</span>}
             </div>
             <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>
               {rc.content}
@@ -573,7 +573,7 @@ function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void })
             padding: "4px 10px", textAlign: "center", flexShrink: 0,
           }}>
             <div style={{ fontSize: 14, fontWeight: 800, color: "white" }}>+{rc.xp}</div>
-            <div style={{ fontSize: 9, color: "rgba(255,255,255,0.8)" }}>XP</div>
+            <div style={{ fontSize: 14, color: "rgba(255,255,255,0.8)" }}>XP</div>
           </div>
         </div>
 
@@ -582,7 +582,7 @@ function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void })
           {rows.map((r) => (
             <div key={r.label} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12,
+              padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 14,
             }}>
               <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
               <span style={{
@@ -603,7 +603,7 @@ function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void })
             style={{
               width: "100%", padding: "10px 0", borderRadius: 10,
               border: "none", background: "#f3f4f6",
-              fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+              fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151",
             }}
           >
             閉じる

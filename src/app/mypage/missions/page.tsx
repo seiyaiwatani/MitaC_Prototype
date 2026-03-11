@@ -29,7 +29,7 @@ export default function MissionsPage() {
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>ミッション</span>
-        <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 600, color: "#6b7280" }}>
+        <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 600, color: "#6b7280" }}>
           達成: {totalCount}/{missions.length}
         </span>
       </div>
@@ -53,10 +53,10 @@ export default function MissionsPage() {
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
               }}
             >
-              <span style={{ fontSize: 12, fontWeight: 700, color: active ? tab.accent : "#9ca3af" }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: active ? tab.accent : "#9ca3af" }}>
                 {tab.label}
               </span>
-              <span style={{ fontSize: 9, color: active ? tab.accent : "#9ca3af" }}>
+              <span style={{ fontSize: 14, color: active ? tab.accent : "#9ca3af" }}>
                 {cnt}/{tot}
               </span>
             </button>
@@ -72,10 +72,10 @@ export default function MissionsPage() {
           flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center",
           background: accent + "12", borderRadius: 10, padding: "8px 14px",
         }}>
-          <span style={{ fontSize: 11, color: accent, fontWeight: 700 }}>
+          <span style={{ fontSize: 14, color: accent, fontWeight: 700 }}>
             {TABS.find((t) => t.key === activeTab)!.desc}
           </span>
-          <span style={{ fontSize: 11, color: accent, fontWeight: 700 }}>
+          <span style={{ fontSize: 14, color: accent, fontWeight: 700 }}>
             {doneCount}/{items.length} 達成
           </span>
         </div>
@@ -84,7 +84,7 @@ export default function MissionsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
           {items.length === 0 ? (
             <div style={{ textAlign: "center", padding: "32px 16px", color: "#9ca3af" }}>
-              <p style={{ fontSize: 13 }}>ミッションはありません</p>
+              <p style={{ fontSize: 14 }}>ミッションはありません</p>
             </div>
           ) : items.map((m) => {
             const pct  = Math.min(Math.round((m.progress / m.goal) * 100), 100);
@@ -103,24 +103,24 @@ export default function MissionsPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" }}>
                       <span style={{
-                        fontSize: 13, fontWeight: 700, color: done ? "#9ca3af" : "#1a1a2e",
+                        fontSize: 14, fontWeight: 700, color: done ? "#9ca3af" : "#1a1a2e",
                         textDecoration: done ? "line-through" : "none",
                       }}>{m.title}</span>
                       {done && (
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#065f46", background: "#dcfce7", padding: "1px 8px", borderRadius: 99 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#065f46", background: "#dcfce7", padding: "1px 8px", borderRadius: 99 }}>
                           達成！
                         </span>
                       )}
                     </div>
                     <p style={{
-                      fontSize: 11, color: "#6b7280", margin: 0, lineHeight: 1.4,
+                      fontSize: 14, color: "#6b7280", margin: 0, lineHeight: 1.4,
                       textDecoration: done ? "line-through" : "none",
                     }}>{m.description}</p>
                   </div>
                   <div style={{ flexShrink: 0, marginLeft: 12, display: "flex", flexDirection: "column", gap: 3, alignItems: "flex-end" }}>
                     <div style={{
                       background: "#fff7ed", color: "#ea580c",
-                      fontWeight: 800, fontSize: 12,
+                      fontWeight: 800, fontSize: 14,
                       padding: "3px 10px", borderRadius: 99,
                       whiteSpace: "nowrap",
                     }}>
@@ -129,7 +129,7 @@ export default function MissionsPage() {
                     {m.passExpReward && (
                       <div style={{
                         background: "#eff6ff", color: "#1e40af",
-                        fontWeight: 700, fontSize: 11,
+                        fontWeight: 700, fontSize: 14,
                         padding: "2px 8px", borderRadius: 99,
                         whiteSpace: "nowrap",
                       }}>
@@ -150,10 +150,10 @@ export default function MissionsPage() {
                       transition: "width 0.3s ease",
                     }} />
                   </div>
-                  <span style={{ fontSize: 10, color: "#6b7280", whiteSpace: "nowrap", fontWeight: 600 }}>
+                  <span style={{ fontSize: 14, color: "#6b7280", whiteSpace: "nowrap", fontWeight: 600 }}>
                     {m.progress}/{m.goal}
                   </span>
-                  <span style={{ fontSize: 10, color: done ? "#10b981" : accent, fontWeight: 700, whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 14, color: done ? "#10b981" : accent, fontWeight: 700, whiteSpace: "nowrap" }}>
                     {pct}%
                   </span>
                 </div>

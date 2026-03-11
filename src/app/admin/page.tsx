@@ -198,7 +198,7 @@ export default function AdminPage() {
       }}>
         <HiCog style={{ width: 18, height: 18, opacity: 0.9 }} />
         <span style={{ fontWeight: 800, fontSize: 15 }}>管理者</span>
-        <span style={{ marginLeft: "auto", fontSize: 11, opacity: 0.7 }}>
+        <span style={{ marginLeft: "auto", fontSize: 14, opacity: 0.7 }}>
           {NAV_ITEMS.find((n) => n.key === view)?.label}
         </span>
       </header>
@@ -286,8 +286,8 @@ export default function AdminPage() {
                     <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
                       {/* 概要 */}
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>概要</div>
-                        <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>
+                        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>概要</div>
+                        <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0 }}>
                           {selDetail.description}
                         </p>
                       </div>
@@ -295,14 +295,14 @@ export default function AdminPage() {
                       {/* メンバー */}
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>メンバー</div>
-                          <span style={{ fontSize: 10, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                          <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>メンバー</div>
+                          <span style={{ fontSize: 14, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
                             メンバーを見る &gt;
                           </span>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                           {selDetail.members.map((m) => (
-                            <div key={m.role} style={{ fontSize: 12, color: "#374151" }}>
+                            <div key={m.role} style={{ fontSize: 14, color: "#374151" }}>
                               {m.role}：{m.count}名
                             </div>
                           ))}
@@ -312,32 +312,32 @@ export default function AdminPage() {
                       {/* 主な仕様技術 */}
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                          <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600 }}>主な仕様技術</div>
-                          <span style={{ fontSize: 10, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                          <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>主な仕様技術</div>
+                          <span style={{ fontSize: 14, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
                             すべて見る &gt;
                           </span>
                         </div>
-                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.techStack}</div>
+                        <div style={{ fontSize: 14, color: "#374151" }}>{selDetail.techStack}</div>
                       </div>
 
                       {/* 役割 */}
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>役割</div>
-                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.myRole}</div>
+                        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>役割</div>
+                        <div style={{ fontSize: 14, color: "#374151" }}>{selDetail.myRole}</div>
                       </div>
 
                       {/* 業務内容 */}
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>業務内容</div>
-                        <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.7, margin: 0 }}>
+                        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>業務内容</div>
+                        <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0 }}>
                           {selDetail.jobContent}
                         </p>
                       </div>
 
                       {/* アサイン日 */}
                       <div>
-                        <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>アサイン日</div>
-                        <div style={{ fontSize: 12, color: "#374151" }}>{selDetail.assignDate}</div>
+                        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 6, fontWeight: 600 }}>アサイン日</div>
+                        <div style={{ fontSize: 14, color: "#374151" }}>{selDetail.assignDate}</div>
                       </div>
                     </div>
                   )}
@@ -349,12 +349,12 @@ export default function AdminPage() {
           {/* ── 工数管理/日 ── */}
           {view === "daily" && (
             <>
-              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>工数管理 / 日 — 2026/02/24</div>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>工数管理 / 日 — 2026/02/24</div>
 
               {/* 凡例 */}
               <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
                 {projects.map((p) => (
-                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10 }}>
+                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 14 }}>
                     <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[p.id] }} />
                     <span style={{ color: "#4b5563" }}>{p.name}</span>
                   </div>
@@ -374,7 +374,7 @@ export default function AdminPage() {
                         <div
                           onClick={() => openModal(m, "daily")}
                           style={{
-                            width: 64, fontSize: 11, flexShrink: 0, textAlign: "right",
+                            width: 64, fontSize: 14, flexShrink: 0, textAlign: "right",
                             cursor: "pointer", userSelect: "none",
                             fontWeight: 600, color: "#4f46e5",
                             textDecoration: "underline", textDecorationStyle: "dotted",
@@ -419,10 +419,10 @@ export default function AdminPage() {
                           })}
                         </div>
 
-                        <span style={{ fontSize: 10, color: "#6b7280", width: 28, flexShrink: 0, textAlign: "right" }}>
+                        <span style={{ fontSize: 14, color: "#6b7280", width: 28, flexShrink: 0, textAlign: "right" }}>
                           {(total / 60).toFixed(1)}h
                         </span>
-                        <span style={{ fontSize: 10, fontWeight: 700, width: 36, flexShrink: 0, color: m.reported ? "#10b981" : "#ef4444" }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, width: 36, flexShrink: 0, color: m.reported ? "#10b981" : "#ef4444" }}>
                           {m.reported ? "報告済" : "未報告"}
                         </span>
                       </div>
@@ -431,7 +431,7 @@ export default function AdminPage() {
                 })}
               </div>
 
-              <div style={{ marginTop: 8, paddingLeft: 72, display: "flex", justifyContent: "space-between", fontSize: 9, color: "#9ca3af" }}>
+              <div style={{ marginTop: 8, paddingLeft: 72, display: "flex", justifyContent: "space-between", fontSize: 14, color: "#9ca3af" }}>
                 <span>0h</span><span>2h</span><span>4h</span><span>6h</span><span>8h</span>
               </div>
             </>
@@ -440,15 +440,15 @@ export default function AdminPage() {
           {/* ── 工数管理/月 ── */}
           {view === "monthly" && (
             <>
-              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>工数管理 / 月 — 2026年2月</div>
-              <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 12 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>工数管理 / 月 — 2026年2月</div>
+              <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 12 }}>
                 各メンバーの月合計工数をプロジェクト別に集計しています
               </div>
 
               {/* 凡例 */}
               <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
                 {projects.map((p) => (
-                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11 }}>
+                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 14 }}>
                     <div style={{ width: 12, height: 12, borderRadius: 3, background: PROJ_COLOR[p.id] ?? "#6b7280", flexShrink: 0 }} />
                     <span style={{ color: "#374151" }}>{p.name}</span>
                   </div>
@@ -470,14 +470,14 @@ export default function AdminPage() {
                         <span
                           onClick={() => openModal(m, "monthly")}
                           style={{
-                            fontSize: 12, fontWeight: 700, color: "#4f46e5",
+                            fontSize: 14, fontWeight: 700, color: "#4f46e5",
                             cursor: "pointer", userSelect: "none",
                             textDecoration: "underline", textDecorationStyle: "dotted",
                           }}
                         >
                           {m.name}
                         </span>
-                        <span style={{ fontSize: 11, color: "#6b7280" }}>
+                        <span style={{ fontSize: 14, color: "#6b7280" }}>
                           合計 <strong style={{ color: "#1a1a2e" }}>{totalH}h</strong>
                         </span>
                       </div>
@@ -518,7 +518,7 @@ export default function AdminPage() {
                               onMouseMove={(e) => setTooltip((prev) => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
                               onMouseLeave={() => { setHoveredKey(null); setTooltip(null); }}
                             >
-                              <span style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.9)", whiteSpace: "nowrap", padding: "0 4px" }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.9)", whiteSpace: "nowrap", padding: "0 4px" }}>
                                 {(seg.min / 60).toFixed(0)}h
                               </span>
                             </div>
@@ -531,7 +531,7 @@ export default function AdminPage() {
                           const proj = projects.find((p) => p.id === seg.projectId);
                           const pct  = Math.round((seg.min / totalMin) * 100);
                           return (
-                            <span key={seg.projectId} style={{ fontSize: 9, color: "#6b7280", display: "flex", alignItems: "center", gap: 3 }}>
+                            <span key={seg.projectId} style={{ fontSize: 14, color: "#6b7280", display: "flex", alignItems: "center", gap: 3 }}>
                               <span style={{ width: 8, height: 8, borderRadius: 2, background: PROJ_COLOR[seg.projectId], display: "inline-block" }} />
                               {proj?.name ?? seg.projectId}: {(seg.min / 60).toFixed(0)}h ({pct}%)
                             </span>
@@ -543,7 +543,7 @@ export default function AdminPage() {
                 })}
               </div>
 
-              <div style={{ marginTop: 16, borderTop: "1px solid #f3f4f6", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 9, color: "#9ca3af" }}>
+              <div style={{ marginTop: 16, borderTop: "1px solid #f3f4f6", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 14, color: "#9ca3af" }}>
                 <span>0h</span><span>40h</span><span>80h</span><span>120h</span><span>160h</span>
               </div>
             </>
@@ -555,16 +555,16 @@ export default function AdminPage() {
 
               {/* 左: ミッション一覧 */}
               <div>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10 }}>ミッション一覧</div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>ミッション一覧</div>
                 {(["daily", "monthly", "unlimited"] as Mission["type"][]).map((type) => {
                   const label = type === "daily" ? "日次" : type === "monthly" ? "月次" : "無期限";
                   const list  = missions.filter((m) => m.type === type);
                   return (
                     <div key={type} style={{ marginBottom: 14 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>{label}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>{label}</div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                         {list.length === 0 ? (
-                          <div style={{ fontSize: 11, color: "#9ca3af", padding: "6px 0" }}>なし</div>
+                          <div style={{ fontSize: 14, color: "#9ca3af", padding: "6px 0" }}>なし</div>
                         ) : list.map((m) => (
                           <div
                             key={m.id}
@@ -582,15 +582,15 @@ export default function AdminPage() {
                               {m.completed && <HiCheck style={{ width: 11, height: 11, color: "white" }} />}
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 12, fontWeight: 700, color: m.completed ? "#9ca3af" : "#1f2937", textDecoration: m.completed ? "line-through" : "none" }}>
+                              <div style={{ fontSize: 14, fontWeight: 700, color: m.completed ? "#9ca3af" : "#1f2937", textDecoration: m.completed ? "line-through" : "none" }}>
                                 {m.title}
                               </div>
-                              <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 1 }}>{m.description}</div>
+                              <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 1 }}>{m.description}</div>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
-                              <span style={{ fontSize: 10, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
+                              <span style={{ fontSize: 14, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
                               {m.passExpReward ? (
-                                <span style={{ fontSize: 9, color: "#1e40af", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
+                                <span style={{ fontSize: 14, color: "#1e40af", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
                               ) : null}
                             </div>
                           </div>
@@ -603,23 +603,23 @@ export default function AdminPage() {
 
               {/* 右: ミッション作成フォーム */}
               <div>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10 }}>ミッション追加</div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>ミッション追加</div>
                 <div className="card" style={{ padding: 14 }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     <div>
-                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>タイトル</label>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>タイトル</label>
                       <input value={mTitle} onChange={(e) => setMTitle(e.target.value)} placeholder="例: 始業報告を3日連続提出"
-                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                     </div>
                     <div>
-                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>説明</label>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>説明</label>
                       <input value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="ミッションの詳細説明"
-                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                     </div>
                     <div>
-                      <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
                       <select value={mType} onChange={(e) => setMType(e.target.value as Mission["type"])}
-                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 12 }}>
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 14 }}>
                         <option value="daily">日次</option>
                         <option value="monthly">月次</option>
                         <option value="unlimited">無期限</option>
@@ -627,20 +627,20 @@ export default function AdminPage() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: "#ea580c", display: "block", marginBottom: 3 }}>アカウントXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#ea580c", display: "block", marginBottom: 3 }}>アカウントXP</label>
                         <input type="number" min={0} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
-                          style={{ width: "100%", border: "1px solid #fed7aa", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                          style={{ width: "100%", border: "1px solid #fed7aa", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 600, color: "#1e40af", display: "block", marginBottom: 3 }}>パスEXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#1e40af", display: "block", marginBottom: 3 }}>パスEXP</label>
                         <input type="number" min={0} value={mPassExp} onChange={(e) => setMPassExp(Number(e.target.value))}
-                          style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 6, padding: "6px 8px", fontSize: 12 }} />
+                          style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                     </div>
                   </div>
                   <button
                     className="btn btn-primary"
-                    style={{ width: "100%", marginTop: 12, fontSize: 12 }}
+                    style={{ width: "100%", marginTop: 12, fontSize: 14 }}
                     disabled={!mTitle.trim()}
                     onClick={() => {
                       addMission({ type: mType, title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false });
@@ -657,21 +657,21 @@ export default function AdminPage() {
           {/* ── プロジェクト作成 ── */}
           {view === "new-project" && (
             <>
-              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 12 }}>プロジェクト作成</div>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 12 }}>プロジェクト作成</div>
               <div className="card" style={{ padding: 14, maxWidth: 380 }}>
                 <div style={{ marginBottom: 10 }}>
-                  <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト名</label>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト名</label>
                   <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="例: 社内基盤システム刷新"
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }} />
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }} />
                 </div>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>メモ</label>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>メモ</label>
                   <textarea value={projMemo} onChange={(e) => setProjMemo(e.target.value)} placeholder="プロジェクトの概要・備考" rows={4}
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12, resize: "vertical" }} />
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "vertical" }} />
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button className="btn btn-ghost" style={{ flex: 1, fontSize: 12 }} onClick={() => setView("projects")}>キャンセル</button>
-                  <button className="btn btn-primary" style={{ flex: 2, fontSize: 12 }} disabled={!projName.trim()}
+                  <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }} onClick={() => setView("projects")}>キャンセル</button>
+                  <button className="btn btn-primary" style={{ flex: 2, fontSize: 14 }} disabled={!projName.trim()}
                     onClick={() => { addProject(projName.trim()); setProjName(""); setProjMemo(""); setView("projects"); }}>
                     登録
                   </button>
@@ -689,9 +689,9 @@ export default function AdminPage() {
           position: "fixed", left: tooltip.x + 14, top: tooltip.y - 10,
           background: "white", border: "1px solid #e5e7eb", borderRadius: 8,
           padding: "10px 14px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
-          zIndex: 9999, fontSize: 11, minWidth: 180, pointerEvents: "none",
+          zIndex: 9999, fontSize: 14, minWidth: 180, pointerEvents: "none",
         }}>
-          <div style={{ fontWeight: 700, color: tooltip.titleColor, marginBottom: 6, fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+          <div style={{ fontWeight: 700, color: tooltip.titleColor, marginBottom: 6, fontSize: 14, display: "flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: tooltip.titleColor, display: "inline-block" }} />
             {tooltip.title}
           </div>
@@ -735,13 +735,13 @@ export default function AdminPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 800, color: "#1a1a2e" }}>{modal.member.name}</div>
-                <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>
+                <div style={{ fontSize: 14, color: "#6b7280", marginTop: 3 }}>
                   {modal.mode === "daily" ? "2026/02/24 の工数詳細" : "2026年2月 の月次工数"}
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 700, padding: "3px 12px", borderRadius: 99,
+                  fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: 99,
                   background: modal.member.reported ? "#dcfce7" : "#fee2e2",
                   color:      modal.member.reported ? "#166534"  : "#991b1b",
                 }}>
@@ -761,7 +761,7 @@ export default function AdminPage() {
                 <>
                   {/* 合計バー */}
                   <div style={{ marginBottom: 20 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b7280", marginBottom: 5 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 5 }}>
                       <span>本日合計</span>
                       <span style={{ fontWeight: 700, color: "#1a1a2e" }}>{(total / 60).toFixed(1)}h / 8.0h</span>
                     </div>
@@ -791,9 +791,9 @@ export default function AdminPage() {
                           }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                               <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[seg.projectId] }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e" }}>{proj?.name}</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>{proj?.name}</span>
                             </div>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
                               {(seg.min / 60).toFixed(1)}h
                             </span>
                           </div>
@@ -805,8 +805,8 @@ export default function AdminPage() {
                               borderBottom: i < seg.tasks.length - 1 ? "1px solid #f9fafb" : "none",
                               background: "white",
                             }}>
-                              <span style={{ fontSize: 12, color: "#374151" }}>{t.name}</span>
-                              <span style={{ fontSize: 11, color: "#9ca3af", whiteSpace: "nowrap" }}>{t.min}分</span>
+                              <span style={{ fontSize: 14, color: "#374151" }}>{t.name}</span>
+                              <span style={{ fontSize: 14, color: "#9ca3af", whiteSpace: "nowrap" }}>{t.min}分</span>
                             </div>
                           ))}
                         </div>
@@ -832,15 +832,15 @@ export default function AdminPage() {
                     marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center",
                   }}>
                     <div>
-                      <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>月間合計工数</div>
+                      <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 2 }}>月間合計工数</div>
                       <div style={{ fontSize: 28, fontWeight: 800, color: "#1a1a2e" }}>
                         {(totalMin / 60).toFixed(1)}<span style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", marginLeft: 2 }}>h</span>
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>稼働率</div>
+                      <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 2 }}>稼働率</div>
                       <div style={{ fontSize: 22, fontWeight: 800, color: "#4f46e5" }}>
-                        {Math.round((totalMin / maxMin) * 100)}<span style={{ fontSize: 12, color: "#6b7280" }}>%</span>
+                        {Math.round((totalMin / maxMin) * 100)}<span style={{ fontSize: 14, color: "#6b7280" }}>%</span>
                       </div>
                     </div>
                   </div>
@@ -855,11 +855,11 @@ export default function AdminPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                               <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[seg.projectId] }} />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e" }}>{proj?.name}</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>{proj?.name}</span>
                             </div>
                             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                              <span style={{ fontSize: 11, color: "#6b7280" }}>{pct}%</span>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
+                              <span style={{ fontSize: 14, color: "#6b7280" }}>{pct}%</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
                                 {(seg.min / 60).toFixed(1)}h
                               </span>
                             </div>

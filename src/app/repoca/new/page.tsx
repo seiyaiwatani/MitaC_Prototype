@@ -97,7 +97,7 @@ export default function NewRepoCa() {
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>RepoCa作成</span>
-        <span style={{ marginLeft: "auto", background: "#dcfce7", color: "#166534", fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 99 }}>
+        <span style={{ marginLeft: "auto", background: "#dcfce7", color: "#166534", fontSize: 14, fontWeight: 700, padding: "2px 10px", borderRadius: 99 }}>
           +{xp} XP
         </span>
       </div>
@@ -125,10 +125,10 @@ export default function NewRepoCa() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", gap: 4, marginBottom: 3 }}>
-                          <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.name}</span>
-                          <span className="chip chip-gray" style={{ fontSize: 9 }}>{c.label}</span>
+                          <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                          <span className="chip chip-gray" style={{ fontSize: 14 }}>{c.label}</span>
                         </div>
-                        <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{c.content}</p>
+                        <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{c.content}</p>
                       </div>
                       <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: 6 }}>
                         <button
@@ -150,7 +150,7 @@ export default function NewRepoCa() {
                       </div>
                     </div>
                     {isOpen && (
-                      <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #f3f4f6", fontSize: 10, color: "#6b7280", display: "flex", flexDirection: "column", gap: 2 }}>
+                      <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #f3f4f6", fontSize: 14, color: "#6b7280", display: "flex", flexDirection: "column", gap: 2 }}>
                         <span>PJ名: {proj?.name}</span>
                         <span>ラベル: {c.label}</span>
                         <span>実装範囲: {c.implScope}</span>
@@ -173,7 +173,7 @@ export default function NewRepoCa() {
               {(["開発", "その他"] as Tab[]).map((t) => (
                 <button key={t} onClick={() => { setTab(t); setDraft((d) => ({ ...d, taskType: t === "開発" ? "開発" : "その他" })); }}
                   style={{
-                    padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 10, fontWeight: 700, cursor: "pointer",
+                    padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
                     background: tab === t ? "#4f46e5" : "#f3f4f6",
                     color: tab === t ? "white" : "#6b7280",
                   }}>
@@ -188,7 +188,7 @@ export default function NewRepoCa() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <button
                 onClick={() => setDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
-                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 11, padding: 0 }}
+                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 14, padding: 0 }}
               >
                 {draft.isFavorite
                   ? <HiStar style={{ width: 16, height: 16, color: "#d97706" }} />
@@ -200,7 +200,7 @@ export default function NewRepoCa() {
                   const fav = allRepoCas.find((r) => r.id === e.target.value);
                   if (fav) setDraft((d) => ({ ...d, projectId: fav.projectId, label: fav.label, implScope: fav.implScope, content: fav.content }));
                 }}
-                style={{ fontSize: 10, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 6px", color: "#374151" }}
+                style={{ fontSize: 14, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 6px", color: "#374151" }}
               >
                 <option value="">お気に入りから選択 ▼</option>
                 {allRepoCas.filter((r) => r.isFavorite).map((r) => (
@@ -211,22 +211,22 @@ export default function NewRepoCa() {
 
             {/* PJ名 */}
             <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                 PJ名 <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <select value={draft.projectId} onChange={(e) => setDraft((d) => ({ ...d, projectId: e.target.value }))}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                 {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
               </select>
             </div>
 
             {/* ラベル */}
             <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                 ラベル <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <select value={draft.label} onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                 {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
@@ -235,11 +235,11 @@ export default function NewRepoCa() {
 
             {/* 実装範囲 */}
             <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                 実装範囲 <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <select value={draft.implScope} onChange={(e) => setDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#374151" }}>
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                 {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -248,7 +248,7 @@ export default function NewRepoCa() {
 
             {/* タスク内容 */}
             <div style={{ marginBottom: 10 }}>
-              <label style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                 タスク内容 <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <textarea
@@ -256,20 +256,20 @@ export default function NewRepoCa() {
                 onChange={(e) => setDraft((d) => ({ ...d, content: e.target.value }))}
                 placeholder="例）Contactページ作成、デイリースクラム..."
                 rows={3}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 11, resize: "none", color: "#374151" }}
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, resize: "none", color: "#374151" }}
               />
-              <div style={{ textAlign: "right", fontSize: 9, color: "#9ca3af" }}>{draft.content.length}文字</div>
+              <div style={{ textAlign: "right", fontSize: 14, color: "#9ca3af" }}>{draft.content.length}文字</div>
             </div>
 
             {/* フォームボタン */}
             <div style={{ display: "flex", gap: 6 }}>
-              <button className="btn btn-ghost" style={{ flex: 1, fontSize: 10, padding: "6px" }}
+              <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14, padding: "6px" }}
                 disabled={!isValid} onClick={addToDraft}>
                 業務報告に追加
               </button>
               <button
                 className="btn"
-                style={{ flex: 1, fontSize: 10, padding: "6px", background: "#10b981", color: "white" }}
+                style={{ flex: 1, fontSize: 14, padding: "6px", background: "#10b981", color: "white" }}
                 disabled={!isValid}
                 onClick={addAndReport}
               >

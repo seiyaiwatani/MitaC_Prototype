@@ -93,7 +93,7 @@ export default function StartReport() {
           <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             提出完了。お疲れ様でした！
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             本日の始業報告は完了しています。
           </p>
           <Link href="/">
@@ -116,12 +116,12 @@ export default function StartReport() {
           <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
             提出完了。お疲れ様でした！
           </p>
-          <p style={{ fontSize: 12, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             今日も一日頑張りましょう！<br />
             選択中のRepoCa: {addedIds.length}枚
           </p>
           <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ede9fe", border: "2px solid #4f46e5", textAlign: "center" }}>
-            <p style={{ fontSize: 12, color: "#4c1d95", margin: 0, fontWeight: 600 }}>
+            <p style={{ fontSize: 14, color: "#4c1d95", margin: 0, fontWeight: 600 }}>
               ✅ 始業報告が提出されました
             </p>
           </div>
@@ -196,7 +196,7 @@ export default function StartReport() {
                               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
                               pointerEvents: "none",
                             }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{truncate(rc.content)}</p>
+                              <p style={{ fontSize: 14, fontWeight: 700, margin: "0 0 8px", lineHeight: 1.4 }}>{truncate(rc.content)}</p>
                               {[
                                 { label: "種別",   value: rc.taskType },
                                 { label: "ラベル", value: rc.label },
@@ -204,7 +204,7 @@ export default function StartReport() {
                                 { label: "XP",     value: `+${rc.xp} XP` },
                                 { label: "作成",   value: new Date(rc.createdAt).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }) },
                               ].map(({ label, value }) => (
-                                <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 3 }}>
+                                <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 3 }}>
                                   <span style={{ color: "#9ca3af" }}>{label}</span>
                                   <span style={{ fontWeight: 600 }}>{value}</span>
                                 </div>
@@ -212,7 +212,7 @@ export default function StartReport() {
                             </div>
                           )}
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-                            <span style={{ fontSize: 9, color: proj?.textColor ?? "#374151", fontWeight: 700 }}>
+                            <span style={{ fontSize: 14, color: proj?.textColor ?? "#374151", fontWeight: 700 }}>
                               {rc.taskType}
                             </span>
                             <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
@@ -231,7 +231,7 @@ export default function StartReport() {
                               </button>
                             </div>
                           </div>
-                          <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937", lineHeight: 1.3 }}>
+                          <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937", lineHeight: 1.3 }}>
                             {truncate(rc.content)}
                           </p>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
@@ -243,7 +243,7 @@ export default function StartReport() {
                                 ? <HiStar style={{ width: 11, height: 11, color: "#d97706" }} />
                                 : <HiOutlineStar style={{ width: 11, height: 11, color: "#d1d5db" }} />}
                             </button>
-                            <span style={{ fontSize: 9, color: "#9ca3af" }}>{rc.createdAt.slice(0, 10)}</span>
+                            <span style={{ fontSize: 14, color: "#9ca3af" }}>{rc.createdAt.slice(0, 10)}</span>
                           </div>
                         </div>
                       ))}
@@ -258,22 +258,22 @@ export default function StartReport() {
         {/* 右サイドバー: 未完了 + お気に入り */}
         <div className="split-col">
           {/* 未完了のRepoCa */}
-          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             未完了のRepoCa
           </div>
           <div style={{ flex: "0 0 auto", maxHeight: "40%", overflowY: "auto", padding: "6px 8px", borderBottom: "1px solid #e5e7eb" }}>
             {unfinished.length === 0 ? (
-              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
+              <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
               unfinished.map((rc) => {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc.id)}>
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
-                      <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.icon} {proj?.name}</span>
+                      <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
-                    <div style={{ fontSize: 9, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
+                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
+                    <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
                   </div>
                 );
               })
@@ -281,22 +281,22 @@ export default function StartReport() {
           </div>
 
           {/* お気に入りのRepoCa */}
-          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
+          <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             お気に入りのRepoCa
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "6px 8px" }}>
             {favorites.length === 0 ? (
-              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
+              <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
               favorites.map((rc) => {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc.id)}>
                     <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
-                      <span className="chip chip-yellow" style={{ fontSize: 9 }}>⭐ お気に入り</span>
+                      <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
                     </div>
-                    <p style={{ fontSize: 11, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
-                    <span style={{ fontSize: 9, color: "#9ca3af" }}>{proj?.name}</span>
+                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
+                    <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
                   </div>
                 );
               })
@@ -306,7 +306,7 @@ export default function StartReport() {
           {/* 新しいRepoCaを作成 */}
           <div style={{ padding: "8px", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
             <Link href="/repoca/new">
-              <button className="btn btn-ghost" style={{ width: "100%", fontSize: 11, padding: "6px" }}>
+              <button className="btn btn-ghost" style={{ width: "100%", fontSize: 14, padding: "6px" }}>
                 + 新しいRepoCaを作成
               </button>
             </Link>
@@ -343,7 +343,7 @@ export default function StartReport() {
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>始業報告の確認</p>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
-              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 8 }}>
+              <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
                 選択済みRepoCa: <span style={{ fontWeight: 700, color: "#1a1a2e" }}>{addedIds.length}枚</span>
               </div>
               {addedIds.map((id) => {
@@ -353,8 +353,8 @@ export default function StartReport() {
                 return (
                   <div key={id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f3f4f6" }}>
                     <HiCheck style={{ width: 14, height: 14, color: "#4f46e5", flexShrink: 0 }} />
-                    <span className="chip chip-indigo" style={{ fontSize: 9 }}>{proj?.name}</span>
-                    <span style={{ fontSize: 12, color: "#374151" }}>{truncate(rc.content)}</span>
+                    <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                    <span style={{ fontSize: 14, color: "#374151" }}>{truncate(rc.content)}</span>
                   </div>
                 );
               })}
@@ -386,11 +386,11 @@ export default function StartReport() {
             <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
               {/* プロジェクト */}
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト</label>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト</label>
                 <select
                   value={editProjectId}
                   onChange={(e) => setEditProjectId(e.target.value)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
                 >
                   {projects.map((p) => (
                     <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
@@ -400,22 +400,22 @@ export default function StartReport() {
 
               {/* 内容 */}
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>内容</label>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>内容</label>
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                   rows={2}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12, resize: "none" }}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
                 />
               </div>
 
               {/* 種別 */}
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>種別</label>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>種別</label>
                 <select
                   value={editTaskType}
                   onChange={(e) => setEditTaskType(e.target.value as TaskType)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
                 >
                   {TASK_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -423,11 +423,11 @@ export default function StartReport() {
 
               {/* ラベル */}
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>ラベル</label>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>ラベル</label>
                 <select
                   value={editLabel}
                   onChange={(e) => setEditLabel(e.target.value as TaskLabel)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
                 >
                   {TASK_LABELS.map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
@@ -435,11 +435,11 @@ export default function StartReport() {
 
               {/* 実装範囲 */}
               <div>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>実装範囲</label>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>実装範囲</label>
                 <select
                   value={editImplScope}
                   onChange={(e) => setEditImplScope(e.target.value as ImplScope)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 12 }}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
                 >
                   {IMPL_SCOPES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>

@@ -49,10 +49,10 @@ export default function ReportIndex() {
           <div className="scroll-y" style={{ flex: 1, padding: 8 }}>
             {todayRepoCas.length === 0 ? (
               <div style={{ textAlign: "center", padding: "24px 16px" }}>
-                <p style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>カードが作成されていません</p>
-                <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12 }}>下のボタンからカードを作成しよう！</p>
+                <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>カードが作成されていません</p>
+                <p style={{ fontSize: 14, color: "#9ca3af", marginBottom: 12 }}>下のボタンからカードを作成しよう！</p>
                 <Link href="/repoca/new">
-                  <button className="btn btn-primary" style={{ fontSize: 12 }}>カード作成</button>
+                  <button className="btn btn-primary" style={{ fontSize: 14 }}>カード作成</button>
                 </Link>
               </div>
             ) : (
@@ -93,13 +93,13 @@ export default function ReportIndex() {
                       onClick={() => setSelectedRc(rc)}
                     >
                       <p style={{
-                        fontSize: 13, margin: 0, fontWeight: 500,
+                        fontSize: 14, margin: 0, fontWeight: 500,
                         color: rc.isCompleted ? "#9ca3af" : "#1f2937",
                         textDecoration: rc.isCompleted ? "line-through" : "none",
                       }}>
                         {rc.content}
                       </p>
-                      <span style={{ fontSize: 10, color: "#9ca3af" }}>{proj?.name}</span>
+                      <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
                     </div>
                   </div>
                 );
@@ -122,7 +122,7 @@ export default function ReportIndex() {
                 }}>
                   <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>{s.label}</span>
                   <span style={{
-                    fontWeight: 700, fontSize: 12, padding: "3px 14px", borderRadius: 99,
+                    fontWeight: 700, fontSize: 14, padding: "3px 14px", borderRadius: 99,
                     background: s.done ? "#dcfce7" : "#fee2e2",
                     color: s.done ? "#166534" : "#991b1b",
                   }}>
@@ -155,7 +155,7 @@ export default function ReportIndex() {
           <Link key={btn.href} href={btn.href}>
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
-              border: "1px solid #e5e7eb", fontSize: 13, padding: "10px",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
             }}>
               {btn.label}
             </button>
@@ -188,7 +188,7 @@ export default function ReportIndex() {
               <div style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", padding: "16px 20px", display: "flex", alignItems: "flex-start", gap: 10 }}>
                 <div style={{ flex: 1 }}>
                   {proj && (
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: proj.color, color: proj.textColor, display: "inline-block", marginBottom: 6 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: proj.color, color: proj.textColor, display: "inline-block", marginBottom: 6 }}>
                       {proj.icon} {proj.name}
                     </span>
                   )}
@@ -200,7 +200,7 @@ export default function ReportIndex() {
               </div>
               <div style={{ padding: "14px 20px 10px" }}>
                 {rows.map((r) => (
-                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 12 }}>
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid #f3f4f6", fontSize: 14 }}>
                     <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
                     <span style={{
                       color: r.label === "ステータス" ? (selectedRc.isCompleted ? "#10b981" : "#9ca3af") :
@@ -216,7 +216,7 @@ export default function ReportIndex() {
                 <button
                   onClick={() => { toggleTask(selectedRc.id); setSelectedRc(null); }}
                   style={{
-                    flex: 1, padding: "9px 0", borderRadius: 10, border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer",
+                    flex: 1, padding: "9px 0", borderRadius: 10, border: "none", fontWeight: 700, fontSize: 14, cursor: "pointer",
                     background: selectedRc.isCompleted ? "#fee2e2" : "#dcfce7",
                     color: selectedRc.isCompleted ? "#991b1b" : "#166534",
                   }}
@@ -225,7 +225,7 @@ export default function ReportIndex() {
                 </button>
                 <button
                   onClick={() => setSelectedRc(null)}
-                  style={{ flex: 1, padding: "9px 0", borderRadius: 10, border: "none", background: "#f3f4f6", fontWeight: 700, fontSize: 12, cursor: "pointer", color: "#374151" }}
+                  style={{ flex: 1, padding: "9px 0", borderRadius: 10, border: "none", background: "#f3f4f6", fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151" }}
                 >
                   閉じる
                 </button>

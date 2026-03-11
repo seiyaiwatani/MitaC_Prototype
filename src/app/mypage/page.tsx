@@ -69,7 +69,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
         </div>
         {currentTierStyle ? (
           <span style={{
-            fontSize: 10, fontWeight: 700,
+            fontSize: 14, fontWeight: 700,
             background: "rgba(255,255,255,0.3)", color: "white",
             padding: "2px 10px", borderRadius: 99,
           }}>
@@ -77,7 +77,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
           </span>
         ) : (
           <span style={{
-            fontSize: 10, fontWeight: 700,
+            fontSize: 14, fontWeight: 700,
             background: "rgba(0,0,0,0.1)", color: "rgba(255,255,255,0.7)",
             padding: "2px 10px", borderRadius: 99,
           }}>
@@ -92,13 +92,13 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
         {/* EXP・説明 */}
         <div>
           {badge.acquired && badge.exp !== undefined && (
-            <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
               EXP: <span style={{ fontWeight: 700, color: "#4f46e5" }}>
                 {badge.exp.toLocaleString()}
               </span>
             </div>
           )}
-          <p style={{ fontSize: 12, color: "#374151", margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#374151", margin: 0, lineHeight: 1.6 }}>
             {badge.description}
           </p>
         </div>
@@ -109,25 +109,25 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
             display: "flex", justifyContent: "space-between", alignItems: "center",
             marginBottom: 4,
           }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#374151" }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#374151" }}>
               {nextTier
                 ? `next : ${TIER_STYLE[nextTier].label}`
                 : badge.tier ? "蓄積EXP" : "初回取得条件"
               }
             </span>
             {hasProgress && (
-              <span style={{ fontSize: 10, color: "#6b7280" }}>
+              <span style={{ fontSize: 14, color: "#6b7280" }}>
                 {badge.nextTierProgress} / {badge.nextTierGoal}
               </span>
             )}
             {isMaxTier && badge.exp !== undefined && (
-              <span style={{ fontSize: 10, color: "#6b7280" }}>
+              <span style={{ fontSize: 14, color: "#6b7280" }}>
                 {badge.exp.toLocaleString()} EXP
               </span>
             )}
           </div>
           {badge.nextTierCondition && !isMaxTier && (
-            <div style={{ fontSize: 10, color: "#9ca3af", marginBottom: hasProgress ? 6 : 0 }}>
+            <div style={{ fontSize: 14, color: "#9ca3af", marginBottom: hasProgress ? 6 : 0 }}>
               {badge.nextTierCondition}
             </div>
           )}
@@ -140,7 +140,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
             </div>
           )}
           {isMaxTier && badge.exp !== undefined && (
-            <div style={{ fontSize: 10, color: "#10b981", marginTop: 4 }}>
+            <div style={{ fontSize: 14, color: "#10b981", marginTop: 4 }}>
               ゴールド取得後も経験値を蓄積中
             </div>
           )}
@@ -149,7 +149,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
         {/* 取得履歴 */}
         {badge.tierHistory && badge.tierHistory.length > 0 && (
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>
               取得履歴
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -165,13 +165,13 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
                         width: 10, height: 10, borderRadius: "50%",
                         background: ts.bg, flexShrink: 0,
                       }} />
-                      <span style={{ flex: 1, fontSize: 11, fontWeight: 600, color: ts.labelColor }}>
+                      <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: ts.labelColor }}>
                         {ts.label}バッジ取得
                       </span>
-                      <span style={{ fontSize: 10, color: "#9ca3af" }}>{h.date}</span>
+                      <span style={{ fontSize: 14, color: "#9ca3af" }}>{h.date}</span>
                     </div>
                     {h.note && (
-                      <p style={{ margin: "0 0 0 18px", fontSize: 10, color: "#6b7280", lineHeight: 1.4 }}>
+                      <p style={{ margin: "0 0 0 18px", fontSize: 14, color: "#6b7280", lineHeight: 1.4 }}>
                         {h.note}
                       </p>
                     )}
@@ -206,7 +206,7 @@ export default function MyPage() {
             { tier: "silver", count: silverCount, bg: "#8eadc4", label: "シルバー" },
             { tier: "gold",   count: goldCount,   bg: "#f5c842", label: "ゴールド" },
           ] as const).map(({ tier, count, bg, label }) => (
-            <span key={tier} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "#6b7280" }}>
+            <span key={tier} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 14, color: "#6b7280" }}>
               <span style={{ width: 10, height: 10, borderRadius: "50%", background: bg, display: "inline-block" }} />
               {label} {count}
             </span>
@@ -225,7 +225,7 @@ export default function MyPage() {
 
           {/* バッジグリッド */}
           <div className="card" style={{ padding: 12, marginBottom: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#6b7280", marginBottom: 10 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 10 }}>
               全バッジ（合計取得数: {acquiredCount}個）
             </div>
             <div style={{
@@ -268,7 +268,7 @@ export default function MyPage() {
                       )}
                     </div>
                     <span style={{
-                      fontSize: 8, fontWeight: 600, textAlign: "center",
+                      fontSize: 14, fontWeight: 600, textAlign: "center",
                       color: ts ? ts.labelColor : "#9ca3af",
                     }}>
                       {b.name}
@@ -287,8 +287,8 @@ export default function MyPage() {
               marginBottom: 10, cursor: "pointer",
             }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 12, color: "#1a1a2e", marginBottom: 2 }}>ミッション</div>
-                <div style={{ fontSize: 10, color: "#6b7280" }}>達成 {missionDone}/{missions.length} 件</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", marginBottom: 2 }}>ミッション</div>
+                <div style={{ fontSize: 14, color: "#6b7280" }}>達成 {missionDone}/{missions.length} 件</div>
               </div>
               <HiChevronRight style={{ width: 18, height: 18, color: "#9ca3af" }} />
             </div>
@@ -296,10 +296,10 @@ export default function MyPage() {
 
           {/* ステータス */}
           <div className="card" style={{ padding: 12 }}>
-            <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 8, color: "#1a1a2e" }}>ステータス</div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8, color: "#1a1a2e" }}>ステータス</div>
             <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#6b7280", marginBottom: 3 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 3 }}>
                   <span>Lv.{currentUser.level} → Lv.{currentUser.level + 1}</span>
                   <span>{currentUser.xp} / {currentUser.xpToNext} XP</span>
                 </div>
@@ -318,7 +318,7 @@ export default function MyPage() {
                 ].map(({ v, label, color }) => (
                   <div key={label} style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 16, fontWeight: 800, color }}>{v.toLocaleString()}</div>
-                    <div style={{ fontSize: 8, color: "#6b7280" }}>{label}</div>
+                    <div style={{ fontSize: 14, color: "#6b7280" }}>{label}</div>
                   </div>
                 ))}
               </div>
