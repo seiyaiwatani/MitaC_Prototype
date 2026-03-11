@@ -88,3 +88,32 @@
 - **RepoCaContext（`src/contexts/RepoCaContext.tsx`）** — 報告日付管理の追加
 - **モックデータ（`src/lib/mock-data.ts`）** — データ修正
 - **型定義（`src/types/index.ts`）** — 型追加
+
+---
+
+## 2026/03/11 修正履歴
+
+### 1. シーズンパスレイアウト修正 — SeiyaIwatani（13:54）
+
+**コミット:** `dd116d0`
+
+**修正内容:**
+
+- **ホームページ（`src/app/page.tsx`）** — レイアウト調整
+- **シーズンパス（`src/app/season-pass/page.tsx`）** — レイアウト修正
+- **モックデータ（`src/lib/mock-data.ts`）** — データ修正
+
+---
+
+### 2. UI修正 — kikuchi-hibiki（本日）
+
+**修正内容（コミット未）:**
+
+- **ホームページ（`src/app/page.tsx`）**
+  - タスクパネル下部の「今日のミッション」セクションを削除
+  - バッジ一覧コンポーネントに `minHeight: 290` を追加
+  - ミッションコンポーネントのタブ切り替え（日/月/無期限）を削除し、常にデイリーミッションを表示
+  - タイトルを「ミッション」→「デイリーミッション」に変更
+  - 不要な `missionTab` / `setMissionTab` state を削除
+- **ヘッダー（`src/components/AppHeader.tsx`）**
+  - 「報酬交換」「プロジェクト」ナビゲーションボタンを削除
