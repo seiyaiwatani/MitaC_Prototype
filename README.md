@@ -151,3 +151,30 @@
   - `.chip` に `max-width: 100%; overflow: hidden; text-overflow: ellipsis` を追加
   - `.repoca-mini` の幅を `min-width: 225px; max-width: 300px` に拡大
   - `.report-layout` の右カラム幅を `260px → 390px` に拡大
+
+---
+
+### 2. ホームUI・シーズンパス改修 — SeiyaIwatani
+
+**修正内容（コミット未）:**
+
+- **ホームページ（`src/app/page.tsx`）**
+  - アバターゲームエリアの高さを `height: 160` 固定 → `flex: 1`（残余スペースを100%埋める）に変更
+  - `ResizeObserver` でコンテナサイズを追跡し、アバターサイズを画面幅・高さに応じて可変化
+  - DepartAvatar / ReturnAvatar の GSAP x移動量をコンテナ幅に追従（`containerW * 1.2`）
+  - 地面（濃い緑）の高さを `30% → 18%` に縮小、グラデーション境界を `68% → 82%` に更新
+  - 木・家・アバターの `bottom` 位置を新しい地面ラインに合わせて調整
+  - アバターサイズ計算式を `min(w*0.36, h*0.38, 180)` に拡大
+  - バッジ一覧のグリッドを `4列 → 3列` に変更
+  - デイリーミッションタイトル横に「一覧」ボタンを追加（`/mypage/missions` へ遷移）
+- **RepoCa一覧（`src/app/repoca/page.tsx`）**
+  - カード内の作業時間（duration）表示を削除
+- **RepoCaContext（`src/contexts/RepoCaContext.tsx`）**
+  - `setTodayFromIds` で `duration: 0` リセットを追加（始業報告時に前日の作業時間が引き継がれるバグ修正）
+- **モックデータ（`src/lib/mock-data.ts`）**
+  - 全 RepoCa の `duration` を `0` に統一
+  - シーズンパス上限レベルを `50 → 30` に変更
+  - シーズンパス報酬をLv.5〜30の6段階に削減
+- **シーズンパス（`src/app/season-pass/page.tsx`）**
+  - 報酬トラックを `ResizeObserver` でレスポンシブ化（`NODE_W`・`MILESTONE_W` を画面幅から動的計算）
+  - `overflowX: "auto"` を廃止し横スクロールを解消
