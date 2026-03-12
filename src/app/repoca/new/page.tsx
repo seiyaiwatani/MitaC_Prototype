@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TaskType, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiStar, HiOutlineStar, HiTrash, HiChevronUp, HiChevronDown } from "react-icons/hi";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -20,10 +20,12 @@ interface DraftCard {
   isFavorite: boolean;
 }
 
-export default function NewRepoCa() {
+function NewRepoCaContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("from") ?? "/repoca";
   const { projects } = useProjects();
-  const { allRepoCas, addRepoCa, addTodayRepoCa } = useRepoCa();
+  const { allRepoCas, addRepoCa, addTodayRepoCa, addPendingRepoCaId } = useRepoCa();
 
   const initDraft = (): DraftCard => ({
     id: Date.now().toString(),
@@ -42,12 +44,6 @@ export default function NewRepoCa() {
 
   const isValid = draft.projectId && draft.label && draft.implScope && draft.content.trim();
 
-  const addToDraft = () => {
-    if (!isValid) return;
-    setCreated((prev) => [...prev, { ...draft, id: Date.now().toString() }]);
-    setDraft(initDraft());
-  };
-
   const buildRepoCa = (d: DraftCard): import("@/types").RepoCa => ({
     ...d,
     isCompleted: false,
@@ -58,15 +54,8 @@ export default function NewRepoCa() {
 
   const addAndReport = () => {
     if (!isValid) return;
-    const all = [...created, { ...draft, id: Date.now().toString() }];
-    setCreated(all);
+    setCreated((prev) => [...prev, { ...draft, id: Date.now().toString() }]);
     setDraft(initDraft());
-    all.forEach((d) => {
-      const rc = buildRepoCa(d);
-      addRepoCa(rc);
-      addTodayRepoCa(rc);
-    });
-    router.push("/report/start");
   };
 
   const submitAll = () => {
@@ -81,8 +70,9 @@ export default function NewRepoCa() {
       const rc = buildRepoCa(d);
       addRepoCa(rc);
       addTodayRepoCa(rc);
+      addPendingRepoCaId(rc.id);
     });
-    router.push("/repoca");
+    router.push(returnTo);
   };
 
   const removeCreated = (id: string) => setCreated((prev) => prev.filter((c) => c.id !== id));
@@ -263,10 +253,6 @@ export default function NewRepoCa() {
 
             {/* フォームボタン */}
             <div style={{ display: "flex", gap: 6 }}>
-              <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14, padding: "6px" }}
-                disabled={!isValid} onClick={addToDraft}>
-                業務報告に追加
-              </button>
               <button
                 className="btn"
                 style={{ flex: 1, fontSize: 14, padding: "6px", background: "#10b981", color: "white" }}
@@ -291,9 +277,17 @@ export default function NewRepoCa() {
           onClick={submitAll}
           disabled={created.length === 0 && !draft.content.trim()}
         >
-          カードを新規作成（{created.length + (draft.content.trim() ? 1 : 0)}件）
+          {returnTo !== "/repoca" ? "報告に追加" : "カードを新規作成"}（{created.length + (draft.content.trim() ? 1 : 0)}件）
         </button>
       </div>
     </div>
+  );
+}
+
+export default function NewRepoCa() {
+  return (
+    <Suspense fallback={<div className="page-root" />}>
+      <NewRepoCaContent />
+    </Suspense>
   );
 }

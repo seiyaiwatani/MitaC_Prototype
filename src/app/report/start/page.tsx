@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
-import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar, HiPencil } from "react-icons/hi";
+import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar, HiPencil, HiTrash } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
@@ -14,10 +14,19 @@ const TASK_LABELS: TaskLabel[] = ["新規作成", "修正", "調査", "レビュ
 const IMPL_SCOPES: ImplScope[] = ["フロント", "バック", "インフラ", "フルスタック", "その他"];
 
 export default function StartReport() {
-  const { allRepoCas, updateRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate } = useRepoCa();
+  const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds } = useRepoCa();
   const { projects } = useProjects();
   // 追加したRepoCa（既に選択済みのもの）
   const [addedIds, setAddedIds] = useState<string[]>([]);
+
+  // /repoca/new から戻ったとき、新規作成RepoCaを自動追加
+  useEffect(() => {
+    if (pendingRepoCaIds.length > 0) {
+      setAddedIds((prev) => [...new Set([...prev, ...pendingRepoCaIds])]);
+      clearPendingRepoCaIds();
+    }
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
@@ -187,7 +196,7 @@ export default function StartReport() {
                                 ? { top: "calc(100% + 6px)" }
                                 : { bottom: "calc(100% + 6px)" }),
                               left: 0,
-                              width: 200,
+                              width: 300,
                               background: "#1a1a2e",
                               color: "white",
                               borderRadius: 10,
@@ -269,8 +278,12 @@ export default function StartReport() {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc.id)}>
-                    <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
+                      <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center", flexShrink: 0 }}>
+                        <HiTrash style={{ width: 14, height: 14 }} />
+                      </button>
                     </div>
                     <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
                     <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
@@ -292,8 +305,12 @@ export default function StartReport() {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc.id)}>
-                    <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
+                      <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center", flexShrink: 0 }}>
+                        <HiTrash style={{ width: 14, height: 14 }} />
+                      </button>
                     </div>
                     <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
                     <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
@@ -305,7 +322,7 @@ export default function StartReport() {
 
           {/* 新しいRepoCaを作成 */}
           <div style={{ padding: "8px", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
-            <Link href="/repoca/new">
+            <Link href="/repoca/new?from=/report/start">
               <button className="btn btn-ghost" style={{ width: "100%", fontSize: 14, padding: "6px" }}>
                 + 新しいRepoCaを作成
               </button>

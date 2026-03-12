@@ -96,6 +96,10 @@ body {
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   border: 1px solid var(--border);
+  overflow: hidden;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* RepoCaカード（クリック選択式） */
@@ -106,6 +110,10 @@ body {
   padding: 8px 10px;
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .repoca-card:hover  { border-color: var(--primary); }
 .repoca-card.selected {
@@ -122,6 +130,18 @@ body {
   font-size: var(--fs-md);
 }
 
+/* カード・RepoCaカード内テキスト */
+.card p, .repoca-card p {
+  overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* カード内flexコンテナの縮小許可 */
+.card > div, .repoca-card > div {
+  min-width: 0;
+}
+
 /* 始業報告: 横並びミニカード */
 .repoca-mini {
   background: white;
@@ -130,9 +150,12 @@ body {
   padding: 9px 11px;
   cursor: pointer;
   transition: border-color 0.15s;
-  min-width: 150px;
-  max-width: 200px;
+  min-width: 225px;
+  max-width: 300px;
   flex-shrink: 0;
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .repoca-mini:hover { border-color: var(--primary); }
 .repoca-mini.selected { border-color: var(--primary); background: #eef2ff; }
@@ -180,6 +203,9 @@ body {
   font-size: var(--fs-xs);
   font-weight: 600;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .chip-indigo { background: #eef2ff; color: #4f46e5; }
 .chip-green  { background: #dcfce7; color: #166534; }
@@ -219,7 +245,7 @@ body {
 /* 分割レイアウト（報告画面等）: 左広め右サイドバー */
 .report-layout {
   display: grid;
-  grid-template-columns: 1fr 260px;
+  grid-template-columns: 1fr 390px;
   gap: 8px;
   height: 100%;
   overflow: hidden;

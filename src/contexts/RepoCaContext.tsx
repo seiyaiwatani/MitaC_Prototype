@@ -24,6 +24,7 @@ interface RepoCaContextValue {
   allRepoCas: RepoCa[];
   updateRepoCa: (id: string, patch: Partial<RepoCa>) => void;
   addRepoCa: (rc: RepoCa) => void;
+  removeRepoCa: (id: string) => void;
   todayRepoCas: RepoCa[];
   addTodayRepoCa: (rc: RepoCa) => void;
   toggleTodayRepoCa: (id: string) => void;
@@ -44,12 +45,16 @@ interface RepoCaContextValue {
   endReportedDate: string | null;
   setEndReportedDate: (v: string | null) => void;
   bulkUpdateCompleted: (completedMap: Record<string, boolean>) => void;
+  pendingRepoCaIds: string[];
+  addPendingRepoCaId: (id: string) => void;
+  clearPendingRepoCaIds: () => void;
 }
 
 const RepoCaContext = createContext<RepoCaContextValue>({
   allRepoCas: defaultRepoCas,
   updateRepoCa: () => {},
   addRepoCa: () => {},
+  removeRepoCa: () => {},
   todayRepoCas: [],
   addTodayRepoCa: () => {},
   toggleTodayRepoCa: () => {},
@@ -70,6 +75,9 @@ const RepoCaContext = createContext<RepoCaContextValue>({
   endReportedDate: null,
   setEndReportedDate: () => {},
   bulkUpdateCompleted: () => {},
+  pendingRepoCaIds: [],
+  addPendingRepoCaId: () => {},
+  clearPendingRepoCaIds: () => {},
 });
 
 export function RepoCaProvider({ children }: { children: ReactNode }) {
@@ -92,6 +100,11 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
 
   const addRepoCa = (rc: RepoCa) =>
     setAllRepoCas((prev) => [...prev, rc]);
+
+  const removeRepoCa = (id: string) => {
+    setAllRepoCas((prev) => prev.filter((r) => r.id !== id));
+    setTodayRepoCas((prev) => prev.filter((r) => r.id !== id));
+  };
 
   // 始業報告するまで todayRepoCas は空
   const [todayRepoCas, setTodayRepoCas] = useState<RepoCa[]>([]);
@@ -127,6 +140,10 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   const toggleFavorite = (id: string) =>
     setFavoriteIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
+  const [pendingRepoCaIds, setPendingRepoCaIds] = useState<string[]>([]);
+  const addPendingRepoCaId = (id: string) => setPendingRepoCaIds((prev) => [...prev, id]);
+  const clearPendingRepoCaIds = () => setPendingRepoCaIds([]);
+
   // 終業報告時に完了状態を一括で allRepoCas に反映
   const bulkUpdateCompleted = (completedMap: Record<string, boolean>) =>
     setAllRepoCas((prev) =>
@@ -139,7 +156,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
 
   return (
     <RepoCaContext.Provider value={{
-      allRepoCas, updateRepoCa, addRepoCa,
+      allRepoCas, updateRepoCa, addRepoCa, removeRepoCa,
       todayRepoCas, addTodayRepoCa, toggleTodayRepoCa,
       hasStartReported, hasOvertimeReported, hasEndReported,
       setHasStartReported, setHasOvertimeReported, setHasEndReported, resetDailyReports,
@@ -147,6 +164,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
       startReportedDate, setStartReportedDate,
       overtimeReportedDate, setOvertimeReportedDate,
       endReportedDate, setEndReportedDate,
+      pendingRepoCaIds, addPendingRepoCaId, clearPendingRepoCaIds,
     }}>
       {children}
     </RepoCaContext.Provider>
