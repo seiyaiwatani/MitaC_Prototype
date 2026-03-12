@@ -117,3 +117,37 @@
   - 不要な `missionTab` / `setMissionTab` state を削除
 - **ヘッダー（`src/components/AppHeader.tsx`）**
   - 「報酬交換」「プロジェクト」ナビゲーションボタンを削除
+
+---
+
+## 2026/03/12 修正履歴
+
+### 1. RepoCa新規作成フロー・報告画面改修 — SeiyaIwatani
+
+**修正内容（コミット未）:**
+
+- **RepoCa新規作成（`src/app/repoca/new/page.tsx`）**
+  - 「続けて作成」ボタン押下時に遷移せず左パネルに積み上げる動作に変更
+  - 「業務報告に追加」ボタンを削除し下部の確定ボタンに統合
+  - 下部ボタンラベルを遷移元に応じて「報告に追加」「カードを新規作成」に切り替え
+  - `useSearchParams` のバグ修正：`NewRepoCaContent` + Suspenseラッパー (`NewRepoCa`) に分割
+- **報告一覧（`src/app/report/page.tsx`）**
+  - RepoCa作成リンクを `/repoca/new?from=/report` に変更
+- **始業報告（`src/app/report/start/page.tsx`）**
+  - RepoCa作成リンクを `/repoca/new?from=/report/start` に変更
+  - `useEffect` で `pendingRepoCaIds` を選択済みIDに自動マージしてクリア
+  - 「未完了のRepoCa」「お気に入りのRepoCa」にゴミ箱ボタンを追加（削除機能）
+  - ツールチップ幅を `200px → 300px` に拡大
+- **終業報告（`src/app/report/end/page.tsx`）**
+  - RepoCa作成リンクを `/repoca/new?from=/report/end` に変更
+  - サイドバー幅を `200px → 300px` に拡大
+  - `useEffect` で `pendingRepoCaIds` を自動マージ
+  - 「未完了のRepoCa」「お気に入りのRepoCa」にゴミ箱ボタンを追加
+- **RepoCaContext（`src/contexts/RepoCaContext.tsx`）**
+  - `removeRepoCa(id)`：`allRepoCas` と `todayRepoCas` 両方から削除する機能を追加
+  - `pendingRepoCaIds` / `addPendingRepoCaId` / `clearPendingRepoCaIds` を追加（ページ間ID受け渡し）
+- **グローバルCSS（`src/app/globals.css`）**
+  - `.card` / `.repoca-card` に `overflow: hidden; min-width: 0; word-break: break-word; overflow-wrap: break-word` を追加（テキストはみ出し修正）
+  - `.chip` に `max-width: 100%; overflow: hidden; text-overflow: ellipsis` を追加
+  - `.repoca-mini` の幅を `min-width: 225px; max-width: 300px` に拡大
+  - `.report-layout` の右カラム幅を `260px → 390px` に拡大
