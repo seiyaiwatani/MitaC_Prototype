@@ -152,7 +152,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
 
   // 始業報告で選ばれたIDから todayRepoCas をセット（allRepoCas の最新状態を使用）
   const setTodayFromIds = (ids: string[]) =>
-    setTodayRepoCas(allRepoCas.filter((r) => ids.includes(r.id)).map((r) => ({ ...r, isCompleted: false })));
+    setTodayRepoCas(allRepoCas.filter((r) => ids.includes(r.id)).map((r) => ({ ...r, isCompleted: false, duration: 0 })));
 
   return (
     <RepoCaContext.Provider value={{

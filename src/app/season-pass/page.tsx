@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { HiArrowLeft } from "react-icons/hi";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import type { SeasonRewardType } from "@/types";
-
-const NODE_W      = 32;
-const MILESTONE_W = 96;
 
 const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
   avatar_costume: { label: "衣装",    bg: "#ede9fe", color: "#5b21b6" },
@@ -28,6 +25,26 @@ export default function SeasonPassPage() {
   const endLabel  = new Date(endDate).toLocaleDateString("ja-JP", { month: "long", day: "numeric" });
   const rewardMap = Object.fromEntries(rewards.map((r) => [r.level, r]));
   const levels    = Array.from({ length: maxPassLevel }, (_, i) => i + 1);
+
+  // トラックコンテナ幅の追跡
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [trackW, setTrackW] = useState(0);
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setTrackW(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // 画面幅に応じてノード幅を動的計算（スクロールなし）
+  const milestoneCount = levels.filter(lv => !!rewardMap[lv]).length;
+  const nodeCount      = levels.length - milestoneCount;
+  const PADDING        = 32;
+  const availW         = trackW > 0 ? trackW - PADDING : 0;
+  // milestoneW = 3 * nodeW となるよう計算
+  const NODE_W      = availW > 0 ? Math.max(18, Math.floor(availW / (nodeCount + 3 * milestoneCount))) : 28;
+  const MILESTONE_W = NODE_W * 3;
 
   // トラック総幅
   const totalTrackW = levels.reduce((sum, lv) => sum + (rewardMap[lv] ? MILESTONE_W : NODE_W), 0);
@@ -122,10 +139,10 @@ export default function SeasonPassPage() {
             <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>報酬トラック</span>
             <span style={{ fontSize: 14, color: "#9ca3af", marginLeft: 8 }}>5レベルごとに報酬獲得</span>
           </div>
-          <div style={{ overflowX: "auto" }}>
+          <div ref={trackRef} style={{ overflow: "hidden" }}>
             <div style={{
               display: "flex",
-              minWidth: `${totalTrackW + 32}px`,
+              width: `${totalTrackW + PADDING}px`,
               position: "relative",
               padding: "20px 16px 8px",
             }}>
@@ -151,13 +168,12 @@ export default function SeasonPassPage() {
                 const isMilestone = !!reward;
                 const claimed     = lv <= passLevel;
                 const isCurrent   = lv === passLevel + 1;
-                const nodeW       = isMilestone ? MILESTONE_W : NODE_W;
-                const circleSize  = isMilestone ? 40 : 28;
+                const circleSize  = isMilestone ? Math.min(40, MILESTONE_W - 8) : Math.min(28, NODE_W - 4);
                 const chip        = reward ? TYPE_CHIP[reward.type] : undefined;
 
                 return (
                   <div key={lv} style={{
-                    width: nodeW, flexShrink: 0,
+                    width: isMilestone ? MILESTONE_W : NODE_W, flexShrink: 0,
                     display: "flex", flexDirection: "column", alignItems: "center",
                     position: "relative", zIndex: 2,
                   }}>

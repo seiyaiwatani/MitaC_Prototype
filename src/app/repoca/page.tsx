@@ -337,9 +337,6 @@ function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
         <p style={{ fontSize: 14, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
         <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
           <span className="chip chip-gray" style={{ fontSize: 14 }}>{rc.label}</span>
-          {rc.duration > 0 && (
-            <span style={{ fontSize: 14, color: "#6b7280" }}>{fmtDuration(rc.duration)}</span>
-          )}
           <span style={{ fontSize: 14, color: "#4f46e5", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
         </div>
       </div>

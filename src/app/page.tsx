@@ -50,10 +50,12 @@ function BobAvatar({
   avatarSrc,
   headCostume,
   bodyCostume,
+  size = 80,
 }: {
   avatarSrc: string;
   headCostume: HeadCostume;
   bodyCostume: BodyCostume;
+  size?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -82,7 +84,7 @@ function BobAvatar({
         avatarSrc={avatarSrc}
         headCostume={headCostume}
         bodyCostume={bodyCostume}
-        size={80}
+        size={size}
       />
     </div>
   );
@@ -93,11 +95,15 @@ function DepartAvatar({
   headCostume,
   bodyCostume,
   onComplete,
+  size = 80,
+  containerW = 340,
 }: {
   avatarSrc: string;
   headCostume: HeadCostume;
   bodyCostume: BodyCostume;
   onComplete: () => void;
+  size?: number;
+  containerW?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -110,7 +116,7 @@ function DepartAvatar({
       .to(el, { y: 0, duration: 0.18, ease: "power1.in" })
       // Y軸フリップしながら走って退場
       .to(el, {
-        x: 360,
+        x: containerW * 1.2,
         opacity: 0,
         rotationY: 360,
         rotation: "+=180",
@@ -121,6 +127,7 @@ function DepartAvatar({
       tl.kill();
       gsap.set(el, { clearProps: "all" });
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div ref={ref}>
@@ -128,7 +135,7 @@ function DepartAvatar({
         avatarSrc={avatarSrc}
         headCostume={headCostume}
         bodyCostume={bodyCostume}
-        size={80}
+        size={size}
       />
     </div>
   );
@@ -139,17 +146,21 @@ function ReturnAvatar({
   headCostume,
   bodyCostume,
   onComplete,
+  size = 80,
+  containerW = 340,
 }: {
   avatarSrc: string;
   headCostume: HeadCostume;
   bodyCostume: BodyCostume;
   onComplete: () => void;
+  size?: number;
+  containerW?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    gsap.set(el, { x: -360, opacity: 0, transformPerspective: 400 });
+    gsap.set(el, { x: -containerW, opacity: 0, transformPerspective: 400 });
     const tl = gsap.timeline({ onComplete });
     // 左から走って登場: Y軸フリップ+Z回転を交互に混ぜたタンブリング
     tl.to(el, {
@@ -191,6 +202,7 @@ function ReturnAvatar({
       tl.kill();
       gsap.set(el, { clearProps: "all" });
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div ref={ref}>
@@ -198,7 +210,7 @@ function ReturnAvatar({
         avatarSrc={avatarSrc}
         headCostume={headCostume}
         bodyCostume={bodyCostume}
-        size={80}
+        size={size}
       />
     </div>
   );
@@ -208,10 +220,12 @@ function WalkAvatar({
   avatarSrc,
   headCostume,
   bodyCostume,
+  size = 80,
 }: {
   avatarSrc: string;
   headCostume: HeadCostume;
   bodyCostume: BodyCostume;
+  size?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -258,7 +272,7 @@ function WalkAvatar({
         avatarSrc={avatarSrc}
         headCostume={headCostume}
         bodyCostume={bodyCostume}
-        size={80}
+        size={size}
       />
     </div>
   );
@@ -533,6 +547,22 @@ export default function Home() {
   const [showWorkResult, setShowWorkResult] = useState(false);
   const [workedMinutes, setWorkedMinutes] = useState(0);
   const [weather, setWeather] = useState<WeatherInfo>(DEFAULT_WEATHER);
+  const gameWrapRef = useRef<HTMLDivElement>(null);
+  const [gameSize, setGameSize] = useState({ w: 340, h: 200 });
+
+  // ゲームエリアのサイズを追跡してアバターサイズを可変に
+  useEffect(() => {
+    const el = gameWrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setGameSize({ w: width, h: height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const avatarSize = Math.round(Math.min(gameSize.w * 0.36, gameSize.h * 0.38, 180));
 
   // 東京の天気を取得（Open-Meteo API）
   useEffect(() => {
@@ -1309,11 +1339,12 @@ export default function Home() {
           {attendance !== "working" ? (
             /* ホームシーン (idle / departing / returning) */
             <div
+              ref={gameWrapRef}
               className="avatar-game-wrap"
               style={{
-                height: 160,
-                flex: "none",
-                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+                flex: 1,
+                minHeight: 0,
+                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 82%, #5a8a3c 82%)`,
               }}
             >
               {/* 天気の雲（速度・種類は天気に応じて変わる） */}
@@ -1370,7 +1401,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "33%",
+                  bottom: "21%",
                   left: "5%",
                   fontSize: 28,
                 }}
@@ -1380,7 +1411,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "31%",
+                  bottom: "19%",
                   left: "16%",
                   fontSize: 22,
                 }}
@@ -1390,7 +1421,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "29%",
+                  bottom: "17%",
                   left: "25%",
                   fontSize: 16,
                 }}
@@ -1400,7 +1431,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "31%",
+                  bottom: "19%",
                   right: "6%",
                   fontSize: 40,
                 }}
@@ -1411,7 +1442,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "30%",
+                  bottom: "18%",
                   left: 0,
                   right: 0,
                   display: "flex",
@@ -1424,6 +1455,8 @@ export default function Home() {
                     headCostume={headCostume}
                     bodyCostume={bodyCostume}
                     onComplete={() => setAttendance("working")}
+                    size={avatarSize}
+                    containerW={gameSize.w}
                   />
                 ) : attendance === "returning" ? (
                   <ReturnAvatar
@@ -1440,12 +1473,15 @@ export default function Home() {
                       setAttendance("idle");
                       setShowWorkResult(true);
                     }}
+                    size={avatarSize}
+                    containerW={gameSize.w}
                   />
                 ) : (
                   <BobAvatar
                     avatarSrc={avatarSrc}
                     headCostume={headCostume}
                     bodyCostume={bodyCostume}
+                    size={avatarSize}
                   />
                 )}
               </div>
@@ -1455,7 +1491,7 @@ export default function Home() {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  height: "30%",
+                  height: "18%",
                   background: "#5a8a3c",
                 }}
               />
@@ -1534,11 +1570,12 @@ export default function Home() {
           ) : (
             /* 冒険シーン (working) */
             <div
+              ref={gameWrapRef}
               className="avatar-game-wrap"
               style={{
-                height: 160,
-                flex: "none",
-                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 68%, #5a8a3c 68%)`,
+                flex: 1,
+                minHeight: 0,
+                background: `linear-gradient(180deg, ${weather.skyColor} 0%, ${weather.skyColor} 45%, #90EE90 45%, #90EE90 82%, #5a8a3c 82%)`,
               }}
             >
               {/* 天気の雲（冒険シーンは少し速め） */}
@@ -1592,7 +1629,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "46%",
+                  bottom: "34%",
                   left: 0,
                   right: 0,
                   overflow: "hidden",
@@ -1638,7 +1675,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "28%",
+                  bottom: "16%",
                   left: 0,
                   right: 0,
                   overflow: "hidden",
@@ -1685,7 +1722,7 @@ export default function Home() {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  height: "30%",
+                  height: "18%",
                   background: "#5a8a3c",
                 }}
               />
@@ -1693,7 +1730,7 @@ export default function Home() {
               <div
                 style={{
                   position: "absolute",
-                  bottom: "30%",
+                  bottom: "18%",
                   left: 0,
                   right: 0,
                   display: "flex",
@@ -1704,6 +1741,7 @@ export default function Home() {
                   avatarSrc={avatarSrc}
                   headCostume={headCostume}
                   bodyCostume={bodyCostume}
+                  size={avatarSize}
                 />
               </div>
               {/* 出勤中バッジ */}
@@ -2030,7 +2068,7 @@ export default function Home() {
             {/* グリッド */}
             <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
               {(() => {
-                const COLS = 4;
+                const COLS = 3;
                 const visibleBadges = showAllBadges
                   ? badges
                   : badges.slice(0, COLS * 3);
@@ -2411,16 +2449,28 @@ export default function Home() {
                   marginBottom: 6,
                 }}
               >
-                <span
-                  style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}
-                >
-                  デイリーミッション
-                </span>
-                <span
-                  style={{ fontSize: 14, fontWeight: 700, color: "#6b7280" }}
-                >
-                  {doneCount}/{tabMissions.length}
-                </span>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>
+                    デイリーミッション
+                  </span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginLeft: 20 }}>
+                    {doneCount}/{tabMissions.length}
+                  </span>
+                </div>
+                <Link href="/mypage/missions" style={{ textDecoration: "none" }}>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: "#4f46e5",
+                    background: "#eef2ff",
+                    padding: "2px 16px",
+                    borderRadius: 99,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  }}>
+                    一覧
+                  </span>
+                </Link>
               </div>
               <div
                 style={{
