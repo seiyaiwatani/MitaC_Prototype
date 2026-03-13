@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RepoCa } from "@/types";
 import { HiArrowLeft, HiCheck, HiTrash } from "react-icons/hi";
@@ -19,7 +20,8 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa } = useRepoCa();
+  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
+  const router = useRouter();
   const { projects } = useProjects();
 
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
@@ -30,7 +32,6 @@ export default function EndReport() {
     Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]))
   );
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
   // /repoca/new から戻ったとき、新規作成RepoCaを自動追加
@@ -182,35 +183,6 @@ export default function EndReport() {
     );
   }
 
-  /* ── 完了画面 ── */
-  if (showCompleted) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            お疲れ様でした。<br />
-            総工数: {fmtDuration(totalMin)}
-          </p>
-          <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ecfdf5", border: "2px solid #10b981", textAlign: "center" }}>
-            <p style={{ fontSize: 14, color: "#047857", margin: 0, fontWeight: 600 }}>
-              ✅ 始業・残業・終業すべての報告が完了
-            </p>
-          </div>
-          <Link href="/">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   /* ── メイン ── */
   return (
     <div className="page-root">
@@ -345,7 +317,7 @@ export default function EndReport() {
 
         {/* 中: 工数バーグラフ */}
         <div style={{
-          width: 60,
+          width: 80,
           flexShrink: 0,
           display: "flex",
           flexDirection: "column",
@@ -362,7 +334,7 @@ export default function EndReport() {
             <div style={{ flex: 1, display: "flex", flexDirection: "row", gap: 2, alignItems: "stretch", overflow: "hidden" }}>
               {/* Y軸ラベル列 - 絶対座標で境界線に配置、近接ラベルはスキップ */}
               {pjTotals.filter(x => x.totalMin > 0).length > 1 && (
-                <div style={{ width: 24, flexShrink: 0, position: "relative" }}>
+                <div style={{ flexShrink: 0, position: "relative", minWidth: 28 }}>
                   {(() => {
                     let cum = 0;
                     let lastPct = -20;
@@ -375,9 +347,9 @@ export default function EndReport() {
                         <span key={pjId} style={{
                           position: "absolute",
                           top: `${pct}%`,
-                          right: 0,
+                          left: 0,
                           transform: "translateY(-50%)",
-                          fontSize: 14,
+                          fontSize: 10,
                           color: "#9ca3af",
                           whiteSpace: "nowrap",
                           lineHeight: 1,
@@ -545,7 +517,15 @@ export default function EndReport() {
                   onClick={() => {
                     // 完了状態を allRepoCas に一括同期
                     bulkUpdateCompleted(completed);
-                    setShowConfirmModal(false); setHasEndReported(true); setEndReportedDate(new Date().toDateString()); resetDailyReports(); setShowCompleted(true);
+                    // 未完了のIDを次回始業報告のデフォルト選択として保存
+                    const incompleteIds = selectedRepoCas.filter((rc) => !completed[rc.id]).map((rc) => rc.id);
+                    setIncompleteIdsFromLastEnd(incompleteIds);
+                    setHasEndReported(true);
+                    setEndReportedDate(new Date().toDateString());
+                    resetDailyReports();
+                    setCompletionType('end');
+                    setShowConfirmModal(false);
+                    router.push('/');
                   }}>
                   送信
                 </button>

@@ -48,6 +48,10 @@ interface RepoCaContextValue {
   pendingRepoCaIds: string[];
   addPendingRepoCaId: (id: string) => void;
   clearPendingRepoCaIds: () => void;
+  completionType: 'start' | 'end' | null;
+  setCompletionType: (v: 'start' | 'end' | null) => void;
+  incompleteIdsFromLastEnd: string[];
+  setIncompleteIdsFromLastEnd: (ids: string[]) => void;
 }
 
 const RepoCaContext = createContext<RepoCaContextValue>({
@@ -78,6 +82,10 @@ const RepoCaContext = createContext<RepoCaContextValue>({
   pendingRepoCaIds: [],
   addPendingRepoCaId: () => {},
   clearPendingRepoCaIds: () => {},
+  completionType: null,
+  setCompletionType: () => {},
+  incompleteIdsFromLastEnd: [],
+  setIncompleteIdsFromLastEnd: () => {},
 });
 
 export function RepoCaProvider({ children }: { children: ReactNode }) {
@@ -144,6 +152,9 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   const addPendingRepoCaId = (id: string) => setPendingRepoCaIds((prev) => [...prev, id]);
   const clearPendingRepoCaIds = () => setPendingRepoCaIds([]);
 
+  const [completionType, setCompletionType] = useState<'start' | 'end' | null>(null);
+  const [incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd] = useState<string[]>([]);
+
   // 終業報告時に完了状態を一括で allRepoCas に反映
   const bulkUpdateCompleted = (completedMap: Record<string, boolean>) =>
     setAllRepoCas((prev) =>
@@ -165,6 +176,8 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
       overtimeReportedDate, setOvertimeReportedDate,
       endReportedDate, setEndReportedDate,
       pendingRepoCaIds, addPendingRepoCaId, clearPendingRepoCaIds,
+      completionType, setCompletionType,
+      incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd,
     }}>
       {children}
     </RepoCaContext.Provider>

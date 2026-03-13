@@ -565,6 +565,8 @@ export default function Home() {
     hasStartReported,
     hasOvertimeReported,
     hasEndReported,
+    completionType,
+    setCompletionType,
   } = useRepoCa();
   const { missions } = useMission();
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -2887,6 +2889,45 @@ export default function Home() {
           </div>,
           document.body,
         )}
+
+      {/* 報告完了モーダル */}
+      {completionType && createPortal(
+        <div
+          onClick={() => setCompletionType(null)}
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 400,
+            display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white", borderRadius: 20, width: "100%", maxWidth: 360,
+              overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+              display: "flex", flexDirection: "column", alignItems: "center",
+              padding: "32px 24px 24px", gap: 12, textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 52 }}>{completionType === 'start' ? '🌅' : '🎉'}</div>
+            <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>
+              提出完了！
+            </p>
+            <p style={{ fontSize: 14, color: "#6b7280", margin: 0, lineHeight: 1.8 }}>
+              {completionType === 'start'
+                ? '始業報告が完了しました。今日も一日頑張りましょう！'
+                : '終業報告が完了しました。お疲れ様でした！'}
+            </p>
+            <button
+              className="btn btn-primary"
+              style={{ marginTop: 8, width: "100%" }}
+              onClick={() => setCompletionType(null)}
+            >
+              OK
+            </button>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

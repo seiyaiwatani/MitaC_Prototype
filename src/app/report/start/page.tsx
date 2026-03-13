@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar, HiPencil, HiTrash } from "react-icons/hi";
@@ -14,21 +15,29 @@ const TASK_LABELS: TaskLabel[] = ["新規作成", "修正", "調査", "レビュ
 const IMPL_SCOPES: ImplScope[] = ["フロント", "バック", "インフラ", "フルスタック", "その他"];
 
 export default function StartReport() {
-  const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds } = useRepoCa();
+  const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds, setCompletionType, incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd } = useRepoCa();
+  const router = useRouter();
   const { projects } = useProjects();
-  // 追加したRepoCa（既に選択済みのもの）
-  const [addedIds, setAddedIds] = useState<string[]>([]);
+  // 追加したRepoCa（既に選択済みのもの）- 前回終業報告の未完了IDをデフォルト選択
+  const [addedIds, setAddedIds] = useState<string[]>(incompleteIdsFromLastEnd);
 
-  // /repoca/new から戻ったとき、新規作成RepoCaを自動追加
+  // /repoca/new から戻ったとき・前回未完了の引き継ぎ
   useEffect(() => {
+    const ids: string[] = [];
+    if (incompleteIdsFromLastEnd.length > 0) {
+      ids.push(...incompleteIdsFromLastEnd);
+      setIncompleteIdsFromLastEnd([]);
+    }
     if (pendingRepoCaIds.length > 0) {
-      setAddedIds((prev) => [...new Set([...prev, ...pendingRepoCaIds])]);
+      ids.push(...pendingRepoCaIds);
       clearPendingRepoCaIds();
+    }
+    if (ids.length > 0) {
+      setAddedIds((prev) => [...new Set([...prev, ...ids])]);
     }
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showCompleted, setShowCompleted] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
   const [editingRepoCa, setEditingRepoCa] = useState<RepoCa | null>(null);
 
@@ -88,7 +97,7 @@ export default function StartReport() {
   const isStartReportedToday = startReportedDate === todayStr;
 
   // 同日中に始業報告ページを再訪した場合 → 完了メッセージ
-  if (!showCompleted && (hasStartReported || isStartReportedToday)) {
+  if (hasStartReported || isStartReportedToday) {
     return (
       <div className="page-root">
         <div className="page-subheader">
@@ -105,35 +114,6 @@ export default function StartReport() {
           <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
             本日の始業報告は完了しています。
           </p>
-          <Link href="/">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 完了画面（送信直後） ── */
-  if (showCompleted) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🌅</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            今日も一日頑張りましょう！<br />
-            選択中のRepoCa: {addedIds.length}枚
-          </p>
-          <div style={{ marginTop: 12, padding: "14px 20px", borderRadius: 12, background: "#ede9fe", border: "2px solid #4f46e5", textAlign: "center" }}>
-            <p style={{ fontSize: 14, color: "#4c1d95", margin: 0, fontWeight: 600 }}>
-              ✅ 始業報告が提出されました
-            </p>
-          </div>
           <Link href="/">
             <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
           </Link>
@@ -379,7 +359,7 @@ export default function StartReport() {
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
               <button className="btn btn-primary" style={{ flex: 2 }}
-                onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); setShowConfirmModal(false); setShowCompleted(true); }}>
+                onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); setShowConfirmModal(false); setCompletionType('start'); router.push('/'); }}>
                 送信
               </button>
             </div>

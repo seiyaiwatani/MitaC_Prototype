@@ -1,31 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiArrowLeft, HiPaperAirplane, HiClock, HiCheckCircle } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 
 export default function OvertimeReport() {
-  const { hasStartReported, hasOvertimeReported, setHasOvertimeReported, startReportedDate, overtimeReportedDate, setOvertimeReportedDate } = useRepoCa();
+  const { hasStartReported, hasOvertimeReported, setHasOvertimeReported, overtimeReportedDate, setOvertimeReportedDate, setCompletionType } = useRepoCa();
+  const router = useRouter();
   const [hasOvertime, setHasOvertime] = useState<boolean | null>(null);
   const [hours,   setHours]   = useState(1);
   const [minutes, setMinutes] = useState(0);
   const [content, setContent] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showCompleted, setShowCompleted] = useState(false);
 
   const handleSubmit = () => {
     if (hasOvertime === null) return;
     setHasOvertimeReported(true);
     setOvertimeReportedDate(new Date().toDateString());
-    setShowCompleted(true);
+    setCompletionType('start'); // 残業報告完了モーダルは始業と同じ緑系でOK
+    router.push('/');
   };
 
   /* ── 残業報告済み: 日付によって表示を切り替え ── */
   const todayStr = new Date().toDateString();
   const isOvertimeReportedToday = overtimeReportedDate === todayStr;
 
-  // 同日中に残業報告ページを再訪した場合（resetDailyReports後含む） → 完了メッセージ
+  // 同日中に残業報告ページを再訪した場合 → 完了メッセージ
   if (!hasStartReported && isOvertimeReportedToday) {
     return (
       <div className="page-root">
@@ -51,7 +53,7 @@ export default function OvertimeReport() {
     );
   }
 
-  // 日付が変わった後に残業報告ページを訪れた場合 → 始業報告を促す
+  // 日付が変わった後 → 始業報告を促す
   if (!hasStartReported && overtimeReportedDate && overtimeReportedDate !== todayStr) {
     return (
       <div className="page-root">
@@ -97,29 +99,6 @@ export default function OvertimeReport() {
           </p>
           <Link href="/report/start">
             <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 完了画面（送信直後） ── */
-  if (showCompleted) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            {hasOvertime ? `残業時間: ${hours}時間${minutes}分` : "残業なし — 定時退社です！"}
-          </p>
-          <Link href="/report">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>報告一覧に戻る</button>
           </Link>
         </div>
       </div>

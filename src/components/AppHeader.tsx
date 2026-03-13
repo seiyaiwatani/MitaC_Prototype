@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
+import { AvatarEditor } from "@/components/AvatarEditor";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -15,13 +17,15 @@ const AVATAR_SRC: Record<string, string> = {
 };
 
 export default function AppHeader() {
-  const { avatarKey, headCostume, bodyCostume } = useAvatar();
+  const { avatarKey, headCostume, bodyCostume, omamori, setAvatarKey, setHeadCostume, setBodyCostume, setOmamori } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
+  const [showEditor, setShowEditor] = useState(false);
   const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const passExpPct = Math.round((passExp / passExpToNext) * 100);
   const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
 
   return (
+    <>
     <header
       style={{
         height: 52,
@@ -67,14 +71,18 @@ export default function AppHeader() {
         }}
       >
         {/* アバター（コスチューム付き） */}
-        <div style={{
-          width: 40, height: 40, flexShrink: 0,
-          borderRadius: "50%",
-          border: "2px solid #c4b5fd",
-          background: "#e5e7eb",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          overflow: "visible",
-        }}>
+        <button
+          onClick={() => setShowEditor(true)}
+          style={{
+            width: 40, height: 40, flexShrink: 0,
+            borderRadius: "50%",
+            border: "2px solid #c4b5fd",
+            background: "#e5e7eb",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            overflow: "visible",
+            cursor: "pointer", padding: 0,
+          }}
+        >
           <AvatarWithCostume
             avatarSrc={avatarSrc}
             headCostume={headCostume}
@@ -82,7 +90,7 @@ export default function AppHeader() {
             size={36}
             style={{ borderRadius: "50%" }}
           />
-        </div>
+        </button>
 
         {/* 名前 */}
         <span style={{ fontSize: "clamp(11px, 1.1vw, 15px)", fontWeight: 800, color: "#1a1a2e", whiteSpace: "nowrap" }}>
@@ -129,5 +137,16 @@ export default function AppHeader() {
         </div>
       </div>
     </header>
+    {showEditor && (
+      <AvatarEditor
+        initialAvatar={avatarKey}
+        initialHeadCostume={headCostume}
+        initialBodyCostume={bodyCostume}
+        initialOmamori={omamori}
+        onConfirm={(av, head, body, om) => { setAvatarKey(av); setHeadCostume(head); setBodyCostume(body); setOmamori(om); }}
+        onClose={() => setShowEditor(false)}
+      />
+    )}
+    </>
   );
 }

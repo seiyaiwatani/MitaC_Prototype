@@ -40,29 +40,35 @@ export default function SeasonPassPage() {
   // 画面幅に応じてノード幅を動的計算（スクロールなし）
   const milestoneCount = levels.filter(lv => !!rewardMap[lv]).length;
   const nodeCount      = levels.length - milestoneCount;
-  const PADDING        = 32;
+  const PADDING        = 64;
+  const EDGE_PAD       = PADDING / 2; // 各辺のパディング
   const availW         = trackW > 0 ? trackW - PADDING : 0;
   // milestoneW = 3 * nodeW となるよう計算
-  const NODE_W      = availW > 0 ? Math.max(18, Math.floor(availW / (nodeCount + 3 * milestoneCount))) : 28;
+  const NODE_W      = availW > 0 ? Math.max(1, Math.floor(availW / (nodeCount + 3 * milestoneCount))) : 0;
   const MILESTONE_W = NODE_W * 3;
 
   // トラック総幅
   const totalTrackW = levels.reduce((sum, lv) => sum + (rewardMap[lv] ? MILESTONE_W : NODE_W), 0);
 
-  // 最終ノードの半幅（ラインをそこで止める）
-  const lastNodeHalfW = (rewardMap[maxPassLevel] ? MILESTONE_W : NODE_W) / 2;
+  const lastNodeHalfW  = (rewardMap[maxPassLevel] ? MILESTONE_W : NODE_W) / 2;
 
-  // 進捗ラインの幅（左端～現在レベルノードの中心）
-  let progressLineW = 0;
-  let accumulated   = 0;
+  // 最初・最終マイルストーンの中心X（ライン開始・終了点）
+  let accBeforeFirstMilestone = 0;
+  for (const lv of levels) { if (rewardMap[lv]) break; accBeforeFirstMilestone += NODE_W; }
+  const firstMilestoneCenterX = EDGE_PAD + accBeforeFirstMilestone + MILESTONE_W / 2;
+
+  // 進捗ライン：現在レベルノードの中心X（innerDiv座標）
+  let currentLevelCenterX = EDGE_PAD;
+  let accumulated = 0;
   for (const lv of levels) {
     const w = rewardMap[lv] ? MILESTONE_W : NODE_W;
-    if (lv <= passLevel) {
-      progressLineW = accumulated + w / 2;
-    }
+    if (lv <= passLevel) currentLevelCenterX = EDGE_PAD + accumulated + w / 2;
     accumulated += w;
     if (lv === passLevel) break;
   }
+  // Lv.5以降のみ進捗ラインを表示（最初のマイルストーン基点）
+  const progressLineVisible = currentLevelCenterX > firstMilestoneCenterX;
+  const progressLineWidth   = currentLevelCenterX - firstMilestoneCenterX;
 
   return (
     <div className="page-root">
@@ -140,66 +146,62 @@ export default function SeasonPassPage() {
             <span style={{ fontSize: 14, color: "#9ca3af", marginLeft: 8 }}>5レベルごとに報酬獲得</span>
           </div>
           <div ref={trackRef} style={{ overflow: "hidden" }}>
-            <div style={{
+            {NODE_W > 0 && <div style={{
               display: "flex",
               width: `${totalTrackW + PADDING}px`,
               position: "relative",
-              padding: "20px 16px 8px",
+              padding: `20px ${EDGE_PAD}px 8px`,
+              margin: "0 auto",
             }}>
-              {/* トラックライン（背景） */}
+              {/* トラックライン（背景）: 最初〜最後のマイルストーン間のみ */}
               <div style={{
-                position: "absolute", top: 40, left: 16, right: 16 + lastNodeHalfW,
+                position: "absolute", top: 40,
+                left: firstMilestoneCenterX, right: EDGE_PAD + lastNodeHalfW,
                 height: 3,
                 background: "#e5e7eb", zIndex: 0,
               }} />
-              {/* トラックライン（進捗） */}
-              {progressLineW > 0 && (
+              {/* トラックライン（進捗）: 最初のマイルストーン基点 */}
+              {progressLineVisible && (
                 <div style={{
-                  position: "absolute", top: 40, left: 16,
-                  width: progressLineW, height: 3,
+                  position: "absolute", top: 40, left: firstMilestoneCenterX,
+                  width: progressLineWidth, height: 3,
                   background: "linear-gradient(90deg, #4f46e5, #7c3aed)",
                   zIndex: 1,
                 }} />
               )}
 
-              {/* 全レベルノード */}
-              {levels.map((lv) => {
-                const reward      = rewardMap[lv];
-                const isMilestone = !!reward;
-                const claimed     = lv <= passLevel;
-                const isCurrent   = lv === passLevel + 1;
-                const circleSize  = isMilestone ? Math.min(40, MILESTONE_W - 8) : Math.min(28, NODE_W - 4);
-                const chip        = reward ? TYPE_CHIP[reward.type] : undefined;
+              {/* マイルストーンのみ描画（非マイルストーンはmarginLeftでスペース確保） */}
+              {rewards.map((reward, idx) => {
+                const prevLevel  = idx === 0 ? 0 : rewards[idx - 1].level;
+                const regsBefore = reward.level - prevLevel - 1;
+                const marginLeft = regsBefore * NODE_W;
+                const claimed    = reward.level <= passLevel;
+                const circleSize = Math.min(40, MILESTONE_W - 8);
+                const chip       = TYPE_CHIP[reward.type];
 
                 return (
-                  <div key={lv} style={{
-                    width: isMilestone ? MILESTONE_W : NODE_W, flexShrink: 0,
+                  <div key={reward.level} style={{
+                    width: MILESTONE_W, flexShrink: 0, marginLeft,
                     display: "flex", flexDirection: "column", alignItems: "center",
                     position: "relative", zIndex: 2,
                   }}>
                     <div style={{
                       width: circleSize, height: circleSize, borderRadius: "50%",
-                      background: claimed
-                        ? (isMilestone ? "#4f46e5" : "#a78bfa")
-                        : isCurrent ? "#e0e7ff" : "white",
-                      border: isCurrent
-                        ? "3px solid #4f46e5"
-                        : (claimed ? "none" : `2px solid ${isMilestone ? "#c4b5fd" : "#e5e7eb"}`),
+                      background: claimed ? "#4f46e5" : "white",
+                      border: claimed ? "none" : "2px solid #c4b5fd",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: claimed ? (isMilestone ? 16 : 11) : (isMilestone ? 18 : 9),
-                      color: claimed ? "white" : isCurrent ? "#4f46e5" : "#9ca3af",
-                      boxShadow: isCurrent ? "0 0 0 4px #e0e7ff" : (isMilestone && !claimed ? "0 0 0 3px #ede9fe" : "none"),
-                      fontWeight: !reward ? 600 : undefined,
+                      fontSize: claimed ? 16 : 18,
+                      color: claimed ? "white" : "#9ca3af",
+                      boxShadow: !claimed ? "0 0 0 3px #ede9fe" : "none",
                     }}>
-                      {claimed ? (isMilestone ? reward!.icon : "✓") : (reward ? reward.icon : lv)}
+                      {reward.icon}
                     </div>
 
                     <span style={{
-                      fontSize: 14, marginTop: 3,
-                      fontWeight: isCurrent || isMilestone ? 700 : 400,
-                      color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#b0b7c3"),
+                      fontSize: 14, marginTop: 3, fontWeight: 700,
+                      color: claimed ? "#9ca3af" : "#374151",
                     }}>
-                      {isMilestone || isCurrent ? `Lv.${lv}` : ""}
+                      Lv.{reward.level}
                     </span>
 
                     {chip && (
@@ -211,23 +213,21 @@ export default function SeasonPassPage() {
                       </span>
                     )}
 
-                    {reward && (
-                      <span style={{
-                        fontSize: 14, textAlign: "center", marginTop: 1,
-                        color: claimed ? "#9ca3af" : "#374151",
-                        lineHeight: 1.3, maxWidth: MILESTONE_W - 8,
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}>
-                        {reward.name}
-                      </span>
-                    )}
+                    <span style={{
+                      fontSize: 14, textAlign: "center", marginTop: 1,
+                      color: claimed ? "#9ca3af" : "#374151",
+                      lineHeight: 1.3, maxWidth: MILESTONE_W - 8,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}>
+                      {reward.name}
+                    </span>
                   </div>
                 );
               })}
-            </div>
+            </div>}
           </div>
         </div>
 
