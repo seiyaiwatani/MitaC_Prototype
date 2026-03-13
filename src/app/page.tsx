@@ -34,9 +34,11 @@ import { fmtDuration } from "@/lib/utils";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
-  avatar_costume: { label: "衣装",    bg: "#ede9fe", color: "#5b21b6" },
-  physical:       { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
+const TYPE_CHIP: Partial<
+  Record<SeasonRewardType, { label: string; bg: string; color: string }>
+> = {
+  avatar_costume: { label: "衣装", bg: "#ede9fe", color: "#5b21b6" },
+  physical: { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
 };
 
 const AVATAR_MAP: Record<string, string> = {
@@ -127,7 +129,7 @@ function DepartAvatar({
       tl.kill();
       gsap.set(el, { clearProps: "all" });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div ref={ref}>
@@ -202,7 +204,7 @@ function ReturnAvatar({
       tl.kill();
       gsap.set(el, { clearProps: "all" });
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div ref={ref}>
@@ -514,7 +516,35 @@ export default function Home() {
     endDate,
     rewards,
   } = useSeasonPass();
-  const [attendance, setAttendance] = useState<AttendanceState>("idle");
+  const [attendance, setAttendance] = useState<AttendanceState>(() => {
+    if (typeof window === "undefined") return "idle";
+    const saved = localStorage.getItem(
+      "mitac_attendance",
+    ) as AttendanceState | null;
+    if (saved === "departing") return "working";
+    if (saved === "returning") return "idle";
+    return saved ?? "idle";
+  });
+  const [workStartTime, setWorkStartTime] = useState<Date | null>(() => {
+    if (typeof window === "undefined") return null;
+    const saved = localStorage.getItem("mitac_work_start");
+    return saved ? new Date(saved) : null;
+  });
+
+  // 出勤ステータスが変わったら localStorage に保存
+  useEffect(() => {
+    localStorage.setItem("mitac_attendance", attendance);
+  }, [attendance]);
+
+  // workStartTime が変わったら localStorage に保存
+  useEffect(() => {
+    if (workStartTime) {
+      localStorage.setItem("mitac_work_start", workStartTime.toISOString());
+    } else {
+      localStorage.removeItem("mitac_work_start");
+    }
+  }, [workStartTime]);
+
   const {
     avatarKey,
     setAvatarKey,
@@ -543,7 +573,6 @@ export default function Home() {
     badges[0] ?? null,
   );
   const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
-  const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
   const [workedMinutes, setWorkedMinutes] = useState(0);
   const [weather, setWeather] = useState<WeatherInfo>(DEFAULT_WEATHER);
@@ -562,7 +591,9 @@ export default function Home() {
     return () => ro.disconnect();
   }, []);
 
-  const avatarSize = Math.round(Math.min(gameSize.w * 0.36, gameSize.h * 0.38, 180));
+  const avatarSize = Math.round(
+    Math.min(gameSize.w * 0.36, gameSize.h * 0.38, 180),
+  );
 
   // 東京の天気を取得（Open-Meteo API）
   useEffect(() => {
@@ -805,7 +836,15 @@ export default function Home() {
                     {seasonName}
                   </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, flexShrink: 0 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 4,
+                    flexShrink: 0,
+                  }}
+                >
                   <div
                     style={{
                       background: "#f59e0b",
@@ -1122,9 +1161,7 @@ export default function Home() {
                   color: "#9ca3af",
                 }}
               >
-                <p style={{ fontSize: 14 }}>
-                  本日の始業報告はされていません。
-                </p>
+                <p style={{ fontSize: 14 }}>本日の始業報告はされていません。</p>
               </div>
             ) : filteredRepoCas.length === 0 ? (
               <div
@@ -1751,42 +1788,45 @@ export default function Home() {
                   top: 8,
                   left: 10,
                   display: "flex",
-                  alignItems: "center",
-                  gap: 6,
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: 4,
                   zIndex: 2,
                 }}
               >
-                <span
-                  style={{
-                    fontWeight: 800,
-                    fontSize: 14,
-                    color: "#1a1a2e",
-                    background: "rgba(255,255,255,0.75)",
-                    padding: "2px 8px",
-                    borderRadius: 6,
-                  }}
-                >
-                  {currentUser.name}
-                </span>
-                <button
-                  onClick={() => setEditorOpen(true)}
-                  style={{
-                    background: "rgba(255,255,255,0.75)",
-                    border: "none",
-                    borderRadius: 6,
-                    padding: "3px 6px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 3,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: "#4f46e5",
-                  }}
-                >
-                  <HiPencilAlt style={{ width: 11, height: 11 }} />
-                  編集
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span
+                    style={{
+                      fontWeight: 800,
+                      fontSize: 14,
+                      color: "#1a1a2e",
+                      background: "rgba(255,255,255,0.75)",
+                      padding: "2px 8px",
+                      borderRadius: 6,
+                    }}
+                  >
+                    {currentUser.name}
+                  </span>
+                  <button
+                    onClick={() => setEditorOpen(true)}
+                    style={{
+                      background: "rgba(255,255,255,0.75)",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "3px 6px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "#4f46e5",
+                    }}
+                  >
+                    <HiPencilAlt style={{ width: 11, height: 11 }} />
+                    編集
+                  </button>
+                </div>
                 <span
                   style={{
                     fontWeight: 700,
@@ -2010,7 +2050,7 @@ export default function Home() {
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             overflow: "hidden",
-            minHeight: 292,
+            height: 345,
           }}
         >
           {/* 左: バッジ一覧 */}
@@ -2218,6 +2258,7 @@ export default function Home() {
                         flexDirection: "column",
                         alignItems: "center",
                         gap: 4,
+                        minHeight: 122,
                       }}
                     >
                       {b.acquired && b.exp !== undefined && (
@@ -2436,8 +2477,6 @@ export default function Home() {
                 padding: "10px 16px",
                 display: "flex",
                 flexDirection: "column",
-                overflow: "hidden",
-                minHeight: 0,
                 gridColumn: "3",
               }}
             >
@@ -2450,24 +2489,38 @@ export default function Home() {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>
+                  <span
+                    style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}
+                  >
                     デイリーミッション
                   </span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginLeft: 20 }}>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "#6b7280",
+                      marginLeft: 20,
+                    }}
+                  >
                     {doneCount}/{tabMissions.length}
                   </span>
                 </div>
-                <Link href="/mypage/missions" style={{ textDecoration: "none" }}>
-                  <span style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: "#4f46e5",
-                    background: "#eef2ff",
-                    padding: "2px 16px",
-                    borderRadius: 99,
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  }}>
+                <Link
+                  href="/mypage/missions"
+                  style={{ textDecoration: "none" }}
+                >
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "#4f46e5",
+                      background: "#eef2ff",
+                      padding: "2px 16px",
+                      borderRadius: 99,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     一覧
                   </span>
                 </Link>
@@ -2475,9 +2528,11 @@ export default function Home() {
               <div
                 style={{
                   display: "flex",
-                  gap: 10,
-                  overflowX: "auto",
-                  flexWrap: "wrap",
+                  flexDirection: "column",
+                  gap: 7,
+                  flex: 1,
+                  minHeight: 0,
+                  overflow: "auto",
                 }}
               >
                 {tabMissions.map((m) => {
@@ -2491,41 +2546,39 @@ export default function Home() {
                       key={m.id}
                       style={{
                         opacity: done ? 0.72 : 1,
-                        flex: "1 1 0",
-                        minWidth: 180,
+                        width: "100%",
                         background: done ? "#f9fafb" : "#fafafa",
-                        borderRadius: 8,
-                        padding: "8px 10px",
+                        borderRadius: 6,
+                        padding: "4px 8px",
                         border: "1px solid #e5e7eb",
                       }}
                     >
                       <div
                         style={{
                           display: "flex",
-                          alignItems: "flex-start",
+                          alignItems: "center",
                           gap: 6,
-                          marginBottom: 4,
+                          marginBottom: 2,
                         }}
                       >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontSize: 14,
-                              fontWeight: 700,
-                              color: done ? "#9ca3af" : "#1f2937",
-                              textDecoration: done ? "line-through" : "none",
-                              lineHeight: 1.3,
-                            }}
-                          >
-                            {m.title}
-                          </div>
+                        <div
+                          style={{
+                            flex: 1,
+                            minWidth: 0,
+                            fontSize: 14,
+                            fontWeight: 700,
+                            color: done ? "#9ca3af" : "#1f2937",
+                            textDecoration: done ? "line-through" : "none",
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {m.title}
                         </div>
                         <div
                           style={{
                             display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                            alignItems: "flex-end",
+                            gap: 4,
+                            alignItems: "center",
                             flexShrink: 0,
                           }}
                         >
@@ -2536,7 +2589,7 @@ export default function Home() {
                                 fontWeight: 800,
                                 color: "#ea580c",
                                 background: "#fff7ed",
-                                padding: "1px 6px",
+                                padding: "0px 5px",
                                 borderRadius: 99,
                                 whiteSpace: "nowrap",
                               }}
@@ -2551,7 +2604,7 @@ export default function Home() {
                                 fontWeight: 700,
                                 color: "#1e40af",
                                 background: "#eff6ff",
-                                padding: "1px 6px",
+                                padding: "0px 5px",
                                 borderRadius: 99,
                                 whiteSpace: "nowrap",
                               }}
@@ -2566,13 +2619,12 @@ export default function Home() {
                           display: "flex",
                           alignItems: "center",
                           gap: 5,
-                          paddingLeft: 0,
                         }}
                       >
                         <div
                           style={{
                             flex: 1,
-                            height: 4,
+                            height: 3,
                             background: "#e5e7eb",
                             borderRadius: 2,
                             overflow: "hidden",
@@ -2662,88 +2714,179 @@ export default function Home() {
       )}
 
       {/* シーズン報酬一覧モーダル */}
-      {showRewardModal && createPortal(
-        <div
-          onClick={() => setShowRewardModal(false)}
-          style={{
-            position: "fixed", top: 0, left: 0, width: "100vw", height: "100dvh",
-            background: "rgba(0,0,0,0.5)", zIndex: 300,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "0 16px",
-          }}
-        >
+      {showRewardModal &&
+        createPortal(
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setShowRewardModal(false)}
             style={{
-              background: "white", borderRadius: 20,
-              width: "100%", maxWidth: 480, maxHeight: "80dvh",
-              display: "flex", flexDirection: "column",
-              overflow: "hidden",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100dvh",
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 300,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 16px",
             }}
           >
-            <div style={{
-              background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
-              padding: "16px 20px", flexShrink: 0,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-            }}>
-              <div>
-                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", marginBottom: 2 }}>{seasonName}</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "white" }}>シーズン報酬一覧</div>
-              </div>
-              <button
-                onClick={() => setShowRewardModal(false)}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "white",
+                borderRadius: 20,
+                width: "100%",
+                maxWidth: 480,
+                maxHeight: "80dvh",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              }}
+            >
+              <div
                 style={{
-                  background: "rgba(255,255,255,0.2)", border: "none",
-                  color: "white", borderRadius: "50%",
-                  width: 32, height: 32, fontSize: 16, cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+                  padding: "16px 20px",
+                  flexShrink: 0,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
-              >✕</button>
-            </div>
-            <div style={{ overflowY: "auto", padding: "12px 16px 24px" }}>
-              {rewards.map((reward) => {
-                const chip = TYPE_CHIP[reward.type];
-                const claimed = reward.level <= passLevel;
-                return (
-                  <div key={reward.level} style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "10px 12px", borderRadius: 10, marginBottom: 6,
-                    background: claimed ? "#f0fdf4" : "white",
-                    border: `1px solid ${claimed ? "#bbf7d0" : "#e5e7eb"}`,
-                    opacity: claimed ? 0.75 : 1,
-                  }}>
-                    <div style={{
-                      width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
-                      background: claimed ? "#4f46e5" : "#ede9fe",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 22,
-                    }}>
-                      {claimed ? "✓" : reward.icon}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#4f46e5" }}>Lv.{reward.level}</span>
-                        {chip && (
-                          <span style={{
-                            fontSize: 14, fontWeight: 700, padding: "1px 6px", borderRadius: 4,
-                            background: chip.bg, color: chip.color,
-                          }}>{chip.label}</span>
-                        )}
-                        {claimed && (
-                          <span style={{ fontSize: 14, color: "#10b981", fontWeight: 700, marginLeft: "auto" }}>獲得済み</span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: 14, color: claimed ? "#6b7280" : "#1f2937", fontWeight: 500 }}>
-                        {reward.name}
-                      </div>
-                    </div>
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "rgba(255,255,255,0.75)",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {seasonName}
                   </div>
-                );
-              })}
+                  <div
+                    style={{ fontSize: 16, fontWeight: 800, color: "white" }}
+                  >
+                    シーズン報酬一覧
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowRewardModal(false)}
+                  style={{
+                    background: "rgba(255,255,255,0.2)",
+                    border: "none",
+                    color: "white",
+                    borderRadius: "50%",
+                    width: 32,
+                    height: 32,
+                    fontSize: 16,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{ overflowY: "auto", padding: "12px 16px 24px" }}>
+                {rewards.map((reward) => {
+                  const chip = TYPE_CHIP[reward.type];
+                  const claimed = reward.level <= passLevel;
+                  return (
+                    <div
+                      key={reward.level}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        padding: "10px 12px",
+                        borderRadius: 10,
+                        marginBottom: 6,
+                        background: claimed ? "#f0fdf4" : "white",
+                        border: `1px solid ${claimed ? "#bbf7d0" : "#e5e7eb"}`,
+                        opacity: claimed ? 0.75 : 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: "50%",
+                          flexShrink: 0,
+                          background: claimed ? "#4f46e5" : "#ede9fe",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 22,
+                        }}
+                      >
+                        {claimed ? "✓" : reward.icon}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            marginBottom: 2,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 700,
+                              color: "#4f46e5",
+                            }}
+                          >
+                            Lv.{reward.level}
+                          </span>
+                          {chip && (
+                            <span
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 700,
+                                padding: "1px 6px",
+                                borderRadius: 4,
+                                background: chip.bg,
+                                color: chip.color,
+                              }}
+                            >
+                              {chip.label}
+                            </span>
+                          )}
+                          {claimed && (
+                            <span
+                              style={{
+                                fontSize: 14,
+                                color: "#10b981",
+                                fontWeight: 700,
+                                marginLeft: "auto",
+                              }}
+                            >
+                              獲得済み
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            color: claimed ? "#6b7280" : "#1f2937",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {reward.name}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
-      , document.body)}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

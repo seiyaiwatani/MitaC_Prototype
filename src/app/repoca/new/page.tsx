@@ -42,7 +42,7 @@ function NewRepoCaContent() {
   const [created, setCreated] = useState<DraftCard[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const isValid = draft.projectId && draft.label && draft.implScope && draft.content.trim();
+  const isValid = draft.projectId && draft.label && (tab !== "開発" || draft.implScope) && draft.content.trim();
 
   const buildRepoCa = (d: DraftCard): import("@/types").RepoCa => ({
     ...d,
@@ -223,18 +223,20 @@ function NewRepoCaContent() {
               </select>
             </div>
 
-            {/* 実装範囲 */}
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
-                実装範囲 <span style={{ color: "#ef4444" }}>*</span>
-              </label>
-              <select value={draft.implScope} onChange={(e) => setDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
-                {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
+            {/* 実装範囲（開発タブのみ） */}
+            {tab === "開発" && (
+              <div style={{ marginBottom: 8 }}>
+                <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                  実装範囲 <span style={{ color: "#ef4444" }}>*</span>
+                </label>
+                <select value={draft.implScope} onChange={(e) => setDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
+                  {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* タスク内容 */}
             <div style={{ marginBottom: 10 }}>
