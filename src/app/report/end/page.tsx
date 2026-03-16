@@ -9,6 +9,34 @@ import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
+const DRAFT_KEY = "mitac_end_report_draft";
+
+interface EndReportDraft {
+  selectedIds: string[];
+  durations: Record<string, number>;
+  completed: Record<string, boolean>;
+}
+
+function loadDraft(): EndReportDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(selectedIds: string[], durations: Record<string, number>, completed: Record<string, boolean>) {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ selectedIds, durations, completed }));
+}
+
+function clearDraft() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(DRAFT_KEY);
+}
+
 /** バーグラフ用の短い時間表示 (例: 1h15m, 30分, 2h) */
 function shortDur(min: number): string {
   if (min === 0) return "0m";
@@ -20,19 +48,35 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { allRepoCas, todayRepoCas, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
+  const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
 
-  const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>([...todayRepoCas]);
-  const [durations, setDurations] = useState<Record<string, number>>(
-    Object.fromEntries(todayRepoCas.map((rc) => [rc.id, 0]))
-  );
-  const [completed, setCompleted] = useState<Record<string, boolean>>(
-    Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]))
-  );
+  const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>(() => {
+    const draft = loadDraft();
+    if (draft?.selectedIds?.length) {
+      const rcs = allRepoCas.filter((r) => draft.selectedIds.includes(r.id));
+      if (rcs.length > 0) return rcs;
+    }
+    return [...todayRepoCas];
+  });
+  const [durations, setDurations] = useState<Record<string, number>>(() => {
+    const draft = loadDraft();
+    if (draft?.durations) return draft.durations;
+    return Object.fromEntries(todayRepoCas.map((rc) => [rc.id, 0]));
+  });
+  const [completed, setCompleted] = useState<Record<string, boolean>>(() => {
+    const draft = loadDraft();
+    if (draft?.completed) return draft.completed;
+    return Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]));
+  });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
+
+  // 状態変化をsessionStorageに即時保存
+  useEffect(() => {
+    saveDraft(selectedRepoCas.map((r) => r.id), durations, completed);
+  }, [selectedRepoCas, durations, completed]);
 
   // /repoca/new から戻ったとき、新規作成RepoCaを自動追加
   useEffect(() => {
@@ -54,6 +98,7 @@ export default function EndReport() {
   const addToList = (rc: RepoCa) => {
     setSelectedRepoCas((prev) => [...prev, rc]);
     setDurations((prev) => ({ ...prev, [rc.id]: 0 }));
+    addTodayRepoCa(rc);
   };
 
   // PJでグループ化
@@ -288,7 +333,7 @@ export default function EndReport() {
                         </div>
                         {/* 完了チェック */}
                         <button
-                          onClick={() => setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] }))}
+                          onClick={() => { setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] })); toggleTodayRepoCa(rc.id); }}
                           style={{
                             display: "flex", alignItems: "center", gap: 4,
                             background: "none", border: "none", cursor: "pointer",
@@ -523,6 +568,7 @@ export default function EndReport() {
                     setHasEndReported(true);
                     setEndReportedDate(new Date().toDateString());
                     resetDailyReports();
+                    clearDraft();
                     setCompletionType('end');
                     setShowConfirmModal(false);
                     router.push('/');

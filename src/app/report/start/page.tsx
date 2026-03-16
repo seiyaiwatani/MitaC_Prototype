@@ -10,6 +10,28 @@ import { useProjects } from "@/contexts/ProjectContext";
 
 const truncate = (s: string, max = 10) => s.length > max ? s.slice(0, max) + "..." : s;
 
+const START_DRAFT_KEY = "mitac_start_report_draft";
+
+function loadStartDraft(): string[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(START_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStartDraft(ids: string[]) {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(START_DRAFT_KEY, JSON.stringify(ids));
+}
+
+function clearStartDraft() {
+  if (typeof window === "undefined") return;
+  sessionStorage.removeItem(START_DRAFT_KEY);
+}
+
 const TASK_TYPES: TaskType[] = ["開発", "実装", "MTG", "デイリースクラム", "その他"];
 const TASK_LABELS: TaskLabel[] = ["新規作成", "修正", "調査", "レビュー", "その他"];
 const IMPL_SCOPES: ImplScope[] = ["フロント", "バック", "インフラ", "フルスタック", "その他"];
@@ -18,8 +40,17 @@ export default function StartReport() {
   const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds, setCompletionType, incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
-  // 追加したRepoCa（既に選択済みのもの）- 前回終業報告の未完了IDをデフォルト選択
-  const [addedIds, setAddedIds] = useState<string[]>(incompleteIdsFromLastEnd);
+  // 追加したRepoCa（既に選択済みのもの）- sessionStorageドラフト or 前回終業報告の未完了IDをデフォルト選択
+  const [addedIds, setAddedIds] = useState<string[]>(() => {
+    const draft = loadStartDraft();
+    if (draft && draft.length > 0) return draft;
+    return [...incompleteIdsFromLastEnd];
+  });
+
+  // addedIds をsessionStorageに即時保存
+  useEffect(() => {
+    saveStartDraft(addedIds);
+  }, [addedIds]);
 
   // /repoca/new から戻ったとき・前回未完了の引き継ぎ
   useEffect(() => {
@@ -359,7 +390,7 @@ export default function StartReport() {
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
               <button className="btn btn-primary" style={{ flex: 2 }}
-                onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); setShowConfirmModal(false); setCompletionType('start'); router.push('/'); }}>
+                onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); clearStartDraft(); setShowConfirmModal(false); setCompletionType('start'); router.push('/'); }}>
                 送信
               </button>
             </div>
