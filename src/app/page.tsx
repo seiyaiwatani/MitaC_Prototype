@@ -614,6 +614,7 @@ export default function Home() {
   };
   const handleCheckOut = () => {
     if (attendance !== "working") return;
+    if (!hasEndReported) return;
     setAttendance("returning");
   };
 
@@ -708,18 +709,24 @@ export default function Home() {
             style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
             本日の始業報告がまだ提出されていません
+            {attendance === "idle" && (
+              <span style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#b45309", marginTop: 1 }}>
+                出勤後に始業報告が行えます
+              </span>
+            )}
           </span>
           <Link href="/report/start">
             <button
+              disabled={attendance === "idle"}
               style={{
-                background: "#f59e0b",
-                color: "white",
+                background: attendance === "idle" ? "#d1d5db" : "#f59e0b",
+                color: attendance === "idle" ? "#9ca3af" : "white",
                 border: "none",
                 borderRadius: 99,
                 fontSize: 14,
                 fontWeight: 700,
                 padding: "3px 12px",
-                cursor: "pointer",
+                cursor: attendance === "idle" ? "not-allowed" : "pointer",
               }}
             >
               始業報告する
@@ -780,6 +787,11 @@ export default function Home() {
             style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
             終業報告がまだ提出されていません
+            {attendance === "working" && (
+              <span style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#b45309", marginTop: 1 }}>
+                終業報告後に退勤が行えます
+              </span>
+            )}
           </span>
           <Link href="/report/end">
             <button
@@ -2040,18 +2052,19 @@ export default function Home() {
             </button>
             <button
               onClick={handleCheckOut}
-              disabled={attendance !== "working"}
+              disabled={attendance !== "working" || !hasEndReported}
+              title={attendance === "working" && !hasEndReported ? "終業報告を完了してから退勤できます" : undefined}
               style={{
                 flex: 1,
                 padding: "13px 0",
                 borderRadius: 10,
                 border: "none",
-                background: attendance === "working" ? "#dbeafe" : "#f3f4f6",
-                color: attendance === "working" ? "#1e40af" : "#9ca3af",
+                background: attendance === "working" && hasEndReported ? "#dbeafe" : "#f3f4f6",
+                color: attendance === "working" && hasEndReported ? "#1e40af" : "#9ca3af",
                 fontWeight: 800,
                 fontSize: 15,
                 letterSpacing: 0.5,
-                cursor: attendance === "working" ? "pointer" : "not-allowed",
+                cursor: (attendance === "working" && hasEndReported) ? "pointer" : "not-allowed",
                 transition: "background 0.2s, color 0.2s",
               }}
             >

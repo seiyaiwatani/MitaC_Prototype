@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { RepoCa } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid } from "react-icons/hi";
+import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
@@ -103,13 +103,35 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 export default function RepoCaList() {
-  const { allRepoCas } = useRepoCa();
+  const { allRepoCas, removeRepoCa } = useRepoCa();
   const { projects } = useProjects();
   const [mainTab, setMainTab]           = useState<"repoca" | "projects">("repoca");
   const [filter, setFilter]             = useState<"all" | "favorite" | "incomplete" | "completed">("all");
   const [search, setSearch]             = useState("");
   const [selectedRc, setSelectedRc]     = useState<RepoCa | null>(null);
   const [sortBy, setSortBy]             = useState<SortKey>("created");
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds]     = useState<Set<string>>(new Set());
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    selectedIds.forEach((id) => removeRepoCa(id));
+    exitSelectionMode();
+    setShowBulkConfirm(false);
+  };
 
   const filtered = allRepoCas
     .filter((rc) => {
@@ -162,20 +184,22 @@ export default function RepoCaList() {
         <span style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 5 }}>
           <HiCollection style={{ width: 18, height: 18 }} /> RepoCa
         </span>
-        {/* 検索バー（RepoCaタブのみ・右寄せ・幅固定） */}
+        {/* 検索バー（RepoCaタブのみ・右寄せ） */}
         {mainTab === "repoca" && (
-          <div style={{
-            marginLeft: "auto", width: 148,
-            display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 10px",
-          }}>
-            <HiSearch style={{ width: 14, height: 14, flexShrink: 0 }} />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="検索..."
-              style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 14 }}
-            />
+          <div style={{ marginLeft: "auto" }}>
+            <div style={{
+              width: 148,
+              display: "flex", alignItems: "center", gap: 6,
+              background: "rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 10px",
+            }}>
+              <HiSearch style={{ width: 14, height: 14, flexShrink: 0 }} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="検索..."
+                style={{ flex: 1, background: "none", border: "none", outline: "none", color: "white", fontSize: 14 }}
+              />
+            </div>
           </div>
         )}
       </header>
@@ -248,13 +272,13 @@ export default function RepoCaList() {
               ))}
             </div>
 
-            {/* ソート + 新規作成ボタン */}
+            {/* ソート + 選択ボタン + 新規作成ボタン */}
             <div style={{ flexShrink: 0, display: "flex", gap: 6, alignItems: "center" }}>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
                 style={{
-                  width: 110, flexShrink: 0, padding: "7px 4px", borderRadius: 8,
+                  width: 90, flexShrink: 0, padding: "7px 4px", borderRadius: 8,
                   border: "1.5px solid #d1d5db", fontSize: 14, fontWeight: 600,
                   color: "#374151", background: "white", cursor: "pointer",
                   textAlign: "center", textAlignLast: "center",
@@ -264,10 +288,22 @@ export default function RepoCaList() {
                   <option key={s.key} value={s.key}>{s.label}</option>
                 ))}
               </select>
+              <button
+                onClick={selectionMode ? exitSelectionMode : () => setSelectionMode(true)}
+                style={{
+                  flexShrink: 0, padding: "7px 12px", borderRadius: 8, cursor: "pointer",
+                  border: selectionMode ? "1.5px solid #ef4444" : "1.5px solid #d1d5db",
+                  background: selectionMode ? "#fef2f2" : "white",
+                  color: selectionMode ? "#ef4444" : "#6b7280",
+                  fontSize: 13, fontWeight: 700,
+                }}
+              >
+                {selectionMode ? "キャンセル" : "選択"}
+              </button>
               <Link
                 href="/repoca/new"
                 style={{
-                  flex: 2, display: "flex", alignItems: "center", justifyContent: "center",
+                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
                   gap: 6, padding: "9px 0", borderRadius: 10,
                   background: "linear-gradient(135deg,#10b981,#059669)",
                   color: "white", fontWeight: 700, fontSize: 14,
@@ -279,6 +315,47 @@ export default function RepoCaList() {
               </Link>
             </div>
 
+            {/* 選択モード時: 一括操作バー */}
+            {selectionMode && (
+              <div style={{
+                flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+                padding: "6px 8px", background: "#fef2f2", borderRadius: 8,
+                border: "1px solid #fecaca",
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", flex: 1 }}>
+                  {selectedIds.size > 0 ? `${selectedIds.size}件を選択中` : "削除するRepoCaを選択してください"}
+                </span>
+                <button
+                  onClick={() => {
+                    if (selectedIds.size === filtered.length) {
+                      setSelectedIds(new Set());
+                    } else {
+                      setSelectedIds(new Set(filtered.map((r) => r.id)));
+                    }
+                  }}
+                  style={{
+                    background: "none", border: "1px solid #fca5a5", borderRadius: 6,
+                    fontSize: 12, fontWeight: 600, color: "#dc2626", padding: "3px 8px", cursor: "pointer",
+                  }}
+                >
+                  {selectedIds.size === filtered.length && filtered.length > 0 ? "全解除" : "全選択"}
+                </button>
+                <button
+                  disabled={selectedIds.size === 0}
+                  onClick={() => setShowBulkConfirm(true)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    background: selectedIds.size > 0 ? "#ef4444" : "#d1d5db",
+                    border: "none", borderRadius: 6, padding: "4px 10px",
+                    fontSize: 13, fontWeight: 700, color: "white",
+                    cursor: selectedIds.size > 0 ? "pointer" : "not-allowed",
+                  }}
+                >
+                  <HiTrash style={{ width: 13, height: 13 }} /> 削除
+                </button>
+              </div>
+            )}
+
             {/* カードリスト */}
             <div className="scroll-y" style={{ flex: 1 }}>
               {filtered.length === 0 ? (
@@ -288,7 +365,13 @@ export default function RepoCaList() {
                 </div>
               ) : (
                 filtered.map((rc) => (
-                  <RepoCaCard key={rc.id} rc={rc} onClick={() => setSelectedRc(rc)} />
+                  <RepoCaCard
+                    key={rc.id}
+                    rc={rc}
+                    onClick={() => selectionMode ? toggleSelect(rc.id) : setSelectedRc(rc)}
+                    selectionMode={selectionMode}
+                    isSelected={selectedIds.has(rc.id)}
+                  />
                 ))
               )}
             </div>
@@ -300,14 +383,65 @@ export default function RepoCaList() {
 
       {/* 詳細モーダル */}
       {selectedRc && (
-        <RepoCaDetailModal rc={selectedRc} onClose={() => setSelectedRc(null)} />
+        <RepoCaDetailModal
+          rc={selectedRc}
+          onClose={() => setSelectedRc(null)}
+          onDelete={(id) => { removeRepoCa(id); setSelectedRc(null); }}
+        />
+      )}
+
+      {/* 一括削除確認モーダル */}
+      {showBulkConfirm && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setShowBulkConfirm(false)}
+        >
+          <div
+            style={{ background: "white", borderRadius: 16, width: 320, maxWidth: "90vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)", padding: "16px 20px" }}>
+              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>まとめて削除</p>
+            </div>
+            <div style={{ padding: "16px 20px" }}>
+              <p style={{ fontSize: 14, color: "#374151", margin: "0 0 4px" }}>
+                選択した <span style={{ fontWeight: 800, color: "#ef4444" }}>{selectedIds.size}件</span> のRepoCaを削除します。
+              </p>
+              <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>この操作は取り消せません。</p>
+            </div>
+            <div style={{ padding: "0 20px 16px", display: "flex", gap: 8 }}>
+              <button
+                className="btn btn-ghost"
+                style={{ flex: 1 }}
+                onClick={() => setShowBulkConfirm(false)}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                style={{
+                  flex: 2, padding: "10px 0", borderRadius: 10, border: "none",
+                  background: "#ef4444", color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                }}
+              >
+                <HiTrash style={{ width: 15, height: 15 }} /> 削除する
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
 // ---- RepoCaカード ----
-function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
+function RepoCaCard({ rc, onClick, selectionMode, isSelected }: {
+  rc: RepoCa;
+  onClick: () => void;
+  selectionMode?: boolean;
+  isSelected?: boolean;
+}) {
   const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
   return (
@@ -317,11 +451,22 @@ function RepoCaCard({ rc, onClick }: { rc: RepoCa; onClick: () => void }) {
       style={{
         padding: 10, marginBottom: 6,
         display: "flex", gap: 8, alignItems: "flex-start", cursor: "pointer",
-        // 完了済みグレーアウト
-        opacity: rc.isCompleted ? 0.55 : 1,
-        background: rc.isCompleted ? "#f9fafb" : "white",
+        opacity: rc.isCompleted && !selectionMode ? 0.55 : 1,
+        background: isSelected ? "#fef2f2" : rc.isCompleted ? "#f9fafb" : "white",
+        outline: isSelected ? "2px solid #ef4444" : "none",
       }}
     >
+      {/* 選択モード時チェックボックス */}
+      {selectionMode && (
+        <div style={{
+          width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 2,
+          border: isSelected ? "none" : "2px solid #d1d5db",
+          background: isSelected ? "#ef4444" : "white",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {isSelected && <HiCheck style={{ width: 13, height: 13, color: "white" }} />}
+        </div>
+      )}
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* タグ */}
         <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 4 }}>
@@ -507,9 +652,10 @@ function ProjectsContent() {
 }
 
 // ---- RepoCa詳細モーダル ----
-function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void }) {
+function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () => void; onDelete: (id: string) => void }) {
   const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const rows: { label: string; value: string }[] = [
     { label: "プロジェクト", value: proj?.name ?? "—" },
     { label: "タスク種別",   value: `${TASK_ICON[rc.taskType] ?? "📌"} ${rc.taskType}` },
@@ -594,17 +740,59 @@ function RepoCaDetailModal({ rc, onClose }: { rc: RepoCa; onClose: () => void })
         </div>
 
         {/* フッター */}
-        <div style={{ padding: "8px 20px 18px" }}>
-          <button
-            onClick={onClose}
-            style={{
-              width: "100%", padding: "10px 0", borderRadius: 10,
-              border: "none", background: "#f3f4f6",
-              fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151",
-            }}
-          >
-            閉じる
-          </button>
+        <div style={{ padding: "8px 20px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+          {confirmDelete ? (
+            <div style={{ background: "#fef2f2", borderRadius: 10, padding: "10px 12px" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", margin: "0 0 8px", textAlign: "center" }}>
+                本当に削除しますか？
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  style={{
+                    flex: 1, padding: "8px 0", borderRadius: 8, border: "none",
+                    background: "#f3f4f6", fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+                  }}
+                >
+                  キャンセル
+                </button>
+                <button
+                  onClick={() => onDelete(rc.id)}
+                  style={{
+                    flex: 2, padding: "8px 0", borderRadius: 8, border: "none",
+                    background: "#ef4444", fontWeight: 700, fontSize: 13, cursor: "pointer", color: "white",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  }}
+                >
+                  <HiTrash style={{ width: 14, height: 14 }} /> 削除する
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={() => setConfirmDelete(true)}
+                style={{
+                  padding: "10px 14px", borderRadius: 10, border: "none",
+                  background: "#fef2f2", color: "#ef4444",
+                  fontWeight: 700, fontSize: 14, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 5,
+                }}
+              >
+                <HiTrash style={{ width: 15, height: 15 }} />
+              </button>
+              <button
+                onClick={onClose}
+                style={{
+                  flex: 1, padding: "10px 0", borderRadius: 10,
+                  border: "none", background: "#f3f4f6",
+                  fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151",
+                }}
+              >
+                閉じる
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

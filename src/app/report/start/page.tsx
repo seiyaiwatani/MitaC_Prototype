@@ -40,6 +40,13 @@ export default function StartReport() {
   const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds, setCompletionType, incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
+
+  // 出勤状態チェック
+  const [attendanceState, setAttendanceState] = useState<string>("idle");
+  useEffect(() => {
+    const saved = localStorage.getItem("mitac_attendance");
+    setAttendanceState(saved ?? "idle");
+  }, []);
   // 追加したRepoCa（既に選択済みのもの）- sessionStorageドラフト or 前回終業報告の未完了IDをデフォルト選択
   const [addedIds, setAddedIds] = useState<string[]>(() => {
     const draft = loadStartDraft();
@@ -122,6 +129,32 @@ export default function StartReport() {
   };
 
   const grouped = groupByPj(addedIds);
+
+  /* ── 出勤前: 始業報告不可 ── */
+  if (attendanceState === "idle") {
+    return (
+      <div className="page-root">
+        <div className="page-subheader">
+          <Link href="/report" style={{ color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <HiArrowLeft style={{ width: 20, height: 20 }} />
+          </Link>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <div style={{ fontSize: 56 }}>🏠</div>
+          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
+            まず出勤してください
+          </p>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
+            出勤ボタンを押してから<br />始業報告を行ってください。
+          </p>
+          <Link href="/">
+            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   /* ── 提出済み: 日付によって表示を切り替え ── */
   const todayStr = new Date().toDateString();
