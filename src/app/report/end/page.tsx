@@ -565,9 +565,9 @@ export default function EndReport() {
                     // 未完了のIDを次回始業報告のデフォルト選択として保存
                     const incompleteIds = selectedRepoCas.filter((rc) => !completed[rc.id]).map((rc) => rc.id);
                     setIncompleteIdsFromLastEnd(incompleteIds);
-                    setHasEndReported(true);
                     setEndReportedDate(new Date().toDateString());
                     resetDailyReports();
+                    setHasEndReported(true);
                     clearDraft();
                     setCompletionType('end');
                     setShowConfirmModal(false);

@@ -708,25 +708,19 @@ export default function Home() {
           <span
             style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
-            本日の始業報告がまだ提出されていません
-            {attendance === "idle" && (
-              <span style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#b45309", marginTop: 1 }}>
-                出勤後に始業報告が行えます
-              </span>
-            )}
+            {attendance === "idle" ? "まず出勤を行ってください" : "本日の始業報告がまだ提出されていません"}
           </span>
           <Link href="/report/start">
             <button
-              disabled={attendance === "idle"}
               style={{
-                background: attendance === "idle" ? "#d1d5db" : "#f59e0b",
-                color: attendance === "idle" ? "#9ca3af" : "white",
+                background: "#f59e0b",
+                color: "white",
                 border: "none",
                 borderRadius: 99,
                 fontSize: 14,
                 fontWeight: 700,
                 padding: "3px 12px",
-                cursor: attendance === "idle" ? "not-allowed" : "pointer",
+                cursor: "pointer",
               }}
             >
               始業報告する
@@ -2936,13 +2930,17 @@ export default function Home() {
               padding: "32px 24px 24px", gap: 12, textAlign: "center",
             }}
           >
-            <div style={{ fontSize: 52 }}>{completionType === 'start' ? '🌅' : '🎉'}</div>
+            <div style={{ fontSize: 52 }}>
+              {completionType === 'start' ? '🌅' : completionType === 'overtime' ? '🌙' : '🎉'}
+            </div>
             <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>
               提出完了！
             </p>
             <p style={{ fontSize: 14, color: "#6b7280", margin: 0, lineHeight: 1.8 }}>
               {completionType === 'start'
                 ? '始業報告が完了しました。今日も一日頑張りましょう！'
+                : completionType === 'overtime'
+                ? '残業報告が完了しました。'
                 : '終業報告が完了しました。お疲れ様でした！'}
             </p>
             <button

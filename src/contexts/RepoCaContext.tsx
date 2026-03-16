@@ -48,7 +48,7 @@ interface RepoCaContextValue {
   pendingRepoCaIds: string[];
   addPendingRepoCaId: (id: string) => void;
   clearPendingRepoCaIds: () => void;
-  completionType: 'start' | 'end' | null;
+  completionType: 'start' | 'overtime' | 'end' | null;
   setCompletionType: (v: 'start' | 'end' | null) => void;
   incompleteIdsFromLastEnd: string[];
   setIncompleteIdsFromLastEnd: (ids: string[]) => void;
@@ -152,7 +152,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   const addPendingRepoCaId = (id: string) => setPendingRepoCaIds((prev) => [...prev, id]);
   const clearPendingRepoCaIds = () => setPendingRepoCaIds([]);
 
-  const [completionType, setCompletionType] = useState<'start' | 'end' | null>(null);
+  const [completionType, setCompletionType] = useState<'start' | 'overtime' | 'end' | null>(null);
   const [incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd] = useState<string[]>([]);
 
   // 終業報告時に完了状態を一括で allRepoCas に反映

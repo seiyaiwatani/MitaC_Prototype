@@ -19,7 +19,7 @@ export default function OvertimeReport() {
     if (hasOvertime === null) return;
     setHasOvertimeReported(true);
     setOvertimeReportedDate(new Date().toDateString());
-    setCompletionType('start'); // 残業報告完了モーダルは始業と同じ緑系でOK
+    setCompletionType('overtime');
     router.push('/');
   };
 
