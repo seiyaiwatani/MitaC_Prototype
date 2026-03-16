@@ -3,10 +3,26 @@
 import { useState } from "react";
 import {
   HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
-  HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer,
+  HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer, HiBell, HiPencil, HiTrash,
 } from "react-icons/hi";
 import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
+import { useNews } from "@/contexts/NewsContext";
+import type { NewsCategory, NewsItem } from "@/contexts/NewsContext";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Mission } from "@/types";
 
 /* ── 型定義 ── */
@@ -138,7 +154,7 @@ const MONTHLY_WORK: Record<string, Record<string, number>> = {
   m5: { p1: 2880, p2: 2880, p3: 1440 },
 };
 
-type View = "projects" | "daily" | "monthly" | "new-project" | "missions";
+type View = "projects" | "daily" | "monthly" | "new-project" | "missions" | "news";
 
 const NAV_ITEMS: { key: View; label: string; Icon: React.ComponentType<{ style?: React.CSSProperties }> }[] = [
   { key: "projects",    label: "プロジェクト一覧", Icon: HiFolder },
@@ -146,6 +162,7 @@ const NAV_ITEMS: { key: View; label: string; Icon: React.ComponentType<{ style?:
   { key: "monthly",     label: "工数管理/月",      Icon: HiCalendar },
   { key: "new-project", label: "プロジェクト作成", Icon: HiPlus },
   { key: "missions",    label: "ミッション管理",   Icon: HiFlag },
+  { key: "news",        label: "ニュース管理",     Icon: HiBell },
 ];
 
 type TooltipState = {
@@ -161,6 +178,76 @@ type ModalState = {
   member: typeof TEAM_MEMBERS[number];
   mode: "daily" | "monthly";
 } | null;
+
+const CAT_STYLE: Record<string, { bg: string; color: string }> = {
+  メンテナンス: { bg: "#fef3c7", color: "#92400e" },
+  新機能:       { bg: "#dbeafe", color: "#1e40af" },
+  キャンペーン: { bg: "#fce7f3", color: "#9d174d" },
+  お知らせ:     { bg: "#f3f4f6", color: "#374151" },
+};
+
+function SortableNewsItem({
+  item,
+  isEditing,
+  onEdit,
+  onDelete,
+}: {
+  item: NewsItem;
+  isEditing: boolean;
+  onEdit: (item: NewsItem) => void;
+  onDelete: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: item.id });
+
+  const cat = CAT_STYLE[item.category] ?? CAT_STYLE["お知らせ"];
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className="card"
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
+        cursor: isDragging ? "grabbing" : "grab",
+        touchAction: "none",
+      }}
+    >
+      <div
+        style={{
+          padding: "10px 12px",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 10,
+          borderLeft: isEditing ? "3px solid #4f46e5" : "3px solid transparent",
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, borderRadius: 4, padding: "1px 6px", background: cat.bg, color: cat.color }}>
+              {item.category}
+            </span>
+            <span style={{ fontSize: 12, color: "#9ca3af" }}>{item.date}</span>
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1f2937", marginBottom: 2 }}>{item.title}</div>
+          <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.5 }}>{item.body}</div>
+        </div>
+
+        <div style={{ display: "flex", gap: 4, flexShrink: 0 }} onPointerDown={(e) => e.stopPropagation()}>
+          <button onClick={() => onEdit(item)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#6b7280" }} title="編集">
+            <HiPencil style={{ width: 15, height: 15 }} />
+          </button>
+          <button onClick={() => onDelete(item.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#ef4444" }} title="削除">
+            <HiTrash style={{ width: 15, height: 15 }} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const [view, setView]         = useState<View>("projects");
@@ -178,6 +265,50 @@ export default function AdminPage() {
   const [mGoal, setMGoal]         = useState(1);
 
   const { projects, addProject } = useProjects();
+  const { newsList, addNews, updateNews, deleteNews, reorderNews } = useNews();
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const handleNewsDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const fromIndex = newsList.findIndex((n) => n.id === active.id);
+    const toIndex   = newsList.findIndex((n) => n.id === over.id);
+    reorderNews(fromIndex, toIndex);
+  };
+
+  // ニュース管理フォーム
+  const CATEGORIES: NewsCategory[] = ["お知らせ", "新機能", "メンテナンス", "キャンペーン"];
+  const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
+  const [nTitle, setNTitle]   = useState("");
+  const [nBody, setNBody]     = useState("");
+  const [nDate, setNDate]     = useState(() => new Date().toISOString().slice(0, 10));
+  const [nCategory, setNCategory] = useState<NewsCategory>("お知らせ");
+
+  const resetNewsForm = () => {
+    setEditingNews(null);
+    setNTitle(""); setNBody("");
+    setNDate(new Date().toISOString().slice(0, 10));
+    setNCategory("お知らせ");
+  };
+
+  const startEditNews = (item: NewsItem) => {
+    setEditingNews(item);
+    setNTitle(item.title);
+    setNBody(item.body);
+    setNDate(item.date);
+    setNCategory(item.category);
+  };
+
+  const submitNews = () => {
+    const payload = { title: nTitle.trim(), body: nBody.trim(), date: nDate, category: nCategory };
+    if (editingNews) {
+      updateNews(editingNews.id, payload);
+    } else {
+      addNews(payload);
+    }
+    resetNewsForm();
+  };
 
   const [selectedProjId, setSelectedProjId] = useState<string>("p1");
   const [hoveredKey, setHoveredKey]   = useState<string | null>(null);
@@ -649,6 +780,85 @@ export default function AdminPage() {
                   >
                     追加
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── ニュース管理 ── */}
+          {view === "news" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
+
+              {/* 左: ニュース一覧 */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>
+                  ニュース一覧
+                </div>
+                {newsList.length === 0 && (
+                  <div style={{ fontSize: 14, color: "#9ca3af", padding: "6px 0" }}>登録されたニュースはありません</div>
+                )}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleNewsDragEnd}>
+                  <SortableContext items={newsList.map((n) => n.id)} strategy={verticalListSortingStrategy}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {newsList.map((item) => (
+                        <SortableNewsItem
+                          key={item.id}
+                          item={item}
+                          isEditing={editingNews?.id === item.id}
+                          onEdit={startEditNews}
+                          onDelete={(id) => { deleteNews(id); if (editingNews?.id === id) resetNewsForm(); }}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </div>
+
+              {/* 右: 追加・編集フォーム */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>
+                  {editingNews ? "ニュース編集" : "ニュース追加"}
+                </div>
+                <div className="card" style={{ padding: 14 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>カテゴリ</label>
+                      <select value={nCategory} onChange={(e) => setNCategory(e.target.value as NewsCategory)}
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 14 }}>
+                        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>日付</label>
+                      <input type="date" value={nDate} onChange={(e) => setNDate(e.target.value)}
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>タイトル</label>
+                      <input value={nTitle} onChange={(e) => setNTitle(e.target.value)} placeholder="例: メンテナンスのお知らせ"
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>本文</label>
+                      <textarea value={nBody} onChange={(e) => setNBody(e.target.value)} placeholder="お知らせの内容" rows={4}
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, resize: "vertical" }} />
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                    {editingNews && (
+                      <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }} onClick={resetNewsForm}>
+                        キャンセル
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-primary"
+                      style={{ flex: 2, fontSize: 14 }}
+                      disabled={!nTitle.trim()}
+                      onClick={submitNews}
+                    >
+                      {editingNews ? "更新" : "追加"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

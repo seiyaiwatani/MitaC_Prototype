@@ -31,6 +31,7 @@ import { useRepoCa } from "@/contexts/RepoCaContext";
 import { BADGE_ICON_MAP, TIER_STYLE, TIER_ORDER } from "@/lib/badge-config";
 import type { Badge } from "@/types";
 import { fmtDuration } from "@/lib/utils";
+import { useNews } from "@/contexts/NewsContext";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -496,16 +497,11 @@ function codeToWeather(code: number, isDay: boolean): WeatherInfo {
   return DEFAULT_WEATHER;
 }
 
-const NEWS = [
-  "新機能追加！バッジシートが追加されました",
-  "1月10日にメンテナンスを実施します",
-  "今月のTOPユーザーに特別ボーナスをプレゼント",
-];
-
 type FilterType = "全て" | "未完了" | "完了";
 type AttendanceState = "idle" | "departing" | "working" | "returning";
 
 export default function Home() {
+  const { newsList } = useNews();
   const { projects } = useProjects();
   const {
     passLevel,
@@ -660,15 +656,34 @@ export default function Home() {
             fontWeight: 700,
             color: "#4f46e5",
             flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
           }}
         >
           お知らせ
+          <Link
+            href="/news"
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#4f46e5",
+              border: "1px solid #4f46e5",
+              borderRadius: 4,
+              padding: "1px 6px",
+              lineHeight: 1.4,
+              textDecoration: "none",
+              flexShrink: 0,
+            }}
+          >
+            一覧
+          </Link>
         </span>
         <div style={{ overflow: "hidden", flex: 1 }}>
           <div className="news-ticker-inner">
-            {NEWS.concat(NEWS).map((n, i) => (
+            {[...newsList, ...newsList].map((n, i) => (
               <span key={i} style={{ marginRight: 40 }}>
-                ◇ {n}
+                ◇ {n.title}
               </span>
             ))}
           </div>

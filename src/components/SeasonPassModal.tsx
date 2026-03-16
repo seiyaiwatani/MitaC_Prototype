@@ -31,20 +31,22 @@ export function SeasonPassModal({ onClose }: Props) {
 
   const totalTrackW = levels.reduce((s, lv) => s + (rewardMap[lv] ? MILESTONE_W : NODE_W), 0);
 
-  let progressLineW = 0;
-  let accumulated   = 0;
+  let accFirst = 0;
+  for (const lv of levels) { if (rewardMap[lv]) break; accFirst += NODE_W; }
+  const firstMilCenterX  = 14 + accFirst + MILESTONE_W / 2;
+  const lastMilHalfW     = MILESTONE_W / 2;
+  const nextMilestoneLevel = rewards.find(r => r.level > passLevel)?.level;
+
+  let progressEndX = 14;
+  let accProg = 0;
   for (const lv of levels) {
     const w = rewardMap[lv] ? MILESTONE_W : NODE_W;
-    if (lv < passLevel) {
-      accumulated += w;
-      progressLineW = accumulated - w / 2;
-    } else if (lv === passLevel) {
-      progressLineW = accumulated + w / 2;
-      break;
-    } else {
-      break;
-    }
+    if (lv <= passLevel) progressEndX = 14 + accProg + w / 2;
+    accProg += w;
+    if (lv === passLevel) break;
   }
+  const showProgress = progressEndX > firstMilCenterX;
+  const progressW    = progressEndX - firstMilCenterX;
 
   return (
     <div
@@ -122,46 +124,41 @@ export function SeasonPassModal({ onClose }: Props) {
             </div>
             <div style={{ overflowX: "auto" }}>
               <div style={{ display: "flex", minWidth: `${totalTrackW + 28}px`, position: "relative", padding: "16px 14px 6px" }}>
-                <div style={{ position: "absolute", top: 36, left: 28, width: totalTrackW, height: 3, background: "#e5e7eb", zIndex: 0 }} />
-                {progressLineW > 0 && (
-                  <div style={{ position: "absolute", top: 36, left: 28, width: progressLineW, height: 3, background: "linear-gradient(90deg,#4f46e5,#7c3aed)", zIndex: 1 }} />
+                <div style={{ position: "absolute", top: 36, left: firstMilCenterX, right: 14 + lastMilHalfW, height: 3, background: "#e5e7eb", zIndex: 0 }} />
+                {showProgress && (
+                  <div style={{ position: "absolute", top: 36, left: firstMilCenterX, width: progressW, height: 3, background: "linear-gradient(90deg,#4f46e5,#7c3aed)", zIndex: 1 }} />
                 )}
-                {levels.map((lv) => {
-                  const reward      = rewardMap[lv];
-                  const isMilestone = !!reward;
-                  const claimed     = lv <= passLevel;
-                  const isCurrent   = lv === passLevel + 1;
-                  const nodeW       = isMilestone ? MILESTONE_W : NODE_W;
-                  const circleSize  = isMilestone ? 40 : 28;
-                  const chip        = reward ? TYPE_CHIP[reward.type] : undefined;
+                {rewards.map((reward, idx) => {
+                  const prevLevel  = idx === 0 ? 0 : rewards[idx - 1].level;
+                  const marginLeft = (reward.level - prevLevel - 1) * NODE_W;
+                  const claimed    = reward.level <= passLevel;
+                  const isCurrent  = reward.level === nextMilestoneLevel;
+                  const chip       = TYPE_CHIP[reward.type];
 
                   return (
-                    <div key={lv} style={{ width: nodeW, flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}>
+                    <div key={reward.level} style={{ width: MILESTONE_W, flexShrink: 0, marginLeft, display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}>
                       <div style={{
-                        width: circleSize, height: circleSize, borderRadius: "50%",
-                        background: claimed ? (isMilestone ? "#4f46e5" : "#a78bfa") : isCurrent ? "#e0e7ff" : "white",
-                        border: isCurrent ? "3px solid #4f46e5" : (claimed ? "none" : `2px solid ${isMilestone ? "#c4b5fd" : "#e5e7eb"}`),
+                        width: 40, height: 40, borderRadius: "50%",
+                        background: claimed ? "#4f46e5" : isCurrent ? "#e0e7ff" : "white",
+                        border: isCurrent ? "3px solid #4f46e5" : (claimed ? "none" : "2px solid #c4b5fd"),
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: claimed ? (isMilestone ? 16 : 11) : (isMilestone ? 18 : 10),
+                        fontSize: claimed ? 16 : 18,
                         color: claimed ? "white" : isCurrent ? "#4f46e5" : "#9ca3af",
-                        boxShadow: isCurrent ? "0 0 0 4px #e0e7ff" : (isMilestone && !claimed ? "0 0 0 3px #ede9fe" : "none"),
-                        fontWeight: !reward ? 600 : undefined,
+                        boxShadow: isCurrent ? "0 0 0 4px #e0e7ff" : (!claimed ? "0 0 0 3px #ede9fe" : "none"),
                       }}>
-                        {claimed ? (isMilestone ? reward!.icon : "✓") : (reward ? reward.icon : lv)}
+                        {reward.icon}
                       </div>
-                      <span style={{ fontSize: 14, marginTop: 4, fontWeight: isCurrent || isMilestone ? 700 : 400, color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : (isMilestone ? "#374151" : "#9ca3af") }}>
-                        Lv.{lv}
+                      <span style={{ fontSize: 14, marginTop: 4, fontWeight: 700, color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : "#374151" }}>
+                        Lv.{reward.level}
                       </span>
                       {chip && (
                         <span style={{ fontSize: 14, padding: "1px 4px", borderRadius: 3, marginTop: 2, background: chip.bg, color: chip.color, fontWeight: 700 }}>
                           {chip.label}
                         </span>
                       )}
-                      {reward && (
-                        <span style={{ fontSize: 14, textAlign: "center", marginTop: 1, color: claimed ? "#9ca3af" : "#374151", lineHeight: 1.3, maxWidth: MILESTONE_W - 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                          {reward.name}
-                        </span>
-                      )}
+                      <span style={{ fontSize: 14, textAlign: "center", marginTop: 1, color: claimed ? "#9ca3af" : "#374151", lineHeight: 1.3, maxWidth: MILESTONE_W - 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {reward.name}
+                      </span>
                     </div>
                   );
                 })}
