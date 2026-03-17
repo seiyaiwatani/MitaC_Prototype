@@ -11,10 +11,6 @@ import type { SeasonRewardType, RepoCa } from "@/types";
 import {
   HiFlag,
   HiCheck,
-  HiBadgeCheck,
-  HiClipboardList,
-  HiStar,
-  HiExclamation,
   HiPencilAlt,
 } from "react-icons/hi";
 import {
@@ -574,11 +570,13 @@ export default function Home() {
     completionType,
     setCompletionType,
     resetDailyReports,
+    showEndOfWork,
+    setShowEndOfWork,
   } = useRepoCa();
-  const [showEndOfWork, setShowEndOfWork] = useState(false);
   const { missions } = useMission();
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [missionTab, setMissionTab] = useState<"daily" | "monthly" | "unlimited">("daily");
+  const [hoveredRewardLv, setHoveredRewardLv] = useState<number | null>(null);
   const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
   const [workedMinutes, setWorkedMinutes] = useState(0);
@@ -642,8 +640,6 @@ export default function Home() {
 
   const completedCount = todayRepoCas.filter((r) => r.isCompleted).length;
   const dailyMissions = missions.filter((m) => m.type === "daily");
-  const acquiredBadges = badges.filter((b) => b.acquired).length;
-  const xpPct = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const avatarSrc = AVATAR_MAP[avatarKey] ?? AVATAR_MAP.fox;
   // おまもりの効果チップ
   const activeEffectChips = omamori
@@ -700,158 +696,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 警告バナー */}
-      {showEndOfWork && (
-        <div
-          style={{
-            flexShrink: 0,
-            background: "#d1fae5",
-            borderBottom: "1px solid #6ee7b7",
-            padding: "6px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <span style={{ fontSize: 16 }}>🏠</span>
-          <span
-            style={{ fontSize: 14, fontWeight: 700, color: "#065f46", flex: 1 }}
-          >
-            業務終了です。お疲れ様でした！
-          </span>
-        </div>
-      )}
-      {!showEndOfWork && !hasStartReported && (
-        <div
-          style={{
-            flexShrink: 0,
-            background: "#fef3c7",
-            borderBottom: "1px solid #fcd34d",
-            padding: "6px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
-          <span
-            style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
-          >
-            {attendance === "idle"
-              ? "まず出勤を行ってください"
-              : "本日の始業報告がまだ提出されていません"}
-          </span>
-          <Link href="/report/start">
-            <button
-              style={{
-                background: "#f59e0b",
-                color: "white",
-                border: "none",
-                borderRadius: 99,
-                fontSize: 14,
-                fontWeight: 700,
-                padding: "3px 12px",
-                cursor: "pointer",
-              }}
-            >
-              始業報告する
-            </button>
-          </Link>
-        </div>
-      )}
-      {!showEndOfWork && hasStartReported && !hasOvertimeReported && (
-        <div
-          style={{
-            flexShrink: 0,
-            background: "#ede9fe",
-            borderBottom: "1px solid #c4b5fd",
-            padding: "6px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
-          <span
-            style={{ fontSize: 14, fontWeight: 700, color: "#4c1d95", flex: 1 }}
-          >
-            残業報告がまだ提出されていません
-          </span>
-          <Link href="/report/overtime">
-            <button
-              style={{
-                background: "#4f46e5",
-                color: "white",
-                border: "none",
-                borderRadius: 99,
-                fontSize: 14,
-                fontWeight: 700,
-                padding: "3px 12px",
-                cursor: "pointer",
-              }}
-            >
-              残業報告する
-            </button>
-          </Link>
-        </div>
-      )}
-      {!showEndOfWork &&
-        hasStartReported &&
-        hasOvertimeReported &&
-        !hasEndReported && (
-          <div
-            style={{
-              flexShrink: 0,
-              background: "#fef3c7",
-              borderBottom: "1px solid #fcd34d",
-              padding: "6px 14px",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
-            <span
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: "#92400e",
-                flex: 1,
-              }}
-            >
-              終業報告がまだ提出されていません
-              {attendance === "working" && (
-                <span
-                  style={{
-                    display: "block",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: "#b45309",
-                    marginTop: 1,
-                  }}
-                >
-                  終業報告後に退勤が行えます
-                </span>
-              )}
-            </span>
-            <Link href="/report/end">
-              <button
-                style={{
-                  background: "#f59e0b",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 99,
-                  fontSize: 14,
-                  fontWeight: 700,
-                  padding: "3px 12px",
-                  cursor: "pointer",
-                }}
-              >
-                終業報告する
-              </button>
-            </Link>
-          </div>
-        )}
 
       {/* ====== シーズンパス（全幅） ====== */}
       {(() => {
@@ -900,7 +744,7 @@ export default function Home() {
         const showProgress = progressLineW > 0;
         return (
           <div style={{ flexShrink: 0, padding: "8px 40px" }}>
-            <div className="card" style={{ overflow: "hidden" }}>
+            <div className="card" style={{ overflow: "visible" }}>
               {/* バナー */}
               <div
                 style={{
@@ -1011,7 +855,7 @@ export default function Home() {
                 </div>
               </div>
               {/* 報酬トラック */}
-              <div ref={spTrackRef} style={{ overflow: "hidden" }}>
+              <div ref={spTrackRef} style={{ overflow: "visible" }}>
                 {spTrackW > 0 && (
                   <div
                     style={{
@@ -1051,6 +895,7 @@ export default function Home() {
                       const claimed = lv <= passLevel;
                       const isCur = lv === passLevel + 1;
                       const chip = TYPE_CHIP[reward.type as SeasonRewardType];
+                      const hovered = hoveredRewardLv === lv;
                       return (
                         <div
                           key={lv}
@@ -1065,7 +910,45 @@ export default function Home() {
                             zIndex: 2,
                           }}
                         >
+                          {/* ホバートゥールチップ */}
+                          {hovered && (
+                            <div style={{
+                              position: "absolute",
+                              bottom: "calc(100% + 6px)",
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              background: "#1a1a2e",
+                              color: "white",
+                              padding: "5px 9px",
+                              borderRadius: 7,
+                              fontSize: 12,
+                              whiteSpace: "nowrap",
+                              zIndex: 20,
+                              pointerEvents: "none",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 2,
+                              alignItems: "center",
+                            }}>
+                              {chip && (
+                                <span style={{
+                                  fontSize: 11,
+                                  fontWeight: 700,
+                                  background: chip.bg,
+                                  color: chip.color,
+                                  padding: "1px 5px",
+                                  borderRadius: 3,
+                                }}>
+                                  {chip.label}
+                                </span>
+                              )}
+                              <span style={{ fontWeight: 700 }}>{reward.name}</span>
+                            </div>
+                          )}
                           <div
+                            onMouseEnter={() => setHoveredRewardLv(lv)}
+                            onMouseLeave={() => setHoveredRewardLv(null)}
                             style={{
                               width: 36,
                               height: 36,
@@ -1094,13 +977,14 @@ export default function Home() {
                                 : claimed
                                   ? "none"
                                   : "0 0 0 3px #ede9fe",
+                              cursor: "default",
                             }}
                           >
                             {reward.icon}
                           </div>
                           <span
                             style={{
-                              fontSize: 14,
+                              fontSize: 12,
                               marginTop: 3,
                               fontWeight: 700,
                               color: isCur
@@ -1111,37 +995,6 @@ export default function Home() {
                             }}
                           >
                             Lv.{lv}
-                          </span>
-                          {chip && (
-                            <span
-                              style={{
-                                fontSize: 14,
-                                padding: "1px 3px",
-                                borderRadius: 3,
-                                marginTop: 1,
-                                background: chip.bg,
-                                color: chip.color,
-                                fontWeight: 700,
-                              }}
-                            >
-                              {chip.label}
-                            </span>
-                          )}
-                          <span
-                            style={{
-                              fontSize: 14,
-                              textAlign: "center",
-                              marginTop: 1,
-                              color: claimed ? "#9ca3af" : "#374151",
-                              lineHeight: 1.2,
-                              maxWidth: MILESTONE_W - 4,
-                              display: "-webkit-box",
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
-                            {reward.name}
                           </span>
                         </div>
                       );
@@ -1946,127 +1799,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
-          {/* XPバー + コスチューム効果 */}
-          <div
-            style={{
-              padding: "8px 14px",
-              background: "#f9fafb",
-              borderBottom: "1px solid #e5e7eb",
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 14,
-                color: "#6b7280",
-                marginBottom: 3,
-              }}
-            >
-              <span style={{ fontWeight: 600 }}>EXP</span>
-              <span>
-                {currentUser.xp} / {currentUser.xpToNext}
-              </span>
-            </div>
-            <div
-              style={{
-                height: 7,
-                background: "#e5e7eb",
-                borderRadius: 4,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: `${xpPct}%`,
-                  height: "100%",
-                  background: "linear-gradient(90deg,#6366f1,#a855f7)",
-                  borderRadius: 4,
-                }}
-              />
-            </div>
-            {/* 装備中コスチュームの効果 */}
-            {activeEffectChips.length > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  gap: 4,
-                  marginTop: 5,
-                  flexWrap: "wrap",
-                }}
-              >
-                {activeEffectChips.map((eff) => (
-                  <span
-                    key={eff.key}
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      background: eff.color + "22",
-                      color: eff.color,
-                      borderRadius: 99,
-                      padding: "1px 7px",
-                      border: `1px solid ${eff.color}44`,
-                    }}
-                  >
-                    {eff.label}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 本日の進捗サマリー */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              flexShrink: 0,
-            }}
-          >
-            {[
-              {
-                Icon: HiClipboardList,
-                label: "本日タスク",
-                value: `${completedCount}/${todayRepoCas.length}`,
-                color: "#4f46e5",
-              },
-              {
-                Icon: HiBadgeCheck,
-                label: "バッジ",
-                value: `${acquiredBadges}個`,
-                color: "#10b981",
-              },
-              {
-                Icon: HiStar,
-                label: "レベル",
-                value: `Lv.${currentUser.level}`,
-                color: "#f59e0b",
-              },
-            ].map(({ Icon, label, value, color }, i) => (
-              <div
-                key={label}
-                style={{
-                  padding: "10px 8px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 3,
-                  borderRight: i < 2 ? "1px solid #e5e7eb" : "none",
-                  borderBottom: "1px solid #e5e7eb",
-                }}
-              >
-                <Icon style={{ width: 16, height: 16, color }} />
-                <span
-                  style={{ fontSize: 14, fontWeight: 800, color: "#1a1a2e" }}
-                >
-                  {value}
-                </span>
-                <span style={{ fontSize: 14, color: "#6b7280" }}>{label}</span>
-              </div>
-            ))}
-          </div>
 
           {/* 出退勤ボタン */}
           <div

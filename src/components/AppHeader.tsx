@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { HiExclamation } from "react-icons/hi";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
+import { useRepoCa } from "@/contexts/RepoCaContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 import { AvatarEditor } from "@/components/AvatarEditor";
 
@@ -19,6 +21,7 @@ const AVATAR_SRC: Record<string, string> = {
 export default function AppHeader() {
   const { avatarKey, headCostume, bodyCostume, omamori, setAvatarKey, setHeadCostume, setBodyCostume, setOmamori } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
+  const { hasStartReported, hasOvertimeReported, hasEndReported, showEndOfWork } = useRepoCa();
   const [showEditor, setShowEditor] = useState(false);
   const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const passExpPct = Math.round((passExp / passExpToNext) * 100);
@@ -56,8 +59,44 @@ export default function AppHeader() {
         </span>
       </Link>
 
-      {/* 中央: スペーサー */}
-      <div style={{ flex: 1 }} />
+      {/* 中央: 警告バナー */}
+      <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 16px" }}>
+        {showEndOfWork ? (
+          <span style={{ fontSize: 13, fontWeight: 700, color: "#065f46", background: "#d1fae5", padding: "4px 12px", borderRadius: 99, display: "flex", alignItems: "center", gap: 6 }}>
+            🏠 業務終了です。お疲れ様でした！
+          </span>
+        ) : !hasStartReported ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fef3c7", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#92400e", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#92400e", whiteSpace: "nowrap" }}>始業報告が未提出です</span>
+            <Link href="/report/start">
+              <button style={{ background: "#f59e0b", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                始業報告する
+              </button>
+            </Link>
+          </div>
+        ) : !hasOvertimeReported ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#ede9fe", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#4c1d95", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#4c1d95", whiteSpace: "nowrap" }}>残業報告が未提出です</span>
+            <Link href="/report/overtime">
+              <button style={{ background: "#4f46e5", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                残業報告する
+              </button>
+            </Link>
+          </div>
+        ) : !hasEndReported ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fef3c7", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#92400e", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#92400e", whiteSpace: "nowrap" }}>終業報告が未提出です</span>
+            <Link href="/report/end">
+              <button style={{ background: "#f59e0b", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                終業報告する
+              </button>
+            </Link>
+          </div>
+        ) : null}
+      </div>
 
       {/* 右: アバター + ユーザー情報 */}
       <div

@@ -52,6 +52,8 @@ interface RepoCaContextValue {
   setCompletionType: (v: 'start' | 'overtime' | 'end' | null) => void;
   incompleteIdsFromLastEnd: string[];
   setIncompleteIdsFromLastEnd: (ids: string[]) => void;
+  showEndOfWork: boolean;
+  setShowEndOfWork: (v: boolean) => void;
 }
 
 const RepoCaContext = createContext<RepoCaContextValue>({
@@ -86,6 +88,8 @@ const RepoCaContext = createContext<RepoCaContextValue>({
   setCompletionType: () => {},
   incompleteIdsFromLastEnd: [],
   setIncompleteIdsFromLastEnd: () => {},
+  showEndOfWork: false,
+  setShowEndOfWork: () => {},
 });
 
 export function RepoCaProvider({ children }: { children: ReactNode }) {
@@ -130,6 +134,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
     setStartReportedDate(null);
     setOvertimeReportedDate(null);
     setEndReportedDate(null);
+    setShowEndOfWork(false);
   };
   const [favoriteIds, setFavoriteIds] = useState<string[]>(
     defaultRepoCas.filter((r) => r.isFavorite).map((r) => r.id)
@@ -154,6 +159,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
 
   const [completionType, setCompletionType] = useState<'start' | 'overtime' | 'end' | null>(null);
   const [incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd] = useState<string[]>([]);
+  const [showEndOfWork, setShowEndOfWork] = useState(false);
 
   // 終業報告時に完了状態を一括で allRepoCas に反映
   const bulkUpdateCompleted = (completedMap: Record<string, boolean>) =>
@@ -178,6 +184,7 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
       pendingRepoCaIds, addPendingRepoCaId, clearPendingRepoCaIds,
       completionType, setCompletionType,
       incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd,
+      showEndOfWork, setShowEndOfWork,
     }}>
       {children}
     </RepoCaContext.Provider>
