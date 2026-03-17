@@ -135,12 +135,9 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
   const addTodayRepoCa = (rc: RepoCa) =>
     setTodayRepoCas((prev) => [...prev, rc]);
 
-  // 完了トグル: todayRepoCas と allRepoCas の両方を更新
+  // 完了トグル: todayRepoCas のみ更新（allRepoCas は終業報告送信時に bulkUpdateCompleted で一括反映）
   const toggleTodayRepoCa = (id: string) => {
     setTodayRepoCas((prev) =>
-      prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r)
-    );
-    setAllRepoCas((prev) =>
       prev.map((r) => r.id === id ? { ...r, isCompleted: !r.isCompleted } : r)
     );
   };

@@ -541,6 +541,17 @@ export default function Home() {
     }
   }, [workStartTime]);
 
+  // シーズンパス報酬トラックのコンテナ幅追跡
+  const spTrackRef = useRef<HTMLDivElement>(null);
+  const [spTrackW, setSpTrackW] = useState(0);
+  useEffect(() => {
+    const el = spTrackRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setSpTrackW(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const {
     avatarKey,
     setAvatarKey,
@@ -563,7 +574,9 @@ export default function Home() {
     hasEndReported,
     completionType,
     setCompletionType,
+    resetDailyReports,
   } = useRepoCa();
+  const [showEndOfWork, setShowEndOfWork] = useState(false);
   const { missions } = useMission();
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [showAllBadges, setShowAllBadges] = useState(false);
@@ -692,7 +705,21 @@ export default function Home() {
       </div>
 
       {/* 警告バナー */}
-      {!hasStartReported && (
+      {showEndOfWork && (
+        <div style={{
+          flexShrink: 0,
+          background: "#d1fae5",
+          borderBottom: "1px solid #6ee7b7",
+          padding: "6px 14px",
+          display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span style={{ fontSize: 16 }}>🏠</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "#065f46", flex: 1 }}>
+            業務終了です。お疲れ様でした！
+          </span>
+        </div>
+      )}
+      {!showEndOfWork && !hasStartReported && (
         <div
           style={{
             flexShrink: 0,
@@ -728,7 +755,7 @@ export default function Home() {
           </Link>
         </div>
       )}
-      {hasStartReported && !hasOvertimeReported && (
+      {!showEndOfWork && hasStartReported && !hasOvertimeReported && (
         <div
           style={{
             flexShrink: 0,
@@ -764,7 +791,7 @@ export default function Home() {
           </Link>
         </div>
       )}
-      {hasStartReported && hasOvertimeReported && !hasEndReported && (
+      {!showEndOfWork && hasStartReported && hasOvertimeReported && !hasEndReported && (
         <div
           style={{
             flexShrink: 0,
@@ -808,14 +835,12 @@ export default function Home() {
 
       {/* ====== シーズンパス（全幅） ====== */}
       {(() => {
-        const NODE_W = 52,
-          MILESTONE_W = 76;
-        const rewardMap = Object.fromEntries(rewards.map((r) => [r.level, r]));
-        const levels = Array.from({ length: maxPassLevel }, (_, i) => i + 1);
-        const totalTrackW = levels.reduce(
-          (s, lv) => s + (rewardMap[lv] ? MILESTONE_W : NODE_W),
-          0,
-        );
+        const milestoneCount = rewards.length;
+        const EDGE_PAD = 10;
+        const MILESTONE_W = 80;
+        const availW = spTrackW > 0 ? spTrackW - 2 * EDGE_PAD : 0;
+        const gapW = availW > 0 ? (availW - milestoneCount * MILESTONE_W) / (milestoneCount - 1) : 0;
+        const milestoneStep = MILESTONE_W + gapW; // マイルストーン中心間の距離
         const passExpPct = Math.round((passExp / passExpToNext) * 100);
         const daysLeft = Math.max(
           0,
@@ -825,18 +850,21 @@ export default function Home() {
           month: "long",
           day: "numeric",
         });
-        let progressLineW = 0,
-          accumulated = 0;
-        for (const lv of levels) {
-          const w = rewardMap[lv] ? MILESTONE_W : NODE_W;
-          if (lv < passLevel) {
-            accumulated += w;
-            progressLineW = accumulated - w / 2;
-          } else if (lv === passLevel) {
-            progressLineW = accumulated + w / 2;
+        const firstMilCenterX = EDGE_PAD + MILESTONE_W / 2;
+        // 進捗ライン: マイルストーン間を補間して現在レベルの中心Xを算出
+        let currentLevelCenterX = firstMilCenterX;
+        for (let i = 0; i < rewards.length; i++) {
+          if (rewards[i].level <= passLevel) {
+            currentLevelCenterX = firstMilCenterX + i * milestoneStep;
+          }
+          if (i < rewards.length - 1 && rewards[i].level < passLevel && rewards[i + 1].level > passLevel) {
+            const t = (passLevel - rewards[i].level) / (rewards[i + 1].level - rewards[i].level);
+            currentLevelCenterX = firstMilCenterX + i * milestoneStep + t * milestoneStep;
             break;
-          } else break;
+          }
         }
+        const progressLineW = Math.max(0, currentLevelCenterX - firstMilCenterX);
+        const showProgress = progressLineW > 0;
         return (
           <div style={{ flexShrink: 0, padding: "8px 40px" }}>
             <div className="card" style={{ overflow: "hidden" }}>
@@ -950,39 +978,33 @@ export default function Home() {
                 </div>
               </div>
               {/* 報酬トラック */}
-              <div
-                style={{
-                  overflowX: "auto",
-                  display: "flex",
-                  alignItems: "stretch",
-                }}
-              >
-                <div
+              <div ref={spTrackRef} style={{ overflow: "hidden" }}>
+                {spTrackW > 0 && <div
                   style={{
                     display: "flex",
-                    minWidth: `${totalTrackW + 20}px`,
+                    gap: gapW,
+                    width: "100%",
                     position: "relative",
                     padding: "14px 10px 4px",
-                    flex: 1,
                   }}
                 >
                   <div
                     style={{
                       position: "absolute",
                       top: 34,
-                      left: 26,
-                      width: totalTrackW,
+                      left: firstMilCenterX,
+                      right: EDGE_PAD + MILESTONE_W / 2,
                       height: 2,
                       background: "#e5e7eb",
                       zIndex: 0,
                     }}
                   />
-                  {progressLineW > 0 && (
+                  {showProgress && (
                     <div
                       style={{
                         position: "absolute",
                         top: 34,
-                        left: 26,
+                        left: firstMilCenterX,
                         width: progressLineW,
                         height: 2,
                         background: "linear-gradient(90deg,#4f46e5,#7c3aed)",
@@ -990,16 +1012,8 @@ export default function Home() {
                       }}
                     />
                   )}
-                  {levels.map((lv) => {
-                    const reward = rewardMap[lv];
-                    const isM = !!reward;
-                    if (!isM)
-                      return (
-                        <div
-                          key={lv}
-                          style={{ width: NODE_W, flexShrink: 0 }}
-                        />
-                      );
+                  {rewards.map((reward) => {
+                    const lv = reward.level;
                     const claimed = lv <= passLevel;
                     const isCur = lv === passLevel + 1;
                     const chip = TYPE_CHIP[reward.type as SeasonRewardType];
@@ -1012,6 +1026,7 @@ export default function Home() {
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
+                          textAlign: "center",
                           position: "relative",
                           zIndex: 2,
                         }}
@@ -1097,7 +1112,7 @@ export default function Home() {
                       </div>
                     );
                   })}
-                </div>
+                </div>}
               </div>
             </div>
           </div>
@@ -1532,6 +1547,9 @@ export default function Home() {
                       setWorkedMinutes(mins);
                       setAttendance("idle");
                       setShowWorkResult(true);
+                      resetDailyReports();
+                      setShowEndOfWork(true);
+                      setTimeout(() => setShowEndOfWork(false), 8000);
                     }}
                     size={avatarSize}
                     containerW={gameSize.w}

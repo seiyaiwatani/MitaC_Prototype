@@ -13,10 +13,11 @@ export const currentUser: User = {
 };
 
 export const projects: Project[] = [
-  { id: "p1", name: "ITS-xLP",                        teamId: "t1", color: "#bbf7d0", textColor: "#065f46", icon: "🔧" },
-  { id: "p2", name: "コーポレートサイトリニューアル", teamId: "t1", color: "#e9d5ff", textColor: "#581c87", icon: "🏢" },
-  { id: "p3", name: "モバイルアプリ開発",             teamId: "t2", color: "#bfdbfe", textColor: "#1e3a8a", icon: "📱" },
-  { id: "p4", name: "データ基盤構築",                 teamId: "t1", color: "#fde68a", textColor: "#78350f", icon: "🗄️" },
+  { id: "p1",     name: "ITS-xLP",                        teamId: "t1", color: "#bbf7d0", textColor: "#065f46", icon: "🔧" },
+  { id: "p2",     name: "コーポレートサイトリニューアル", teamId: "t1", color: "#e9d5ff", textColor: "#581c87", icon: "🏢" },
+  { id: "p3",     name: "モバイルアプリ開発",             teamId: "t2", color: "#bfdbfe", textColor: "#1e3a8a", icon: "📱" },
+  { id: "p4",     name: "データ基盤構築",                 teamId: "t1", color: "#fde68a", textColor: "#78350f", icon: "🗄️" },
+  { id: "p_other", name: "その他",                        teamId: "t1", color: "#f3f4f6", textColor: "#6b7280", icon: "📌" },
 ];
 
 export const repoCas: RepoCa[] = [

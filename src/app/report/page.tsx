@@ -11,7 +11,8 @@ import { useProjects } from "@/contexts/ProjectContext";
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
 
 export default function ReportIndex() {
-  const { allRepoCas, todayRepoCas, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported, favoriteIds, toggleFavorite: ctxToggleFavorite } = useRepoCa();
+  const { todayRepoCas, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, hasEndReported, favoriteIds, toggleFavorite: ctxToggleFavorite } = useRepoCa();
+  const [showEndBlockModal, setShowEndBlockModal] = useState(false);
   const { projects } = useProjects();
   const reportStatus = [
     { key: "start",    label: "始業報告", done: hasStartReported,    href: "/report/start" },
@@ -147,11 +148,10 @@ export default function ReportIndex() {
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
         background: "#f3f4f6", borderTop: "1px solid #e5e7eb",
       }}>
-        {[
+        {([
           { href: "/report/start",    label: "始業報告" },
           { href: "/report/overtime", label: "残業報告" },
-          { href: "/report/end",      label: "終業報告" },
-        ].map((btn) => (
+        ] as const).map((btn) => (
           <Link key={btn.href} href={btn.href}>
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
@@ -161,7 +161,61 @@ export default function ReportIndex() {
             </button>
           </Link>
         ))}
+        {hasStartReported ? (
+          <Link href="/report/end">
+            <button className="btn" style={{
+              width: "100%", background: "white", color: "#374151",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
+            }}>
+              終業報告
+            </button>
+          </Link>
+        ) : (
+          <button
+            className="btn"
+            onClick={() => setShowEndBlockModal(true)}
+            style={{
+              width: "100%", background: "white", color: "#374151",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
+            }}
+          >
+            終業報告
+          </button>
+        )}
       </div>
+
+      {/* 終業報告ブロックモーダル */}
+      {showEndBlockModal && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+          onClick={() => setShowEndBlockModal(false)}
+        >
+          <div
+            style={{ background: "white", borderRadius: 16, padding: "24px 20px", width: "100%", maxWidth: 320, textAlign: "center" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", margin: "0 0 8px" }}>
+              始業報告が未提出です
+            </p>
+            <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 20px", lineHeight: 1.6 }}>
+              終業報告は始業報告を提出した後に行えます
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <Link href="/report/start" style={{ flex: 1 }}>
+                <button className="btn btn-primary" style={{ width: "100%" }}>始業報告する</button>
+              </Link>
+              <button
+                className="btn"
+                onClick={() => setShowEndBlockModal(false)}
+                style={{ flex: 1, background: "#f3f4f6", color: "#374151" }}
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* RepoCa詳細モーダル */}
       {selectedRc && (() => {

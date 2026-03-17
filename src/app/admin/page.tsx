@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useRole } from "@/contexts/RoleContext";
 import {
   HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
   HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer, HiBell, HiPencil, HiTrash,
@@ -250,6 +252,13 @@ function SortableNewsItem({
 }
 
 export default function AdminPage() {
+  const { role } = useRole();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (role !== null && role !== "admin") router.replace("/");
+  }, [role, router]);
+
   const [view, setView]         = useState<View>("projects");
 
   const [projName, setProjName] = useState("");
@@ -318,6 +327,8 @@ export default function AdminPage() {
   const openModal = (member: typeof TEAM_MEMBERS[number], mode: "daily" | "monthly") =>
     setModal({ member, mode });
   const closeModal = () => setModal(null);
+
+  if (role !== "admin") return null;
 
   return (
     <div className="page-root">

@@ -217,7 +217,7 @@ function NewRepoCaContent() {
               </label>
               <select value={draft.label} onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
-                {(["新規作成", "修正", "調査", "レビュー"] as TaskLabel[]).map((l) => (
+                {(["新規作成", "修正", "調査", "レビュー", "MTG", "外部対応", "その他"] as TaskLabel[]).map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
               </select>

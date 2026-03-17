@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HiHome, HiCollection, HiClipboardList, HiBadgeCheck, HiCog } from "react-icons/hi";
+import { HiHome, HiCollection, HiClipboardList, HiBadgeCheck, HiCog, HiShieldCheck } from "react-icons/hi";
 
-const navItems = [
+const baseNavItems = [
   { href: "/",         label: "ホーム",    Icon: HiHome },
   { href: "/repoca",   label: "RepoCa/PJ", Icon: HiCollection },
   { href: "/report",   label: "報告",      Icon: HiClipboardList },
@@ -12,8 +12,11 @@ const navItems = [
   { href: "/settings", label: "設定",      Icon: HiCog },
 ];
 
-export default function BottomNav() {
+const adminNavItem = { href: "/admin", label: "管理者", Icon: HiShieldCheck };
+
+export default function BottomNav({ showAdmin }: { showAdmin: boolean }) {
   const pathname = usePathname();
+  const navItems = showAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
     <nav className="bottom-nav">

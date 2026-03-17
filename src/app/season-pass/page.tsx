@@ -44,7 +44,7 @@ export default function SeasonPassPage() {
   const EDGE_PAD       = PADDING / 2; // 各辺のパディング
   const availW         = trackW > 0 ? trackW - PADDING : 0;
   // milestoneW = 3 * nodeW となるよう計算
-  const NODE_W      = availW > 0 ? Math.max(1, Math.floor(availW / (nodeCount + 3 * milestoneCount))) : 0;
+  const NODE_W      = availW > 0 ? availW / (nodeCount + 3 * milestoneCount) : 0;
   const MILESTONE_W = NODE_W * 3;
 
   // トラック総幅
@@ -183,6 +183,7 @@ export default function SeasonPassPage() {
                   <div key={reward.level} style={{
                     width: MILESTONE_W, flexShrink: 0, marginLeft,
                     display: "flex", flexDirection: "column", alignItems: "center",
+                    textAlign: "center",
                     position: "relative", zIndex: 2,
                   }}>
                     <div style={{

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
-import BottomNav from "@/components/BottomNav";
 import { AppShell } from "@/components/AppShell";
 
 const notoSansJP = Noto_Sans_JP({
@@ -26,7 +25,6 @@ export default function RootLayout({
         <div className="app-container">
           <AppShell>{children}</AppShell>
         </div>
-        <BottomNav />
       </body>
     </html>
   );

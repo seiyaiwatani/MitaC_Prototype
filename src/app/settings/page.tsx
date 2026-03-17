@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { HiArrowLeft } from "react-icons/hi";
 import Link from "next/link";
 
@@ -143,6 +142,21 @@ function ExternalTab() {
   );
 }
 
+function AdminTab() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "32px 16px" }}>
+      <div style={{ fontSize: 40 }}>🔧</div>
+      <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>管理者ページ</p>
+      <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+        工数管理・プロジェクト管理など<br />管理者向け機能はこちらから
+      </p>
+      <Link href="/admin">
+        <button className="btn btn-primary" style={{ marginTop: 8 }}>管理者ページへ移動</button>
+      </Link>
+    </div>
+  );
+}
+
 function TabContent({ tab }: { tab: Tab }) {
   switch (tab) {
     case "アカウント": return <AccountTab />;
@@ -150,13 +164,13 @@ function TabContent({ tab }: { tab: Tab }) {
     case "利用規約":
       return <TextTab title="利用規約" content={"テキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト"} />;
     case "外部連携": return <ExternalTab />;
+    case "管理者ページ": return <AdminTab />;
     case "その他": return <OtherTab />;
   }
 }
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("アカウント");
-  const router = useRouter();
 
   return (
     <div className="page-root">
@@ -183,7 +197,7 @@ export default function SettingsPage() {
           {TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => tab === "管理者ページ" ? router.push("/admin") : setActiveTab(tab)}
+              onClick={() => setActiveTab(tab)}
               style={{
                 padding: "12px 10px",
                 borderRadius: 8,
