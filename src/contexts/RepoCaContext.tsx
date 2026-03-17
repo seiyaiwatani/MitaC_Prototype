@@ -127,6 +127,9 @@ export function RepoCaProvider({ children }: { children: ReactNode }) {
     setHasOvertimeReported(false);
     setHasEndReported(false);
     setTodayRepoCas([]);
+    setStartReportedDate(null);
+    setOvertimeReportedDate(null);
+    setEndReportedDate(null);
   };
   const [favoriteIds, setFavoriteIds] = useState<string[]>(
     defaultRepoCas.filter((r) => r.isFavorite).map((r) => r.id)

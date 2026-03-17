@@ -4,9 +4,9 @@ import { useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import Link from "next/link";
 
-type Tab = "アカウント" | "フレックス" | "利用規約" | "外部連携" | "管理者ページ" | "その他";
+type Tab = "アカウント" | "フレックス" | "利用規約" | "外部連携" | "その他";
 
-const TABS: Tab[] = ["アカウント", "フレックス", "利用規約", "外部連携", "管理者ページ", "その他"];
+const TABS: Tab[] = ["アカウント", "フレックス", "利用規約", "外部連携", "その他"];
 
 function AccountTab() {
   const [startNotif, setStartNotif] = useState<"on" | "off">("on");
@@ -142,21 +142,6 @@ function ExternalTab() {
   );
 }
 
-function AdminTab() {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "32px 16px" }}>
-      <div style={{ fontSize: 40 }}>🔧</div>
-      <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>管理者ページ</p>
-      <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-        工数管理・プロジェクト管理など<br />管理者向け機能はこちらから
-      </p>
-      <Link href="/admin">
-        <button className="btn btn-primary" style={{ marginTop: 8 }}>管理者ページへ移動</button>
-      </Link>
-    </div>
-  );
-}
-
 function TabContent({ tab }: { tab: Tab }) {
   switch (tab) {
     case "アカウント": return <AccountTab />;
@@ -164,7 +149,6 @@ function TabContent({ tab }: { tab: Tab }) {
     case "利用規約":
       return <TextTab title="利用規約" content={"テキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト\nテキストテキストテキストテキストテキストテキスト"} />;
     case "外部連携": return <ExternalTab />;
-    case "管理者ページ": return <AdminTab />;
     case "その他": return <OtherTab />;
   }
 }
