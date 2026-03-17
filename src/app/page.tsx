@@ -547,7 +547,9 @@ export default function Home() {
   useEffect(() => {
     const el = spTrackRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => setSpTrackW(entry.contentRect.width));
+    const ro = new ResizeObserver(([entry]) =>
+      setSpTrackW(entry.contentRect.width),
+    );
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -706,15 +708,21 @@ export default function Home() {
 
       {/* 警告バナー */}
       {showEndOfWork && (
-        <div style={{
-          flexShrink: 0,
-          background: "#d1fae5",
-          borderBottom: "1px solid #6ee7b7",
-          padding: "6px 14px",
-          display: "flex", alignItems: "center", gap: 8,
-        }}>
+        <div
+          style={{
+            flexShrink: 0,
+            background: "#d1fae5",
+            borderBottom: "1px solid #6ee7b7",
+            padding: "6px 14px",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
           <span style={{ fontSize: 16 }}>🏠</span>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#065f46", flex: 1 }}>
+          <span
+            style={{ fontSize: 14, fontWeight: 700, color: "#065f46", flex: 1 }}
+          >
             業務終了です。お疲れ様でした！
           </span>
         </div>
@@ -735,7 +743,9 @@ export default function Home() {
           <span
             style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
           >
-            {attendance === "idle" ? "まず出勤を行ってください" : "本日の始業報告がまだ提出されていません"}
+            {attendance === "idle"
+              ? "まず出勤を行ってください"
+              : "本日の始業報告がまだ提出されていません"}
           </span>
           <Link href="/report/start">
             <button
@@ -791,47 +801,63 @@ export default function Home() {
           </Link>
         </div>
       )}
-      {!showEndOfWork && hasStartReported && hasOvertimeReported && !hasEndReported && (
-        <div
-          style={{
-            flexShrink: 0,
-            background: "#fef3c7",
-            borderBottom: "1px solid #fcd34d",
-            padding: "6px 14px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
-          <span
-            style={{ fontSize: 14, fontWeight: 700, color: "#92400e", flex: 1 }}
+      {!showEndOfWork &&
+        hasStartReported &&
+        hasOvertimeReported &&
+        !hasEndReported && (
+          <div
+            style={{
+              flexShrink: 0,
+              background: "#fef3c7",
+              borderBottom: "1px solid #fcd34d",
+              padding: "6px 14px",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
           >
-            終業報告がまだ提出されていません
-            {attendance === "working" && (
-              <span style={{ display: "block", fontSize: 12, fontWeight: 500, color: "#b45309", marginTop: 1 }}>
-                終業報告後に退勤が行えます
-              </span>
-            )}
-          </span>
-          <Link href="/report/end">
-            <button
+            <HiExclamation style={{ width: 16, height: 16, flexShrink: 0 }} />
+            <span
               style={{
-                background: "#f59e0b",
-                color: "white",
-                border: "none",
-                borderRadius: 99,
                 fontSize: 14,
                 fontWeight: 700,
-                padding: "3px 12px",
-                cursor: "pointer",
+                color: "#92400e",
+                flex: 1,
               }}
             >
-              終業報告する
-            </button>
-          </Link>
-        </div>
-      )}
+              終業報告がまだ提出されていません
+              {attendance === "working" && (
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: "#b45309",
+                    marginTop: 1,
+                  }}
+                >
+                  終業報告後に退勤が行えます
+                </span>
+              )}
+            </span>
+            <Link href="/report/end">
+              <button
+                style={{
+                  background: "#f59e0b",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 99,
+                  fontSize: 14,
+                  fontWeight: 700,
+                  padding: "3px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                終業報告する
+              </button>
+            </Link>
+          </div>
+        )}
 
       {/* ====== シーズンパス（全幅） ====== */}
       {(() => {
@@ -839,7 +865,10 @@ export default function Home() {
         const EDGE_PAD = 10;
         const MILESTONE_W = 80;
         const availW = spTrackW > 0 ? spTrackW - 2 * EDGE_PAD : 0;
-        const gapW = availW > 0 ? (availW - milestoneCount * MILESTONE_W) / (milestoneCount - 1) : 0;
+        const gapW =
+          availW > 0
+            ? (availW - milestoneCount * MILESTONE_W) / (milestoneCount - 1)
+            : 0;
         const milestoneStep = MILESTONE_W + gapW; // マイルストーン中心間の距離
         const passExpPct = Math.round((passExp / passExpToNext) * 100);
         const daysLeft = Math.max(
@@ -857,13 +886,23 @@ export default function Home() {
           if (rewards[i].level <= passLevel) {
             currentLevelCenterX = firstMilCenterX + i * milestoneStep;
           }
-          if (i < rewards.length - 1 && rewards[i].level < passLevel && rewards[i + 1].level > passLevel) {
-            const t = (passLevel - rewards[i].level) / (rewards[i + 1].level - rewards[i].level);
-            currentLevelCenterX = firstMilCenterX + i * milestoneStep + t * milestoneStep;
+          if (
+            i < rewards.length - 1 &&
+            rewards[i].level < passLevel &&
+            rewards[i + 1].level > passLevel
+          ) {
+            const t =
+              (passLevel - rewards[i].level) /
+              (rewards[i + 1].level - rewards[i].level);
+            currentLevelCenterX =
+              firstMilCenterX + i * milestoneStep + t * milestoneStep;
             break;
           }
         }
-        const progressLineW = Math.max(0, currentLevelCenterX - firstMilCenterX);
+        const progressLineW = Math.max(
+          0,
+          currentLevelCenterX - firstMilCenterX,
+        );
         const showProgress = progressLineW > 0;
         return (
           <div style={{ flexShrink: 0, padding: "8px 40px" }}>
@@ -979,140 +1018,142 @@ export default function Home() {
               </div>
               {/* 報酬トラック */}
               <div ref={spTrackRef} style={{ overflow: "hidden" }}>
-                {spTrackW > 0 && <div
-                  style={{
-                    display: "flex",
-                    gap: gapW,
-                    width: "100%",
-                    position: "relative",
-                    padding: "14px 10px 4px",
-                  }}
-                >
+                {spTrackW > 0 && (
                   <div
                     style={{
-                      position: "absolute",
-                      top: 34,
-                      left: firstMilCenterX,
-                      right: EDGE_PAD + MILESTONE_W / 2,
-                      height: 2,
-                      background: "#e5e7eb",
-                      zIndex: 0,
+                      display: "flex",
+                      gap: gapW,
+                      width: "100%",
+                      position: "relative",
+                      padding: "14px 10px 4px",
                     }}
-                  />
-                  {showProgress && (
+                  >
                     <div
                       style={{
                         position: "absolute",
                         top: 34,
                         left: firstMilCenterX,
-                        width: progressLineW,
+                        right: EDGE_PAD + MILESTONE_W / 2,
                         height: 2,
-                        background: "linear-gradient(90deg,#4f46e5,#7c3aed)",
-                        zIndex: 1,
+                        background: "#e5e7eb",
+                        zIndex: 0,
                       }}
                     />
-                  )}
-                  {rewards.map((reward) => {
-                    const lv = reward.level;
-                    const claimed = lv <= passLevel;
-                    const isCur = lv === passLevel + 1;
-                    const chip = TYPE_CHIP[reward.type as SeasonRewardType];
-                    return (
+                    {showProgress && (
                       <div
-                        key={lv}
                         style={{
-                          width: MILESTONE_W,
-                          flexShrink: 0,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          textAlign: "center",
-                          position: "relative",
-                          zIndex: 2,
+                          position: "absolute",
+                          top: 34,
+                          left: firstMilCenterX,
+                          width: progressLineW,
+                          height: 2,
+                          background: "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                          zIndex: 1,
                         }}
-                      >
+                      />
+                    )}
+                    {rewards.map((reward) => {
+                      const lv = reward.level;
+                      const claimed = lv <= passLevel;
+                      const isCur = lv === passLevel + 1;
+                      const chip = TYPE_CHIP[reward.type as SeasonRewardType];
+                      return (
                         <div
+                          key={lv}
                           style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: "50%",
-                            background: claimed
-                              ? "#4f46e5"
-                              : isCur
-                                ? "#e0e7ff"
-                                : "white",
-                            border: isCur
-                              ? "2px solid #4f46e5"
-                              : claimed
-                                ? "none"
-                                : "2px solid #c4b5fd",
+                            width: MILESTONE_W,
+                            flexShrink: 0,
                             display: "flex",
+                            flexDirection: "column",
                             alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: claimed ? 16 : 18,
-                            color: claimed
-                              ? "white"
-                              : isCur
+                            textAlign: "center",
+                            position: "relative",
+                            zIndex: 2,
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: "50%",
+                              background: claimed
                                 ? "#4f46e5"
-                                : "#9ca3af",
-                            boxShadow: isCur
-                              ? "0 0 0 3px #e0e7ff"
-                              : claimed
-                                ? "none"
-                                : "0 0 0 3px #ede9fe",
-                          }}
-                        >
-                          {reward.icon}
-                        </div>
-                        <span
-                          style={{
-                            fontSize: 14,
-                            marginTop: 3,
-                            fontWeight: 700,
-                            color: isCur
-                              ? "#4f46e5"
-                              : claimed
-                                ? "#9ca3af"
-                                : "#374151",
-                          }}
-                        >
-                          Lv.{lv}
-                        </span>
-                        {chip && (
+                                : isCur
+                                  ? "#e0e7ff"
+                                  : "white",
+                              border: isCur
+                                ? "2px solid #4f46e5"
+                                : claimed
+                                  ? "none"
+                                  : "2px solid #c4b5fd",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: claimed ? 16 : 18,
+                              color: claimed
+                                ? "white"
+                                : isCur
+                                  ? "#4f46e5"
+                                  : "#9ca3af",
+                              boxShadow: isCur
+                                ? "0 0 0 3px #e0e7ff"
+                                : claimed
+                                  ? "none"
+                                  : "0 0 0 3px #ede9fe",
+                            }}
+                          >
+                            {reward.icon}
+                          </div>
                           <span
                             style={{
                               fontSize: 14,
-                              padding: "1px 3px",
-                              borderRadius: 3,
-                              marginTop: 1,
-                              background: chip.bg,
-                              color: chip.color,
+                              marginTop: 3,
                               fontWeight: 700,
+                              color: isCur
+                                ? "#4f46e5"
+                                : claimed
+                                  ? "#9ca3af"
+                                  : "#374151",
                             }}
                           >
-                            {chip.label}
+                            Lv.{lv}
                           </span>
-                        )}
-                        <span
-                          style={{
-                            fontSize: 14,
-                            textAlign: "center",
-                            marginTop: 1,
-                            color: claimed ? "#9ca3af" : "#374151",
-                            lineHeight: 1.2,
-                            maxWidth: MILESTONE_W - 4,
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {reward.name}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>}
+                          {chip && (
+                            <span
+                              style={{
+                                fontSize: 14,
+                                padding: "1px 3px",
+                                borderRadius: 3,
+                                marginTop: 1,
+                                background: chip.bg,
+                                color: chip.color,
+                                fontWeight: 700,
+                              }}
+                            >
+                              {chip.label}
+                            </span>
+                          )}
+                          <span
+                            style={{
+                              fontSize: 14,
+                              textAlign: "center",
+                              marginTop: 1,
+                              color: claimed ? "#9ca3af" : "#374151",
+                              lineHeight: 1.2,
+                              maxWidth: MILESTONE_W - 4,
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {reward.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -2065,18 +2106,31 @@ export default function Home() {
             <button
               onClick={handleCheckOut}
               disabled={attendance !== "working" || !hasEndReported}
-              title={attendance === "working" && !hasEndReported ? "終業報告を完了してから退勤できます" : undefined}
+              title={
+                attendance === "working" && !hasEndReported
+                  ? "終業報告を完了してから退勤できます"
+                  : undefined
+              }
               style={{
                 flex: 1,
                 padding: "13px 0",
                 borderRadius: 10,
                 border: "none",
-                background: attendance === "working" && hasEndReported ? "#dbeafe" : "#f3f4f6",
-                color: attendance === "working" && hasEndReported ? "#1e40af" : "#9ca3af",
+                background:
+                  attendance === "working" && hasEndReported
+                    ? "#dbeafe"
+                    : "#f3f4f6",
+                color:
+                  attendance === "working" && hasEndReported
+                    ? "#1e40af"
+                    : "#9ca3af",
                 fontWeight: 800,
                 fontSize: 15,
                 letterSpacing: 0.5,
-                cursor: (attendance === "working" && hasEndReported) ? "pointer" : "not-allowed",
+                cursor:
+                  attendance === "working" && hasEndReported
+                    ? "pointer"
+                    : "not-allowed",
                 transition: "background 0.2s, color 0.2s",
               }}
             >
@@ -2931,47 +2985,80 @@ export default function Home() {
         )}
 
       {/* 報告完了モーダル */}
-      {completionType && createPortal(
-        <div
-          onClick={() => setCompletionType(null)}
-          style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 400,
-            display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px",
-          }}
-        >
+      {completionType &&
+        createPortal(
           <div
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setCompletionType(null)}
             style={{
-              background: "white", borderRadius: 20, width: "100%", maxWidth: 360,
-              overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
-              display: "flex", flexDirection: "column", alignItems: "center",
-              padding: "32px 24px 24px", gap: 12, textAlign: "center",
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 400,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 16px",
             }}
           >
-            <div style={{ fontSize: 52 }}>
-              {completionType === 'start' ? '🌅' : completionType === 'overtime' ? '🌙' : '🎉'}
-            </div>
-            <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", margin: 0 }}>
-              提出完了！
-            </p>
-            <p style={{ fontSize: 14, color: "#6b7280", margin: 0, lineHeight: 1.8 }}>
-              {completionType === 'start'
-                ? '始業報告が完了しました。今日も一日頑張りましょう！'
-                : completionType === 'overtime'
-                ? '残業報告が完了しました。'
-                : '終業報告が完了しました。お疲れ様でした！'}
-            </p>
-            <button
-              className="btn btn-primary"
-              style={{ marginTop: 8, width: "100%" }}
-              onClick={() => setCompletionType(null)}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "white",
+                borderRadius: 20,
+                width: "100%",
+                maxWidth: 360,
+                overflow: "hidden",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                padding: "32px 24px 24px",
+                gap: 12,
+                textAlign: "center",
+              }}
             >
-              OK
-            </button>
-          </div>
-        </div>,
-        document.body,
-      )}
+              <div style={{ fontSize: 52 }}>
+                {completionType === "start"
+                  ? "🌅"
+                  : completionType === "overtime"
+                    ? "🌙"
+                    : "🎉"}
+              </div>
+              <p
+                style={{
+                  fontSize: 17,
+                  fontWeight: 800,
+                  color: "#1a1a2e",
+                  margin: 0,
+                }}
+              >
+                提出完了！
+              </p>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "#6b7280",
+                  margin: 0,
+                  lineHeight: 1.8,
+                }}
+              >
+                {completionType === "start"
+                  ? "始業報告が完了しました。今日も一日頑張りましょう！"
+                  : completionType === "overtime"
+                    ? "残業報告が完了しました。"
+                    : "終業報告が完了しました。お疲れ様でした！"}
+              </p>
+              <button
+                className="btn btn-primary"
+                style={{ marginTop: 8, width: "100%" }}
+                onClick={() => setCompletionType(null)}
+              >
+                OK
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

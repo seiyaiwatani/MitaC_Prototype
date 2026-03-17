@@ -49,7 +49,7 @@ interface RepoCaContextValue {
   addPendingRepoCaId: (id: string) => void;
   clearPendingRepoCaIds: () => void;
   completionType: 'start' | 'overtime' | 'end' | null;
-  setCompletionType: (v: 'start' | 'end' | null) => void;
+  setCompletionType: (v: 'start' | 'overtime' | 'end' | null) => void;
   incompleteIdsFromLastEnd: string[];
   setIncompleteIdsFromLastEnd: (ids: string[]) => void;
 }
