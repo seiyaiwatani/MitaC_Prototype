@@ -27,6 +27,13 @@ const AVATAR_CROWN_OVERRIDE: Record<string, Partial<CostumeStyle>> = {
   doragon: { top: "-18%", left: "54%", transform: "translateX(-50%)" },
 };
 
+/** アバターごとの胴体パーツ位置オーバーライド */
+const AVATAR_BODY_OVERRIDE: Record<string, Partial<CostumeStyle>> = {
+  fox:     { left: "54%", transform: "translateX(-50%)" },
+  cat:     { left: "55%", transform: "translateX(-50%)" },
+  doragon: { left: "58%", transform: "translateX(-50%)" },
+};
+
 function getAvatarKeyFromSrc(src: string): string {
   if (src.includes("fox"))     return "fox";
   if (src.includes("cat"))     return "cat";
@@ -99,7 +106,7 @@ export function AvatarWithCostume({
         <img
           src={COSTUME_SRC[bodyCostume]}
           alt={bodyCostume}
-          style={{ position: "absolute", ...COSTUME_STYLES[bodyCostume], pointerEvents: "none" }}
+          style={{ position: "absolute", ...COSTUME_STYLES[bodyCostume], ...AVATAR_BODY_OVERRIDE[avatarKey], pointerEvents: "none" }}
         />
       )}
     </div>
