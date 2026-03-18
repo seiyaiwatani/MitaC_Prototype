@@ -33,15 +33,20 @@ type DailySeg  = { projectId: string; min: number; tasks: DailyTask[] };
 
 /* ── モックデータ ── */
 const TEAM_MEMBERS = [
-  { id: "m1", name: "田中 太郎", reported: true },
-  { id: "m2", name: "鈴木 花子", reported: true },
-  { id: "m3", name: "佐藤 健",   reported: false },
-  { id: "m4", name: "山田 優",   reported: true },
-  { id: "m5", name: "伊藤 舞",   reported: true },
+  { id: "m1", name: "田中 太郎", reported: true,  cohort: 24 },
+  { id: "m2", name: "鈴木 花子", reported: true,  cohort: 24 },
+  { id: "m3", name: "佐藤 健",   reported: false, cohort: 24 },
+  { id: "m4", name: "山田 優",   reported: true,  cohort: 24 },
+  { id: "m5", name: "伊藤 舞",   reported: true,  cohort: 25 },
 ];
 
+/** mock-data の proj.color に合わせたパステル背景色 */
 const PROJ_COLOR: Record<string, string> = {
-  p1: "#4f46e5", p2: "#10b981", p3: "#a855f7", p4: "#f59e0b",
+  p1: "#bbf7d0", p2: "#e9d5ff", p3: "#bfdbfe", p4: "#fde68a", p_other: "#f3f4f6",
+};
+/** mock-data の proj.textColor に合わせたテキスト色 */
+const PROJ_TEXT_COLOR: Record<string, string> = {
+  p1: "#065f46", p2: "#581c87", p3: "#1e3a8a", p4: "#78350f", p_other: "#6b7280",
 };
 
 const PROJ_ICONS: Record<string, React.ComponentType<{ style?: React.CSSProperties }>> = {
@@ -95,57 +100,148 @@ const PROJ_DETAIL: Record<string, ProjectDetail> = {
   },
 };
 
-const DAILY_WORK: Record<string, DailySeg[]> = {
-  m1: [
-    { projectId: "p1", min: 240, tasks: [
-      { name: "Contactページ作成",         min: 120 },
-      { name: "ヘッダーコンポーネント修正", min: 80 },
-      { name: "デイリースクラム",           min: 40 },
-    ]},
-    { projectId: "p2", min: 120, tasks: [
-      { name: "会社概要ページ修正",         min: 90 },
-      { name: "定例MTG",                   min: 30 },
-    ]},
-  ],
-  m2: [
-    { projectId: "p1", min: 180, tasks: [
-      { name: "stg環境インフラ構築",        min: 120 },
-      { name: "レビュー対応",               min: 60 },
-    ]},
-    { projectId: "p3", min: 180, tasks: [
-      { name: "モバイルTOP画面作成",        min: 150 },
-      { name: "リファインメント",            min: 30 },
-    ]},
-  ],
-  m3: [
-    { projectId: "p2", min: 300, tasks: [
-      { name: "トップページデザイン実装",   min: 180 },
-      { name: "画像最適化",                 min: 60 },
-      { name: "レスポンシブ対応",           min: 60 },
-    ]},
-    { projectId: "p4", min: 60, tasks: [
-      { name: "DB設計レビュー",             min: 60 },
-    ]},
-  ],
-  m4: [
-    { projectId: "p4", min: 240, tasks: [
-      { name: "ETLパイプライン設計",        min: 120 },
-      { name: "データ検証スクリプト作成",   min: 90 },
-      { name: "チームMTG",                 min: 30 },
-    ]},
-  ],
-  m5: [
-    { projectId: "p1", min: 120, tasks: [
-      { name: "APIエンドポイント実装",      min: 90 },
-      { name: "コードレビュー",             min: 30 },
-    ]},
-    { projectId: "p2", min: 120, tasks: [
-      { name: "ブログ一覧ページ作成",       min: 120 },
-    ]},
-    { projectId: "p3", min: 60, tasks: [
-      { name: "サブリーダー1on1",           min: 60 },
-    ]},
-  ],
+/** date("2026-03-DD") → memberId → DailySeg[] */
+const DAILY_WORK_BY_DATE: Record<string, Record<string, DailySeg[]>> = {
+  "2026-03-02": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "Contactページ作成", min: 150 }, { name: "デイリースクラム", min: 90 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "会社概要ページ修正", min: 90 }, { name: "定例MTG", min: 30 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "stg環境インフラ構築", min: 120 }, { name: "レビュー対応", min: 60 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 300, tasks: [{ name: "トップページデザイン実装", min: 180 }, { name: "画像最適化", min: 120 }] },
+    ],
+  },
+  "2026-03-03": {
+    m1: [
+      { projectId: "p1", min: 300, tasks: [{ name: "ヘッダーコンポーネント修正", min: 180 }, { name: "コードレビュー", min: 120 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 240, tasks: [{ name: "モバイルTOP画面作成", min: 180 }, { name: "リファインメント", min: 60 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "ETLパイプライン設計", min: 150 }, { name: "チームMTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 120, tasks: [{ name: "APIエンドポイント実装", min: 90 }, { name: "コードレビュー", min: 30 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "ブログ一覧ページ作成", min: 120 }] },
+    ],
+  },
+  "2026-03-04": {
+    m1: [
+      { projectId: "p1", min: 180, tasks: [{ name: "フォームバリデーション実装", min: 120 }, { name: "PR作成", min: 60 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "LP修正", min: 90 }, { name: "定例MTG", min: 30 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 180, tasks: [{ name: "レスポンシブ対応", min: 120 }, { name: "クロスブラウザ確認", min: 60 }] },
+      { projectId: "p4", min: 120, tasks: [{ name: "DB設計レビュー", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 240, tasks: [{ name: "カテゴリーページ作成", min: 150 }, { name: "SEO対応", min: 90 }] },
+    ],
+  },
+  "2026-03-05": {
+    m2: [
+      { projectId: "p1", min: 240, tasks: [{ name: "CI/CDパイプライン構築", min: 150 }, { name: "テスト追加", min: 90 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "画面設計レビュー", min: 120 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 300, tasks: [{ name: "データ検証スクリプト作成", min: 180 }, { name: "バグ修正", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 120, tasks: [{ name: "WebSocket実装", min: 90 }, { name: "デイリースクラム", min: 30 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "サブリーダー1on1", min: 60 }, { name: "進捗報告", min: 60 }] },
+    ],
+  },
+  "2026-03-06": {
+    m1: [
+      { projectId: "p1", min: 360, tasks: [{ name: "認証機能実装", min: 240 }, { name: "コードレビュー", min: 120 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "E2Eテスト作成", min: 120 }, { name: "レビュー対応", min: 60 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 240, tasks: [{ name: "フッターデザイン実装", min: 150 }, { name: "アニメーション追加", min: 90 }] },
+    ],
+  },
+  "2026-03-09": {
+    m1: [
+      { projectId: "p2", min: 180, tasks: [{ name: "採用ページ作成", min: 120 }, { name: "画像差し替え", min: 60 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 300, tasks: [{ name: "プッシュ通知実装", min: 180 }, { name: "テスト", min: 120 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "集計バッチ作成", min: 150 }, { name: "定例MTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 240, tasks: [{ name: "GraphQL API実装", min: 180 }, { name: "ドキュメント作成", min: 60 }] },
+    ],
+  },
+  "2026-03-10": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "ヘッダー作成", min: 105 }, { name: "リファインメント", min: 45 }, { name: "会社概要作成", min: 90 }] },
+      { projectId: "p2", min: 60, tasks: [{ name: "サブリーダー1on1", min: 60 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 240, tasks: [{ name: "検索機能実装", min: 150 }, { name: "スタイル調整", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 180, tasks: [{ name: "タグ機能実装", min: 120 }, { name: "テスト追加", min: 60 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "ログイン画面修正", min: 120 }] },
+    ],
+  },
+  "2026-03-11": {
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "Dockerファイル最適化", min: 120 }, { name: "レビュー対応", min: 60 }] },
+      { projectId: "p3", min: 180, tasks: [{ name: "オフライン対応", min: 150 }, { name: "デイリースクラム", min: 30 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 300, tasks: [{ name: "レポート機能実装", min: 180 }, { name: "DB最適化", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 240, tasks: [{ name: "管理画面API実装", min: 150 }, { name: "コードレビュー", min: 90 }] },
+    ],
+  },
+  "2026-03-17": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "マイページ実装", min: 150 }, { name: "レビュー対応", min: 90 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 300, tasks: [{ name: "設定画面実装", min: 180 }, { name: "アニメーション追加", min: 120 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 180, tasks: [{ name: "ブログ詳細ページ作成", min: 120 }, { name: "OGP対応", min: 60 }] },
+      { projectId: "p4", min: 120, tasks: [{ name: "パフォーマンス調査", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 240, tasks: [{ name: "コメント機能実装", min: 150 }, { name: "バリデーション追加", min: 90 }] },
+    ],
+  },
+  "2026-03-18": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "Contactページ作成", min: 120 }, { name: "ヘッダーコンポーネント修正", min: 80 }, { name: "デイリースクラム", min: 40 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "会社概要ページ修正", min: 90 }, { name: "定例MTG", min: 30 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "stg環境インフラ構築", min: 120 }, { name: "レビュー対応", min: 60 }] },
+      { projectId: "p3", min: 180, tasks: [{ name: "モバイルTOP画面作成", min: 150 }, { name: "リファインメント", min: 30 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 300, tasks: [{ name: "トップページデザイン実装", min: 180 }, { name: "画像最適化", min: 60 }, { name: "レスポンシブ対応", min: 60 }] },
+      { projectId: "p4", min: 60, tasks: [{ name: "DB設計レビュー", min: 60 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "ETLパイプライン設計", min: 120 }, { name: "データ検証スクリプト作成", min: 90 }, { name: "チームMTG", min: 30 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 120, tasks: [{ name: "APIエンドポイント実装", min: 90 }, { name: "コードレビュー", min: 30 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "ブログ一覧ページ作成", min: 120 }] },
+      { projectId: "p3", min: 60,  tasks: [{ name: "サブリーダー1on1", min: 60 }] },
+    ],
+  },
 };
 
 const MONTHLY_WORK: Record<string, Record<string, number>> = {
@@ -154,6 +250,17 @@ const MONTHLY_WORK: Record<string, Record<string, number>> = {
   m3: { p2: 6720, p4: 960 },
   m4: { p4: 5760 },
   m5: { p1: 2880, p2: 2880, p3: 1440 },
+};
+
+const UNUSED_REPOCA: Record<string, { id: string; name: string; projectId: string; date: string }[]> = {
+  m1: [
+    { id: "u1", name: "Context作成",  projectId: "p1", date: "2026/2/3 18:37" },
+    { id: "u2", name: "レビュー修正", projectId: "p3", date: "2026/2/3 18:37" },
+  ],
+  m2: [
+    { id: "u3", name: "テスト作成", projectId: "p1", date: "2026/2/4 10:12" },
+  ],
+  m3: [], m4: [], m5: [],
 };
 
 type View = "projects" | "daily" | "monthly" | "new-project" | "missions" | "news";
@@ -261,8 +368,22 @@ export default function AdminPage() {
 
   const [view, setView]         = useState<View>("projects");
 
-  const [projName, setProjName] = useState("");
-  const [projMemo, setProjMemo] = useState("");
+  const [projName, setProjName]       = useState("");
+  const [projMemo, setProjMemo]       = useState("");
+  const [projMembers, setProjMembers] = useState<string[]>([]);
+  const [projColor, setProjColor]     = useState("#bbf7d0");
+  const [projTextColor, setProjTextColor] = useState("#065f46");
+
+  const COLOR_PALETTE = [
+    { color: "#bbf7d0", textColor: "#065f46", label: "グリーン" },
+    { color: "#bfdbfe", textColor: "#1e3a8a", label: "ブルー" },
+    { color: "#e9d5ff", textColor: "#581c87", label: "パープル" },
+    { color: "#fde68a", textColor: "#78350f", label: "イエロー" },
+    { color: "#fecaca", textColor: "#7f1d1d", label: "レッド" },
+    { color: "#d1fae5", textColor: "#064e3b", label: "ミント" },
+    { color: "#fed7aa", textColor: "#7c2d12", label: "オレンジ" },
+    { color: "#e0f2fe", textColor: "#0c4a6e", label: "スカイ" },
+  ];
   const { missions, toggleMission, addMission } = useMission();
 
   // ミッション作成フォーム
@@ -319,10 +440,26 @@ export default function AdminPage() {
     resetNewsForm();
   };
 
-  const [selectedProjId, setSelectedProjId] = useState<string>("p1");
-  const [hoveredKey, setHoveredKey]   = useState<string | null>(null);
-  const [tooltip, setTooltip]         = useState<TooltipState>(null);
-  const [modal, setModal]             = useState<ModalState>(null);
+  const [selectedProjId, setSelectedProjId]           = useState<string>("p1");
+  const [hoveredKey, setHoveredKey]                   = useState<string | null>(null);
+  const [tooltip, setTooltip]                         = useState<TooltipState>(null);
+  const [modal, setModal]                             = useState<ModalState>(null);
+  const [selectedDailyMemberId, setSelectedDailyMemberId] = useState<string>("m1");
+  const [expandedCohorts, setExpandedCohorts]         = useState<number[]>([24]);
+  const [teamExpanded, setTeamExpanded]               = useState(true);
+  const [selectedDate, setSelectedDate]               = useState<string>("2026-03-18");
+  const [showCalendar, setShowCalendar]               = useState(false);
+  const [commentInput, setCommentInput]               = useState("");
+  // key: "YYYY-MM-DD_memberId" → コメント一覧
+  const [comments, setComments]                       = useState<Record<string, string[]>>({});
+
+  const commentKey = `${selectedDate}_${selectedDailyMemberId}`;
+  const submitComment = () => {
+    const text = commentInput.trim();
+    if (!text) return;
+    setComments((prev) => ({ ...prev, [commentKey]: [...(prev[commentKey] ?? []), text] }));
+    setCommentInput("");
+  };
 
   const openModal = (member: typeof TEAM_MEMBERS[number], mode: "daily" | "monthly") =>
     setModal({ member, mode });
@@ -407,7 +544,7 @@ export default function AdminPage() {
                         >
                           <Icon style={{
                             width: 18, height: 18, flexShrink: 0,
-                            color: selected ? (PROJ_COLOR[p.id] ?? "#4f46e5") : "#9ca3af",
+                            color: selected ? (PROJ_TEXT_COLOR[p.id] ?? "#374151") : "#9ca3af",
                           }} />
                           <span style={{
                             flex: 1, fontSize: selected ? 14 : 13,
@@ -489,95 +626,305 @@ export default function AdminPage() {
           })()}
 
           {/* ── 工数管理/日 ── */}
-          {view === "daily" && (
-            <>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>工数管理 / 日 — 2026/02/24</div>
+          {view === "daily" && (() => {
+            const selMember   = TEAM_MEMBERS.find((m) => m.id === selectedDailyMemberId) ?? TEAM_MEMBERS[0];
+            const dayData     = DAILY_WORK_BY_DATE[selectedDate] ?? {};
+            const segs        = dayData[selMember.id] ?? [];
+            const tasks       = segs.flatMap((seg) => seg.tasks.map((t) => ({ ...t, projectId: seg.projectId })));
+            const totalMin    = tasks.reduce((s, t) => s + t.min, 0);
+            const maxMin      = 480;
+            const projTotals  = segs.map((seg) => ({ projectId: seg.projectId, min: seg.min }));
+            const unusedList  = UNUSED_REPOCA[selMember.id] ?? [];
+            const cohorts     = Array.from(new Set(TEAM_MEMBERS.map((m) => m.cohort))).sort();
+            const BAR_H       = 360;
 
-              {/* 凡例 */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-                {projects.map((p) => (
-                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 14 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[p.id] }} />
-                    <span style={{ color: "#4b5563" }}>{p.name}</span>
+            // カレンダー (2026年3月)
+            const datesWithData = Object.keys(DAILY_WORK_BY_DATE);
+            const [selYear, selMonth, selDay] = selectedDate.split("-").map(Number);
+            const firstDow = new Date(2026, 2, 1).getDay(); // March 1 = Sunday = 0
+            const daysInMonth = 31;
+            const calCells: (number | null)[] = [
+              ...Array(firstDow).fill(null),
+              ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+            ];
+            while (calCells.length % 7 !== 0) calCells.push(null);
+
+            return (
+              <div style={{ display: "flex", height: "100%", margin: "-16px", overflow: "hidden" }}>
+
+                {/* 左: チームメンバーリスト */}
+                <div style={{ width: 192, flexShrink: 0, borderRight: "1px solid #e5e7eb", overflowY: "auto", background: "white" }}>
+                  {/* チーム名（折りたたみ） */}
+                  <div
+                    onClick={() => setTeamExpanded((v) => !v)}
+                    style={{ padding: "10px 14px", fontSize: 14, fontWeight: 700, borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", userSelect: "none" }}
+                  >
+                    <span>〇〇チーム</span>
+                    <span style={{ color: "#9ca3af", fontSize: 12 }}>{teamExpanded ? "∧" : "∨"}</span>
                   </div>
-                ))}
-              </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {TEAM_MEMBERS.map((m) => {
-                  const segs   = DAILY_WORK[m.id] ?? [];
-                  const total  = segs.reduce((s, x) => s + x.min, 0);
-                  const maxMin = 480;
-
-                  return (
-                    <div key={m.id}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        {/* 名前クリック → モーダル */}
+                  {/* コホート別 */}
+                  {teamExpanded && cohorts.map((cohort) => {
+                    const members    = TEAM_MEMBERS.filter((m) => m.cohort === cohort);
+                    const isExpanded = expandedCohorts.includes(cohort);
+                    return (
+                      <div key={cohort}>
                         <div
-                          onClick={() => openModal(m, "daily")}
-                          style={{
-                            width: 64, fontSize: 14, flexShrink: 0, textAlign: "right",
-                            cursor: "pointer", userSelect: "none",
-                            fontWeight: 600, color: "#4f46e5",
-                            textDecoration: "underline", textDecorationStyle: "dotted",
-                          }}
+                          onClick={() => setExpandedCohorts((prev) =>
+                            prev.includes(cohort) ? prev.filter((c) => c !== cohort) : [...prev, cohort]
+                          )}
+                          style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", borderBottom: "1px solid #f3f4f6" }}
                         >
-                          {m.name.split(" ")[0]}
+                          <span>{cohort}卒 {members.length}名</span>
+                          <span style={{ color: "#9ca3af", fontSize: 12 }}>{isExpanded ? "∧" : "∨"}</span>
                         </div>
+                        {isExpanded && members.map((m) => (
+                          <div
+                            key={m.id}
+                            onClick={() => setSelectedDailyMemberId(m.id)}
+                            style={{
+                              padding: "8px 14px 8px 20px", fontSize: 13,
+                              background: selectedDailyMemberId === m.id ? "#eef2ff" : "white",
+                              color: selectedDailyMemberId === m.id ? "#4f46e5" : "#374151",
+                              fontWeight: selectedDailyMemberId === m.id ? 700 : 400,
+                              cursor: "pointer",
+                              borderLeft: selectedDailyMemberId === m.id ? "3px solid #4f46e5" : "3px solid transparent",
+                              borderBottom: "1px solid #f9fafb",
+                            }}
+                          >
+                            {m.name}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
 
-                        {/* スタックバー */}
-                        <div style={{ flex: 1, height: 24, background: "#f3f4f6", borderRadius: 4, display: "flex" }}>
-                          {segs.map((seg, i) => {
-                            const proj    = projects.find((p) => p.id === seg.projectId);
-                            const key     = `daily_${m.id}_${i}`;
-                            const hovered = hoveredKey === key;
+                {/* 右: 選択メンバー詳細 */}
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#f3f4f6" }}>
+
+                  {/* ヘッダー行 */}
+                  <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "8px 16px", display: "flex", alignItems: "center", gap: 28, flexShrink: 0, position: "relative" }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>{selMember.name}</span>
+
+                    {/* 日付クリック → カレンダー */}
+                    <button
+                      onClick={() => setShowCalendar((v) => !v)}
+                      style={{ fontSize: 14, fontWeight: 600, color: "#4f46e5", background: "none", border: "1.5px solid #c7d2fe", borderRadius: 6, padding: "2px 10px", cursor: "pointer" }}
+                    >
+                      {selYear}年{selMonth}月{selDay}日
+                    </button>
+
+                    {/* カレンダーポップオーバー */}
+                    {showCalendar && (
+                      <div
+                        style={{ position: "absolute", top: "100%", left: 200, zIndex: 100, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 12, width: 240 }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div style={{ fontWeight: 700, fontSize: 13, textAlign: "center", marginBottom: 8, color: "#1a1a2e" }}>2026年3月</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
+                          {["日","月","火","水","木","金","土"].map((d) => (
+                            <div key={d} style={{ textAlign: "center", fontSize: 11, fontWeight: 600, color: "#9ca3af", padding: "2px 0" }}>{d}</div>
+                          ))}
+                          {calCells.map((day, i) => {
+                            if (!day) return <div key={i} />;
+                            const dateStr  = `2026-03-${String(day).padStart(2, "0")}`;
+                            const hasData  = datesWithData.includes(dateStr);
+                            const isSelected = dateStr === selectedDate;
+                            const dow = (i % 7);
+                            const isSun = dow === 0, isSat = dow === 6;
                             return (
-                              <div
+                              <button
                                 key={i}
+                                onClick={() => { setSelectedDate(dateStr); setShowCalendar(false); }}
                                 style={{
-                                  width: `${(seg.min / maxMin) * 100}%`,
-                                  background: PROJ_COLOR[seg.projectId],
-                                  borderRight: i < segs.length - 1 ? "1px solid rgba(255,255,255,0.4)" : "none",
-                                  borderRadius: i === 0 ? "4px 0 0 4px" : i === segs.length - 1 ? "0 4px 4px 0" : 0,
-                                  cursor: "pointer",
-                                  filter: hovered ? "brightness(1.25)" : "brightness(1)",
-                                  transition: "filter 0.15s ease",
+                                  textAlign: "center", fontSize: 12, padding: "4px 0",
+                                  borderRadius: 6, border: "none", cursor: "pointer",
+                                  background: isSelected ? "#4f46e5" : "transparent",
+                                  color: isSelected ? "white" : isSun ? "#ef4444" : isSat ? "#3b82f6" : "#374151",
+                                  fontWeight: isSelected ? 700 : hasData ? 600 : 400,
+                                  opacity: hasData || isSelected ? 1 : 0.35,
+                                  position: "relative",
                                 }}
-                                onMouseEnter={(e) => {
-                                  setHoveredKey(key);
-                                  setTooltip({
-                                    title: proj?.name ?? seg.projectId,
-                                    titleColor: PROJ_COLOR[seg.projectId],
-                                    rows: seg.tasks.map((t) => ({ label: t.name, value: `${t.min}分` })),
-                                    total: `${seg.min}分（${(seg.min / 60).toFixed(1)}h）`,
-                                    x: e.clientX,
-                                    y: e.clientY,
-                                  });
-                                }}
-                                onMouseMove={(e) => setTooltip((prev) => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
-                                onMouseLeave={() => { setHoveredKey(null); setTooltip(null); }}
-                              />
+                              >
+                                {day}
+                                {hasData && !isSelected && (
+                                  <span style={{ position: "absolute", bottom: 1, left: "50%", transform: "translateX(-50%)", width: 4, height: 4, borderRadius: "50%", background: "#4f46e5", display: "block" }} />
+                                )}
+                              </button>
                             );
                           })}
                         </div>
+                      </div>
+                    )}
 
-                        <span style={{ fontSize: 14, color: "#6b7280", width: 28, flexShrink: 0, textAlign: "right" }}>
-                          {(total / 60).toFixed(1)}h
-                        </span>
-                        <span style={{ fontSize: 14, fontWeight: 700, width: 36, flexShrink: 0, color: m.reported ? "#10b981" : "#ef4444" }}>
-                          {m.reported ? "報告済" : "未報告"}
-                        </span>
+                    <span style={{ marginLeft: "auto", fontSize: 14, color: "#374151" }}>
+                      勤務時間　：　{Math.floor(totalMin / 60)}時間
+                    </span>
+                  </div>
+
+                  {/* コンテンツ */}
+                  <div style={{ flex: 1, display: "flex", overflow: "hidden", padding: 12, gap: 12 }}>
+
+                    {/* 中央: PJグループ + バー（終業報告スタイル） */}
+                    <div style={{ flex: 1, overflow: "hidden", display: "flex", gap: 8 }}>
+
+                      {/* PJグループ列 */}
+                      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                        {segs.length === 0 ? (
+                          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af", fontSize: 13 }}>
+                            この日のデータはありません
+                          </div>
+                        ) : segs.map((seg) => {
+                          const proj = projects.find((p) => p.id === seg.projectId);
+                          if (!proj) return null;
+                          return (
+                            <div key={seg.projectId} className="pj-group" style={{ background: proj.color ?? "#f3f4f6" }}>
+                              <div className="pj-group-header" style={{ color: proj.textColor }}>
+                                <span style={{ fontSize: 18 }}>{proj.icon}</span>
+                                <span>{proj.name}</span>
+                              </div>
+                              {seg.tasks.map((task, i) => {
+                                const cardH = Math.max(Math.round((task.min / maxMin) * BAR_H), 52);
+                                return (
+                                  <div key={i} className="card" style={{
+                                    padding: "8px 10px",
+                                    height: cardH,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    marginBottom: 4,
+                                    flexShrink: 0,
+                                  }}>
+                                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                      <span style={{ fontSize: 11, fontWeight: 700, background: proj.color, color: proj.textColor, borderRadius: 4, padding: "1px 6px" }}>
+                                        {(task.min / 60).toFixed(2)}h
+                                      </span>
+                                    </div>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>{task.name}</div>
+                                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "right" }}>
+                                      {selYear}/{selMonth}/{selDay}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* バー + 時間軸 */}
+                      <div style={{ width: 28, flexShrink: 0, display: "flex", flexDirection: "column", position: "relative" }}>
+                        <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb" }}>
+                          {segs.map((seg) => {
+                            const proj = projects.find((p) => p.id === seg.projectId);
+                            return (
+                              <div key={seg.projectId} style={{
+                                height: `${(seg.min / maxMin) * 100}%`,
+                                background: proj?.color ?? "#e5e7eb",
+                                minHeight: 2,
+                              }} />
+                            );
+                          })}
+                          <div style={{ flex: 1, background: "#f3f4f6" }} />
+                        </div>
+                        <span style={{ position: "absolute", left: 32, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>— 4h</span>
+                        <span style={{ position: "absolute", left: 32, bottom: 0, fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>8h</span>
+                      </div>
+
+                    </div>
+
+                    {/* 右パネル */}
+                    <div style={{ width: 256, flexShrink: 0, display: "flex", flexDirection: "column", gap: 10, overflow: "auto" }}>
+
+                      {/* 未使用RepoCa */}
+                      <div style={{ background: "white", borderRadius: 8, border: "1px solid #e5e7eb", padding: "10px 12px" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 8 }}>未使用RepoCa</div>
+                        {unusedList.length === 0 ? (
+                          <div style={{ fontSize: 12, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</div>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {unusedList.map((r) => {
+                              const Icon  = PROJ_ICONS[r.projectId];
+                              const color     = PROJ_COLOR[r.projectId] ?? "#f3f4f6";
+                              const textColor = PROJ_TEXT_COLOR[r.projectId] ?? "#6b7280";
+                              return (
+                                <div key={r.id} style={{ border: `1px solid ${textColor}44`, borderLeft: `3px solid ${textColor}`, borderRadius: 8, padding: "8px 10px", background: color }}>
+                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1f2937" }}>{r.name}</span>
+                                    {Icon && <Icon style={{ width: 14, height: 14, color: textColor }} />}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{r.date}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* プロジェクト工数サマリー */}
+                      <div style={{ background: "white", borderRadius: 8, border: "1px solid #e5e7eb", padding: "10px 12px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {projTotals.map((pt) => {
+                            const proj  = projects.find((p) => p.id === pt.projectId);
+                            const Icon  = PROJ_ICONS[pt.projectId];
+                            const color = PROJ_TEXT_COLOR[pt.projectId] ?? "#6b7280";
+                            return (
+                              <div key={pt.projectId} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                {Icon && <Icon style={{ width: 18, height: 18, color, flexShrink: 0 }} />}
+                                <span style={{ flex: 1, fontSize: 13, color: "#374151" }}>{proj?.name ?? "PJ名"}</span>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{(pt.min / 60).toFixed(2)}時間</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* コメント */}
+                      <div style={{ background: "white", borderRadius: 8, border: "1px solid #e5e7eb", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {/* 投稿済みコメント */}
+                        {(comments[commentKey] ?? []).length > 0 && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 2 }}>
+                            {(comments[commentKey] ?? []).map((c, i) => (
+                              <div key={i} style={{ background: "#f9fafb", borderRadius: 6, padding: "6px 10px", fontSize: 12, color: "#374151", lineHeight: 1.5, wordBreak: "break-all" }}>
+                                {c}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <textarea
+                          value={commentInput}
+                          onChange={(e) => setCommentInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) submitComment(); }}
+                          placeholder="コメントを入力…"
+                          rows={3}
+                          style={{
+                            width: "100%", resize: "none", border: "1px solid #d1d5db",
+                            borderRadius: 6, padding: "6px 8px", fontSize: 12, color: "#374151",
+                            outline: "none", fontFamily: "inherit", boxSizing: "border-box",
+                          }}
+                        />
+                        <button
+                          onClick={submitComment}
+                          style={{
+                            width: "100%", padding: "8px 0",
+                            background: commentInput.trim() ? "#4f46e5" : "white",
+                            border: `1.5px solid ${commentInput.trim() ? "#4f46e5" : "#d1d5db"}`,
+                            borderRadius: 8, fontSize: 13, fontWeight: 600,
+                            cursor: "pointer",
+                            color: commentInput.trim() ? "white" : "#374151",
+                            transition: "background 0.15s, color 0.15s",
+                          }}
+                        >
+                          コメントする
+                        </button>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
               </div>
-
-              <div style={{ marginTop: 8, paddingLeft: 72, display: "flex", justifyContent: "space-between", fontSize: 14, color: "#9ca3af" }}>
-                <span>0h</span><span>2h</span><span>4h</span><span>6h</span><span>8h</span>
-              </div>
-            </>
-          )}
+            );
+          })()}
 
           {/* ── 工数管理/月 ── */}
           {view === "monthly" && (
@@ -647,7 +994,7 @@ export default function AdminPage() {
                                 setHoveredKey(key);
                                 setTooltip({
                                   title: proj?.name ?? seg.projectId,
-                                  titleColor: PROJ_COLOR[seg.projectId],
+                                  titleColor: PROJ_TEXT_COLOR[seg.projectId],
                                   rows: [
                                     { label: "月間工数", value: `${(seg.min / 60).toFixed(1)}h` },
                                     { label: "全体比率", value: `${pct}%` },
@@ -879,21 +1226,86 @@ export default function AdminPage() {
           {view === "new-project" && (
             <>
               <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 12 }}>プロジェクト作成</div>
-              <div className="card" style={{ padding: 14, maxWidth: 380 }}>
-                <div style={{ marginBottom: 10 }}>
+              <div className="card" style={{ padding: 16, maxWidth: 480 }}>
+
+                {/* プロジェクト名 */}
+                <div style={{ marginBottom: 14 }}>
                   <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト名</label>
                   <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="例: 社内基盤システム刷新"
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }} />
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, boxSizing: "border-box" }} />
                 </div>
+
+                {/* メモ */}
                 <div style={{ marginBottom: 14 }}>
                   <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>メモ</label>
-                  <textarea value={projMemo} onChange={(e) => setProjMemo(e.target.value)} placeholder="プロジェクトの概要・備考" rows={4}
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "vertical" }} />
+                  <textarea value={projMemo} onChange={(e) => setProjMemo(e.target.value)} placeholder="プロジェクトの概要・備考" rows={3}
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }} />
                 </div>
+
+                {/* 識別カラー */}
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 6 }}>識別カラー</label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {COLOR_PALETTE.map((p) => {
+                      const selected = projColor === p.color;
+                      return (
+                        <button
+                          key={p.color}
+                          title={p.label}
+                          onClick={() => { setProjColor(p.color); setProjTextColor(p.textColor); }}
+                          style={{
+                            width: 36, height: 36, borderRadius: 8,
+                            background: p.color,
+                            border: selected ? `3px solid ${p.textColor}` : "2px solid transparent",
+                            cursor: "pointer",
+                            boxShadow: selected ? `0 0 0 1px ${p.textColor}44` : "none",
+                            outline: "none",
+                            position: "relative",
+                          }}
+                        >
+                          {selected && (
+                            <span style={{ color: p.textColor, fontSize: 16, fontWeight: 800, lineHeight: 1 }}>✓</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* プレビュー */}
+                  <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: projColor, color: projTextColor, borderRadius: 6, padding: "3px 10px", fontSize: 13, fontWeight: 600 }}>
+                    <span>📁</span>
+                    <span>{projName.trim() || "プロジェクト名"}</span>
+                  </div>
+                </div>
+
+                {/* メンバー配属 */}
+                <div style={{ marginBottom: 18 }}>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 6 }}>メンバー配属</label>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {TEAM_MEMBERS.map((m) => {
+                      const checked = projMembers.includes(m.id);
+                      return (
+                        <label key={m.id} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "6px 10px", borderRadius: 8, background: checked ? projColor : "#f9fafb", border: `1px solid ${checked ? projTextColor + "44" : "#e5e7eb"}`, transition: "background 0.1s" }}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => setProjMembers((prev) => checked ? prev.filter((id) => id !== m.id) : [...prev, m.id])}
+                            style={{ width: 15, height: 15, accentColor: projTextColor, cursor: "pointer" }}
+                          />
+                          <span style={{ fontSize: 13, fontWeight: checked ? 600 : 400, color: checked ? projTextColor : "#374151" }}>{m.name}</span>
+                          <span style={{ marginLeft: "auto", fontSize: 11, color: "#9ca3af" }}>{m.cohort}卒</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }} onClick={() => setView("projects")}>キャンセル</button>
+                  <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }}
+                    onClick={() => { setView("projects"); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); }}>
+                    キャンセル
+                  </button>
                   <button className="btn btn-primary" style={{ flex: 2, fontSize: 14 }} disabled={!projName.trim()}
-                    onClick={() => { addProject(projName.trim()); setProjName(""); setProjMemo(""); setView("projects"); }}>
+                    onClick={() => { addProject(projName.trim(), projColor, projTextColor); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); setView("projects"); }}>
                     登録
                   </button>
                 </div>
@@ -976,8 +1388,8 @@ export default function AdminPage() {
 
             {/* ── 日別モーダル本体 ── */}
             {modal.mode === "daily" && (() => {
-              const segs  = DAILY_WORK[modal.member.id] ?? [];
-              const total = segs.reduce((s, x) => s + x.min, 0);
+              const segs  = (DAILY_WORK_BY_DATE[selectedDate] ?? {})[modal.member.id] ?? [];
+              const total = segs.reduce((s: number, x: DailySeg) => s + x.min, 0);
               return (
                 <>
                   {/* 合計バー */}
@@ -987,7 +1399,7 @@ export default function AdminPage() {
                       <span style={{ fontWeight: 700, color: "#1a1a2e" }}>{(total / 60).toFixed(1)}h / 8.0h</span>
                     </div>
                     <div style={{ height: 10, background: "#f3f4f6", borderRadius: 5, display: "flex", overflow: "hidden" }}>
-                      {segs.map((seg, i) => (
+                      {segs.map((seg: DailySeg, i: number) => (
                         <div key={i} style={{
                           width: `${(seg.min / 480) * 100}%`,
                           background: PROJ_COLOR[seg.projectId],
@@ -999,27 +1411,27 @@ export default function AdminPage() {
 
                   {/* プロジェクト別タスク */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    {segs.map((seg) => {
+                    {segs.map((seg: DailySeg) => {
                       const proj = projects.find((p) => p.id === seg.projectId);
                       return (
                         <div key={seg.projectId} style={{ border: "1px solid #f3f4f6", borderRadius: 8, overflow: "hidden" }}>
                           {/* PJ見出し */}
                           <div style={{
                             padding: "8px 14px",
-                            background: `${PROJ_COLOR[seg.projectId]}14`,
+                            background: PROJ_COLOR[seg.projectId] ?? "#f3f4f6",
                             borderBottom: "1px solid #f3f4f6",
                             display: "flex", justifyContent: "space-between", alignItems: "center",
                           }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                              <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_COLOR[seg.projectId] }} />
+                              <div style={{ width: 10, height: 10, borderRadius: 2, background: PROJ_TEXT_COLOR[seg.projectId] }} />
                               <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>{proj?.name}</span>
                             </div>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_TEXT_COLOR[seg.projectId] }}>
                               {(seg.min / 60).toFixed(1)}h
                             </span>
                           </div>
                           {/* タスク一覧 */}
-                          {seg.tasks.map((t, i) => (
+                          {seg.tasks.map((t: DailyTask, i: number) => (
                             <div key={i} style={{
                               display: "flex", justifyContent: "space-between",
                               padding: "7px 14px",
@@ -1080,7 +1492,7 @@ export default function AdminPage() {
                             </div>
                             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                               <span style={{ fontSize: 14, color: "#6b7280" }}>{pct}%</span>
-                              <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_COLOR[seg.projectId] }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: PROJ_TEXT_COLOR[seg.projectId] }}>
                                 {(seg.min / 60).toFixed(1)}h
                               </span>
                             </div>

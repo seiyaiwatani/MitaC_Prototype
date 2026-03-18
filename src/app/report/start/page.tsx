@@ -321,7 +321,7 @@ export default function StartReport() {
           <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             未完了のRepoCa
           </div>
-          <div style={{ flex: "0 0 auto", maxHeight: "40%", overflowY: "auto", padding: "6px 8px", borderBottom: "1px solid #e5e7eb" }}>
+          <div style={{ flex: "0 0 auto", maxHeight: "40%", overflowY: "auto", scrollbarGutter: "stable", padding: "6px 8px", borderBottom: "1px solid #e5e7eb" }}>
             {unfinished.length === 0 ? (
               <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (
@@ -348,7 +348,7 @@ export default function StartReport() {
           <div style={{ padding: "8px 12px", fontWeight: 700, fontSize: 14, borderBottom: "1px solid #e5e7eb", flexShrink: 0, color: "#1a1a2e" }}>
             お気に入りのRepoCa
           </div>
-          <div style={{ flex: 1, overflowY: "auto", padding: "6px 8px" }}>
+          <div style={{ flex: 1, overflowY: "auto", scrollbarGutter: "stable", padding: "6px 8px" }}>
             {favorites.length === 0 ? (
               <p style={{ fontSize: 14, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</p>
             ) : (

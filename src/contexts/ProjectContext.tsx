@@ -6,7 +6,7 @@ import { projects as initialProjects } from "@/lib/mock-data";
 
 interface ProjectContextValue {
   projects: Project[];
-  addProject: (name: string, teamId?: string) => void;
+  addProject: (name: string, color?: string, textColor?: string, teamId?: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextValue>({
@@ -26,11 +26,15 @@ const PALETTE: { color: string; textColor: string }[] = [
 export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
 
-  const addProject = (name: string, teamId: string = "t1") => {
+  const addProject = (name: string, color?: string, textColor?: string, teamId: string = "t1") => {
     const palette = PALETTE[projects.length % PALETTE.length];
     setProjects((prev) => [
       ...prev,
-      { id: `p${Date.now()}`, name, teamId, icon: "📁", ...palette },
+      {
+        id: `p${Date.now()}`, name, teamId, icon: "📁",
+        color:     color     ?? palette.color,
+        textColor: textColor ?? palette.textColor,
+      },
     ]);
   };
 

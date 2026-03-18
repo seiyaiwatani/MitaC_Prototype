@@ -8,11 +8,7 @@ import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import type { SeasonRewardType, RepoCa } from "@/types";
-import {
-  HiFlag,
-  HiCheck,
-  HiPencilAlt,
-} from "react-icons/hi";
+import { HiFlag, HiCheck, HiPencilAlt } from "react-icons/hi";
 import {
   AvatarWithCostume,
   OMAMORI_EFFECTS,
@@ -36,7 +32,8 @@ const TYPE_CHIP: Partial<
 };
 
 const AVATAR_MAP: Record<string, string> = {
-  fox: `${BASE}/avatars/avatar_fox.svg`,
+  fox: `${BASE}/avatars/avatar_fox.は
+  ｓvg`,
   cat: `${BASE}/avatars/avatar_cat.svg`,
   doragon: `${BASE}/avatars/avatar_doragon.svg`,
 };
@@ -575,7 +572,9 @@ export default function Home() {
   } = useRepoCa();
   const { missions } = useMission();
   const [showRewardModal, setShowRewardModal] = useState(false);
-  const [missionTab, setMissionTab] = useState<"daily" | "monthly" | "unlimited">("daily");
+  const [missionTab, setMissionTab] = useState<
+    "daily" | "monthly" | "unlimited"
+  >("daily");
   const [hoveredRewardLv, setHoveredRewardLv] = useState<number | null>(null);
   const [selectedTask, setSelectedTask] = useState<RepoCa | null>(null);
   const [showWorkResult, setShowWorkResult] = useState(false);
@@ -695,7 +694,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
 
       {/* ====== シーズンパス（全幅） ====== */}
       {(() => {
@@ -912,38 +910,44 @@ export default function Home() {
                         >
                           {/* ホバートゥールチップ */}
                           {hovered && (
-                            <div style={{
-                              position: "absolute",
-                              bottom: "calc(100% + 6px)",
-                              left: "50%",
-                              transform: "translateX(-50%)",
-                              background: "#1a1a2e",
-                              color: "white",
-                              padding: "5px 9px",
-                              borderRadius: 7,
-                              fontSize: 12,
-                              whiteSpace: "nowrap",
-                              zIndex: 20,
-                              pointerEvents: "none",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 2,
-                              alignItems: "center",
-                            }}>
+                            <div
+                              style={{
+                                position: "absolute",
+                                bottom: "calc(100% + 6px)",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                background: "#1a1a2e",
+                                color: "white",
+                                padding: "5px 9px",
+                                borderRadius: 7,
+                                fontSize: 12,
+                                whiteSpace: "nowrap",
+                                zIndex: 20,
+                                pointerEvents: "none",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 2,
+                                alignItems: "center",
+                              }}
+                            >
                               {chip && (
-                                <span style={{
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  background: chip.bg,
-                                  color: chip.color,
-                                  padding: "1px 5px",
-                                  borderRadius: 3,
-                                }}>
+                                <span
+                                  style={{
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    background: chip.bg,
+                                    color: chip.color,
+                                    padding: "1px 5px",
+                                    borderRadius: 3,
+                                  }}
+                                >
                                   {chip.label}
                                 </span>
                               )}
-                              <span style={{ fontWeight: 700 }}>{reward.name}</span>
+                              <span style={{ fontWeight: 700 }}>
+                                {reward.name}
+                              </span>
                             </div>
                           )}
                           <div
@@ -1868,8 +1872,8 @@ export default function Home() {
         {/* ====== ミッション（横長） ====== */}
         {(() => {
           const MISSION_TABS = [
-            { key: "daily"     as const, label: "デイリー" },
-            { key: "monthly"   as const, label: "今月" },
+            { key: "daily" as const, label: "デイリー" },
+            { key: "monthly" as const, label: "今月" },
             { key: "unlimited" as const, label: "無期限" },
           ];
           const tabMissions = missions.filter((m) => m.type === missionTab);
@@ -1894,10 +1898,15 @@ export default function Home() {
                   marginBottom: 8,
                 }}
               >
-                <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>
+                <span
+                  style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}
+                >
                   ミッション
                 </span>
-                <Link href="/mypage/missions" style={{ textDecoration: "none" }}>
+                <Link
+                  href="/mypage/missions"
+                  style={{ textDecoration: "none" }}
+                >
                   <span
                     style={{
                       fontSize: 14,
@@ -1938,7 +1947,14 @@ export default function Home() {
                     </button>
                   );
                 })}
-                <span style={{ fontSize: 13, color: "#9ca3af", alignSelf: "center", marginLeft: 4 }}>
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: "#9ca3af",
+                    alignSelf: "center",
+                    marginLeft: 4,
+                  }}
+                >
                   {doneCount}/{tabMissions.length}
                 </span>
               </div>
