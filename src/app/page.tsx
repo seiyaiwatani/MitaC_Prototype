@@ -32,8 +32,7 @@ const TYPE_CHIP: Partial<
 };
 
 const AVATAR_MAP: Record<string, string> = {
-  fox: `${BASE}/avatars/avatar_fox.は
-  ｓvg`,
+  fox: `${BASE}/avatars/avatar_fox.svg`,
   cat: `${BASE}/avatars/avatar_cat.svg`,
   doragon: `${BASE}/avatars/avatar_doragon.svg`,
 };
