@@ -95,7 +95,17 @@ export default function AppHeader() {
               </button>
             </Link>
           </div>
-        ) : null}
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fee2e2", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#991b1b", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", whiteSpace: "nowrap" }}>退勤がまだ行われていません</span>
+            <Link href="/report/end">
+              <button style={{ background: "#ef4444", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                退勤する
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* 右: アバター + ユーザー情報 */}
