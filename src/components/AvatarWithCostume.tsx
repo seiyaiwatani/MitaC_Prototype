@@ -20,6 +20,20 @@ const COSTUME_STYLES: Record<string, CostumeStyle> = {
   tie:    { top: "46%",  left: "50%", width: "42%", transform: "translateX(-50%)" },
 };
 
+/** アバターごとの王冠位置オーバーライド */
+const AVATAR_CROWN_OVERRIDE: Record<string, Partial<CostumeStyle>> = {
+  fox:     { top: "-15%",  left: "54%", transform: "translateX(-50%)" },
+  cat:     { top: "-18%", left: "53%", transform: "translateX(-50%)" },
+  doragon: { top: "-18%", left: "54%", transform: "translateX(-50%)" },
+};
+
+function getAvatarKeyFromSrc(src: string): string {
+  if (src.includes("fox"))     return "fox";
+  if (src.includes("cat"))     return "cat";
+  if (src.includes("doragon")) return "doragon";
+  return "fox";
+}
+
 /** おまもりごとの効果 */
 export const OMAMORI_EFFECTS: Record<string, { label: string; color: string; emoji: string; name: string }> = {
   omamori_lucky: { label: "EXP +15%", color: "#f59e0b", emoji: "🧧", name: "幸運のおまもり" },
@@ -53,6 +67,7 @@ export function AvatarWithCostume({
   style,
   onAnimationEnd,
 }: Props) {
+  const avatarKey = getAvatarKeyFromSrc(avatarSrc);
   return (
     <div
       className={animClass}
@@ -71,7 +86,12 @@ export function AvatarWithCostume({
         <img
           src={COSTUME_SRC[headCostume]}
           alt={headCostume}
-          style={{ position: "absolute", ...COSTUME_STYLES[headCostume], pointerEvents: "none" }}
+          style={{
+            position: "absolute",
+            ...COSTUME_STYLES[headCostume],
+            ...(headCostume === "crown" && AVATAR_CROWN_OVERRIDE[avatarKey]),
+            pointerEvents: "none",
+          }}
         />
       )}
       {bodyCostume && (

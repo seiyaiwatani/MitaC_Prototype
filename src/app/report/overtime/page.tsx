@@ -216,7 +216,6 @@ export default function OvertimeReport() {
             <span style={{ fontSize: 32 }}>🎉</span>
             <div>
               <p style={{ fontWeight: 700, color: "#065f46", margin: 0, fontSize: 14 }}>お疲れ様でした！</p>
-              <p style={{ fontSize: 14, color: "#047857", margin: "2px 0 0" }}>定時退社でミッションボーナスの対象です</p>
             </div>
           </div>
         )}
