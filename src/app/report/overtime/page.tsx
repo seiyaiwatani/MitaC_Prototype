@@ -40,7 +40,7 @@ export default function OvertimeReport() {
     <div className="page-root">
       {blockInfo && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
+          <div style={{ background: "white", borderRadius: 16, padding: "40px 36px", width: "60vw", maxWidth: "60vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
             <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
             <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
             <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>

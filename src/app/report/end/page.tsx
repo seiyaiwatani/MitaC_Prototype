@@ -171,7 +171,7 @@ export default function EndReport() {
     <div className="page-root">
       {blockInfo && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
+          <div style={{ background: "white", borderRadius: 16, padding: "40px 36px", width: "60vw", maxWidth: "60vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
             <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
             <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
             <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
@@ -583,7 +583,7 @@ export default function EndReport() {
             onClick={() => setShowConfirmModal(false)}
           >
             <div
-              style={{ background: "white", borderRadius: 16, width: 380, maxWidth: "92vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+              style={{ background: "white", borderRadius: 16, width: "60vw", maxWidth: "60vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", padding: "16px 20px" }}>
@@ -600,19 +600,31 @@ export default function EndReport() {
                   </div>
                 ))}
                 <div style={{ marginTop: 10, fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>RepoCa一覧</div>
-                {selectedRepoCas.map((rc) => {
-                  const proj = projects.find((p) => p.id === rc.projectId);
-                  const done = completed[rc.id] ?? false;
-                  const dur = durations[rc.id] ?? 0;
+                {Array.from(
+                  selectedRepoCas.reduce((map, rc) => {
+                    const arr = map.get(rc.projectId) ?? [];
+                    arr.push(rc);
+                    map.set(rc.projectId, arr);
+                    return map;
+                  }, new Map<string, typeof selectedRepoCas>())
+                ).map(([projectId, rcs]) => {
+                  const proj = projects.find((p) => p.id === projectId);
                   return (
-                    <div key={rc.id} style={{ display: "flex", gap: 6, alignItems: "center", padding: "5px 0", borderBottom: "1px solid #f9fafb" }}>
-                      <span style={{
-                        width: 10, height: 10, borderRadius: 2, flexShrink: 0,
-                        background: done ? "#10b981" : "#d1d5db",
-                      }} />
-                      <span className="chip" style={{ fontSize: 14, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
-                      <span style={{ fontSize: 14, color: "#374151", flex: 1 }}>{rc.content}</span>
-                      <span style={{ fontSize: 14, color: dur > 0 ? "#1f2937" : "#ef4444", fontWeight: 600, flexShrink: 0 }}>{fmtDuration(dur)}</span>
+                    <div key={projectId} style={{ marginBottom: 8 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 0 4px", borderBottom: "1px solid #e5e7eb" }}>
+                        <span className="chip" style={{ fontSize: 13, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
+                      </div>
+                      {rcs.map((rc) => {
+                        const done = completed[rc.id] ?? false;
+                        const dur = durations[rc.id] ?? 0;
+                        return (
+                          <div key={rc.id} style={{ display: "flex", gap: 6, alignItems: "center", padding: "5px 0 5px 10px", borderBottom: "1px solid #f9fafb" }}>
+                            <span style={{ width: 10, height: 10, borderRadius: 2, flexShrink: 0, background: done ? "#10b981" : "#d1d5db" }} />
+                            <span style={{ fontSize: 14, color: "#374151", flex: 1 }}>{rc.content}</span>
+                            <span style={{ fontSize: 14, color: dur > 0 ? "#1f2937" : "#ef4444", fontWeight: 600, flexShrink: 0 }}>{fmtDuration(dur)}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}

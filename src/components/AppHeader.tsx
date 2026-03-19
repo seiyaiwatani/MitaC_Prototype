@@ -77,6 +77,16 @@ export default function AppHeader() {
           <span style={{ fontSize: 13, fontWeight: 700, color: "#065f46", background: "#d1fae5", padding: "4px 12px", borderRadius: 99, display: "flex", alignItems: "center", gap: 6 }}>
             🏠 業務終了です。お疲れ様でした！
           </span>
+        ) : hasEndReported ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fee2e2", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#991b1b", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", whiteSpace: "nowrap" }}>退勤がまだ行われていません</span>
+            <Link href="/">
+              <button style={{ background: "#ef4444", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                退勤する
+              </button>
+            </Link>
+          </div>
         ) : !hasStartReported ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fef3c7", padding: "4px 12px", borderRadius: 99 }}>
             <HiExclamation style={{ width: 14, height: 14, color: "#92400e", flexShrink: 0 }} />
@@ -97,23 +107,13 @@ export default function AppHeader() {
               </button>
             </Link>
           </div>
-        ) : !hasEndReported ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fef3c7", padding: "4px 12px", borderRadius: 99 }}>
-            <HiExclamation style={{ width: 14, height: 14, color: "#92400e", flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#92400e", whiteSpace: "nowrap" }}>終業報告が未提出です</span>
-            <Link href="/report/end">
-              <button style={{ background: "#f59e0b", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
-                終業報告する
-              </button>
-            </Link>
-          </div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fee2e2", padding: "4px 12px", borderRadius: 99 }}>
-            <HiExclamation style={{ width: 14, height: 14, color: "#991b1b", flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", whiteSpace: "nowrap" }}>退勤がまだ行われていません</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#ffedd5", padding: "4px 12px", borderRadius: 99 }}>
+            <HiExclamation style={{ width: 14, height: 14, color: "#9a3412", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#9a3412", whiteSpace: "nowrap" }}>終業報告が未提出です</span>
             <Link href="/report/end">
-              <button style={{ background: "#ef4444", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
-                退勤する
+              <button style={{ background: "#ea580c", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+                終業報告する
               </button>
             </Link>
           </div>
