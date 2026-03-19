@@ -52,7 +52,7 @@ export default function ReportIndex() {
               <div style={{ textAlign: "center", padding: "24px 16px" }}>
                 <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>カードが作成されていません</p>
                 <p style={{ fontSize: 14, color: "#9ca3af", marginBottom: 12 }}>下のボタンからカードを作成しよう！</p>
-                <Link href="/repoca/new?from=/report">
+                <Link href="/repoca/new?from=/report" style={{ display: "inline-block" }}>
                   <button className="btn btn-primary" style={{ fontSize: 14 }}>カード作成</button>
                 </Link>
               </div>

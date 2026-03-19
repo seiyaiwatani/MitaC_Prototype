@@ -137,65 +137,30 @@ export default function StartReport() {
 
   const grouped = groupByPj(addedIds);
 
-  /* ── 未出勤: 始業報告不可 ── */
-  if (attendanceResolved === "idle") {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🏠</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            まず出勤してください
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            出勤ボタンを押してから<br />始業報告を行ってください。
-          </p>
-          <Link href="/">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 提出済み: 日付によって表示を切り替え ── */
   const todayStr = new Date().toDateString();
   const isStartReportedToday = startReportedDate === todayStr;
 
-  // 同日中に始業報告ページを再訪した場合 → 完了メッセージ
-  if (hasStartReported || isStartReportedToday) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🌅</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            本日の始業報告は完了しています。
-          </p>
-          <Link href="/">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const blockInfo = attendanceResolved === "idle"
+    ? { icon: "🏠", title: "まず出勤してください", desc: "出勤ボタンを押してから始業報告を行ってください。", href: "/", btnLabel: "ホームに戻る" }
+    : (hasStartReported || isStartReportedToday)
+    ? { icon: "🌅", title: "提出完了。お疲れ様でした！", desc: "本日の始業報告は完了しています。", href: "/", btnLabel: "ホームに戻る" }
+    : null;
 
-  /* ── メイン: 追加済みRepoCa一覧 + 右サイドバー ── */
+  /* ── メイン ── */
   return (
     <div className="page-root">
+      {blockInfo && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
+            <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
+            <Link href={blockInfo.href} style={{ display: "inline-block" }}>
+              <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
+            </Link>
+          </div>
+        </div>
+      )}
       {/* サブヘッダー */}
       <div className="page-subheader">
         <Link href="/report" style={{ color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center" }}>
@@ -404,7 +369,7 @@ export default function StartReport() {
           onClick={() => setShowConfirmModal(false)}
         >
           <div
-            style={{ background: "white", borderRadius: 16, width: 360, maxWidth: "92vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+            style={{ background: "white", borderRadius: 16, width: "60vw", maxWidth: "60vw", maxHeight: "60vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", padding: "16px 20px" }}>

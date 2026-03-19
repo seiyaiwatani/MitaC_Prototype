@@ -7,9 +7,10 @@ export type Role = "admin" | "user" | null;
 interface RoleContextValue {
   role: Role;
   setRole: (r: "admin" | "user") => void;
+  clearRole: () => void;
 }
 
-const RoleContext = createContext<RoleContextValue>({ role: null, setRole: () => {} });
+const RoleContext = createContext<RoleContextValue>({ role: null, setRole: () => {}, clearRole: () => {} });
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<Role>(() => {
@@ -24,7 +25,12 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     setRoleState(r);
   };
 
-  return <RoleContext.Provider value={{ role, setRole }}>{children}</RoleContext.Provider>;
+  const clearRole = () => {
+    localStorage.removeItem("mitac_role");
+    setRoleState(null);
+  };
+
+  return <RoleContext.Provider value={{ role, setRole, clearRole }}>{children}</RoleContext.Provider>;
 }
 
 export function useRole() {

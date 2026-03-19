@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { RepoCa } from "@/types";
-import { HiArrowLeft, HiCheck, HiTrash } from "react-icons/hi";
+import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
+import { HiArrowLeft, HiCheck, HiTrash, HiPencilAlt } from "react-icons/hi";
 import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -15,6 +15,7 @@ interface EndReportDraft {
   selectedIds: string[];
   durations: Record<string, number>;
   completed: Record<string, boolean>;
+  manuallyAddedIds: string[];
 }
 
 function loadDraft(): EndReportDraft | null {
@@ -27,9 +28,9 @@ function loadDraft(): EndReportDraft | null {
   }
 }
 
-function saveDraft(selectedIds: string[], durations: Record<string, number>, completed: Record<string, boolean>) {
+function saveDraft(selectedIds: string[], durations: Record<string, number>, completed: Record<string, boolean>, manuallyAddedIds: string[]) {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ selectedIds, durations, completed }));
+  sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ selectedIds, durations, completed, manuallyAddedIds }));
 }
 
 function clearDraft() {
@@ -48,7 +49,7 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
+  const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, updateRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
 
@@ -70,13 +71,38 @@ export default function EndReport() {
     if (draft?.completed) return draft.completed;
     return Object.fromEntries(todayRepoCas.map((rc) => [rc.id, rc.isCompleted]));
   });
+  const [editingRepoCa, setEditingRepoCa] = useState<RepoCa | null>(null);
+  const [editDraft, setEditDraft] = useState<Partial<RepoCa>>({});
+  const [editTab, setEditTab] = useState<"開発" | "その他">("開発");
+
+  const openEdit = (rc: RepoCa) => {
+    setEditingRepoCa(rc);
+    setEditDraft({ projectId: rc.projectId, taskType: rc.taskType, label: rc.label, implScope: rc.implScope, content: rc.content, isFavorite: rc.isFavorite });
+    setEditTab(rc.taskType === "開発" || rc.taskType === "実装" ? "開発" : "その他");
+  };
+
+  const saveEdit = () => {
+    if (!editingRepoCa) return;
+    const patch: Partial<RepoCa> = {
+      ...editDraft,
+      xp: (editDraft.taskType === "開発" || editDraft.taskType === "実装") ? 50 : 20,
+    };
+    updateRepoCa(editingRepoCa.id, patch);
+    setSelectedRepoCas((prev) => prev.map((r) => r.id === editingRepoCa.id ? { ...r, ...patch } : r));
+    setEditingRepoCa(null);
+  };
+
+  const [manuallyAddedIds, setManuallyAddedIds] = useState<Set<string>>(() => {
+    const draft = loadDraft();
+    return new Set(draft?.manuallyAddedIds ?? []);
+  });
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [hovered, setHovered] = useState<{ id: string; below: boolean } | null>(null);
 
   // 状態変化をsessionStorageに即時保存
   useEffect(() => {
-    saveDraft(selectedRepoCas.map((r) => r.id), durations, completed);
-  }, [selectedRepoCas, durations, completed]);
+    saveDraft(selectedRepoCas.map((r) => r.id), durations, completed, Array.from(manuallyAddedIds));
+  }, [selectedRepoCas, durations, completed, manuallyAddedIds]);
 
   // /repoca/new から戻ったとき、新規作成RepoCaを自動追加
   useEffect(() => {
@@ -85,6 +111,7 @@ export default function EndReport() {
       setSelectedRepoCas((prev) => [...prev, ...newRcs.filter((r) => !prev.find((p) => p.id === r.id))]);
       setDurations((prev) => ({ ...prev, ...Object.fromEntries(newRcs.map((r) => [r.id, 0])) }));
       setCompleted((prev) => ({ ...prev, ...Object.fromEntries(newRcs.map((r) => [r.id, false])) }));
+      setManuallyAddedIds((prev) => { const s = new Set(prev); newRcs.forEach((r) => s.add(r.id)); return s; });
       clearPendingRepoCaIds();
     }
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
@@ -98,7 +125,13 @@ export default function EndReport() {
   const addToList = (rc: RepoCa) => {
     setSelectedRepoCas((prev) => [...prev, rc]);
     setDurations((prev) => ({ ...prev, [rc.id]: 0 }));
+    setManuallyAddedIds((prev) => { const s = new Set(prev); s.add(rc.id); return s; });
     addTodayRepoCa(rc);
+  };
+
+  const removeFromList = (id: string) => {
+    setSelectedRepoCas((prev) => prev.filter((r) => r.id !== id));
+    setManuallyAddedIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
   };
 
   // PJでグループ化
@@ -120,117 +153,34 @@ export default function EndReport() {
     proj: projects.find((p) => p.id === pjId)!,
   }));
 
-  /* ── 終業報告済み: 日付によって表示を切り替え ── */
   const todayStr = new Date().toDateString();
   const isEndReportedToday = endReportedDate === todayStr;
 
-  // 同日中に終業報告ページを再訪した場合 → 完了メッセージ
-  if (!hasStartReported && isEndReportedToday) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            本日の全報告が完了しています。
-          </p>
-          <Link href="/">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>ホームに戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // 日付が変わった後に終業報告ページを訪れた場合 → 始業報告を促す
-  if (!hasStartReported && endReportedDate && endReportedDate !== todayStr) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 48 }}>📋</div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            始業報告を行ってください
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            新しい日が始まりました。<br />まずは始業報告を提出しましょう。
-          </p>
-          <Link href="/report/start">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 始業未報告ブロック画面 ── */
-  if (!hasStartReported) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 48 }}>⚠️</div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            始業報告が提出されていません
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            終業報告は始業報告を提出した後に<br />行うことができます
-          </p>
-          <Link href="/report/start">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 残業未報告ブロック画面 ── */
-  if (!hasOvertimeReported) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>終業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 48 }}>⚠️</div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            残業報告が提出されていません
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            終業報告は残業報告を提出した後に<br />行うことができます
-          </p>
-          <Link href="/report/overtime">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>残業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const blockInfo = (!hasStartReported && isEndReportedToday)
+    ? { icon: "🎉", title: "提出完了。お疲れ様でした！", desc: "本日の全報告が完了しています。", href: "/", btnLabel: "ホームに戻る" }
+    : (!hasStartReported && endReportedDate && endReportedDate !== todayStr)
+    ? { icon: "📋", title: "始業報告を行ってください", desc: "新しい日が始まりました。まずは始業報告を提出しましょう。", href: "/report/start", btnLabel: "始業報告する" }
+    : !hasStartReported
+    ? { icon: "⚠️", title: "始業報告が提出されていません", desc: "終業報告は始業報告を提出した後に行うことができます", href: "/report/start", btnLabel: "始業報告する" }
+    : !hasOvertimeReported
+    ? { icon: "⚠️", title: "残業報告が提出されていません", desc: "終業報告は残業報告を提出した後に行うことができます", href: "/report/overtime", btnLabel: "残業報告する" }
+    : null;
 
   /* ── メイン ── */
   return (
     <div className="page-root">
+      {blockInfo && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
+            <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
+            <Link href={blockInfo.href} style={{ display: "inline-block" }}>
+              <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
+            </Link>
+          </div>
+        </div>
+      )}
       {/* サブヘッダー */}
       <div className="page-subheader">
         <Link href="/report" style={{ color: "#f59e0b", textDecoration: "none", display: "flex", alignItems: "center" }}>
@@ -309,9 +259,24 @@ export default function EndReport() {
                         )}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                           <span className="chip" style={{ fontSize: 14, background: proj.color, color: proj.textColor }}>{rc.taskType}</span>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
-                            ★
-                          </button>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            {manuallyAddedIds.has(rc.id) ? (
+                              <button
+                                onClick={() => removeFromList(rc.id)}
+                                title="リストから外す"
+                                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9ca3af", fontSize: 16, lineHeight: 1, display: "flex", alignItems: "center" }}
+                              >
+                                ×
+                              </button>
+                            ) : (
+                              <span title="始業報告で追加" style={{ fontSize: 10, color: "#60a5fa", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "1px 3px", lineHeight: 1.3, fontWeight: 700 }}>
+                                始
+                              </span>
+                            )}
+                            <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
+                              ★
+                            </button>
+                          </div>
                         </div>
                         <p style={{ fontSize: 14, margin: "0 0 6px", fontWeight: 500, color: dur === 0 ? "#ef4444" : "#1f2937", lineHeight: 1.3 }}>
                           {rc.content}
@@ -448,10 +413,16 @@ export default function EndReport() {
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
-                      <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center", flexShrink: 0 }}>
-                        <HiTrash style={{ width: 14, height: 14 }} />
-                      </button>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}>
+                          <HiPencilAlt style={{ width: 14, height: 14 }} />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}>
+                          <HiTrash style={{ width: 14, height: 14 }} />
+                        </button>
+                      </div>
                     </div>
                     <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
                     <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
@@ -475,10 +446,16 @@ export default function EndReport() {
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
-                      <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center", flexShrink: 0 }}>
-                        <HiTrash style={{ width: 14, height: 14 }} />
-                      </button>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}>
+                          <HiPencilAlt style={{ width: 14, height: 14 }} />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}>
+                          <HiTrash style={{ width: 14, height: 14 }} />
+                        </button>
+                      </div>
                     </div>
                     <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
                     <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
@@ -512,6 +489,90 @@ export default function EndReport() {
           提出
         </button>
       </div>
+
+      {/* 編集モーダル */}
+      {editingRepoCa && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setEditingRepoCa(null)}
+        >
+          <div
+            style={{ background: "white", borderRadius: 16, width: 360, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ background: "linear-gradient(135deg,#6366f1,#4f46e5)", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
+              <button onClick={() => setEditingRepoCa(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* タスク種別タブ */}
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["開発", "その他"] as const).map((t) => (
+                  <button key={t} onClick={() => { setEditTab(t); setEditDraft((d) => ({ ...d, taskType: t === "開発" ? "開発" as TaskType : "その他" as TaskType })); }}
+                    style={{ padding: "3px 14px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", background: editTab === t ? "#4f46e5" : "#f3f4f6", color: editTab === t ? "white" : "#6b7280" }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+              {/* PJ名 */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>PJ名 <span style={{ color: "#ef4444" }}>*</span></label>
+                <select value={editDraft.projectId ?? ""} onChange={(e) => setEditDraft((d) => ({ ...d, projectId: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                  {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
+                </select>
+              </div>
+              {/* ラベル */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>ラベル <span style={{ color: "#ef4444" }}>*</span></label>
+                <select value={editDraft.label ?? ""} onChange={(e) => setEditDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                  {(["新規作成", "修正", "調査", "レビュー", "MTG", "外部対応", "その他"] as TaskLabel[]).map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+              </div>
+              {/* 実装範囲（開発タブのみ） */}
+              {editTab === "開発" && (
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>実装範囲 <span style={{ color: "#ef4444" }}>*</span></label>
+                  <select value={editDraft.implScope ?? ""} onChange={(e) => setEditDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                    {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {/* タスク内容 */}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>タスク内容 <span style={{ color: "#ef4444" }}>*</span></label>
+                <textarea
+                  value={editDraft.content ?? ""}
+                  onChange={(e) => setEditDraft((d) => ({ ...d, content: e.target.value }))}
+                  rows={3}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, resize: "none", color: "#374151", boxSizing: "border-box" }}
+                />
+                <div style={{ textAlign: "right", fontSize: 12, color: "#9ca3af" }}>{(editDraft.content ?? "").length}文字</div>
+              </div>
+              {/* お気に入り */}
+              <button onClick={() => setEditDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
+                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 14, padding: 0 }}>
+                <span style={{ fontSize: 16, color: editDraft.isFavorite ? "#f59e0b" : "#d1d5db" }}>{editDraft.isFavorite ? "★" : "☆"}</span>
+                <span style={{ color: editDraft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り</span>
+              </button>
+            </div>
+            <div style={{ padding: "10px 18px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
+              <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#6366f1,#4f46e5)", color: "white" }}
+                disabled={!editDraft.projectId || !editDraft.label || !editDraft.content?.trim() || (editTab === "開発" && !editDraft.implScope)}
+                onClick={saveEdit}>
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 確認モーダル */}
       {showConfirmModal && (() => {

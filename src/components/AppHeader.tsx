@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HiExclamation } from "react-icons/hi";
+import { useRouter } from "next/navigation";
+import { HiExclamation, HiLogout } from "react-icons/hi";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
 import { useRepoCa } from "@/contexts/RepoCaContext";
+import { useRole } from "@/contexts/RoleContext";
 import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 import { AvatarEditor } from "@/components/AvatarEditor";
 
@@ -21,8 +23,18 @@ const AVATAR_SRC: Record<string, string> = {
 export default function AppHeader() {
   const { avatarKey, headCostume, bodyCostume, omamori, setAvatarKey, setHeadCostume, setBodyCostume, setOmamori } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
-  const { hasStartReported, hasOvertimeReported, hasEndReported, showEndOfWork } = useRepoCa();
+  const { hasStartReported, hasOvertimeReported, hasEndReported, showEndOfWork, resetDailyReports } = useRepoCa();
+  const { clearRole } = useRole();
+  const router = useRouter();
   const [showEditor, setShowEditor] = useState(false);
+
+  const handleLogout = () => {
+    resetDailyReports();
+    sessionStorage.removeItem("mitac_end_report_draft");
+    sessionStorage.removeItem("mitac_start_report_draft");
+    clearRole();
+    router.push("/");
+  };
   const xpPct     = Math.round((currentUser.xp / currentUser.xpToNext) * 100);
   const passExpPct = Math.round((passExp / passExpToNext) * 100);
   const avatarSrc = AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox;
@@ -184,6 +196,23 @@ export default function AppHeader() {
             </span>
           </div>
         </div>
+
+        {/* 区切り */}
+        <div style={{ width: 1, height: 28, background: "#e5e7eb", flexShrink: 0 }} />
+
+        {/* ログアウトボタン */}
+        <button
+          onClick={handleLogout}
+          title="ログアウト"
+          style={{
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+            background: "none", border: "none", cursor: "pointer", padding: "2px 4px",
+            color: "#4b5563", flexShrink: 0,
+          }}
+        >
+          <HiLogout style={{ width: 18, height: 18 }} />
+          <span style={{ fontSize: 9, fontWeight: 600, whiteSpace: "nowrap" }}>ログアウト</span>
+        </button>
       </div>
     </header>
     {showEditor && (

@@ -23,116 +23,33 @@ export default function OvertimeReport() {
     router.push('/');
   };
 
-  /* ── 残業報告済み: 日付によって表示を切り替え ── */
   const todayStr = new Date().toDateString();
   const isOvertimeReportedToday = overtimeReportedDate === todayStr;
 
-  // 同日中に残業報告ページを再訪した場合 → 完了メッセージ
-  if (!hasStartReported && isOvertimeReportedToday) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.8 }}>
-            本日の残業報告は完了しています。
-          </p>
-          <Link href="/report">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>報告一覧に戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // 日付が変わった後 → 始業報告を促す
-  if (!hasStartReported && overtimeReportedDate && overtimeReportedDate !== todayStr) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 48 }}>📋</div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            始業報告を行ってください
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            新しい日が始まりました。<br />まずは始業報告を提出しましょう。
-          </p>
-          <Link href="/report/start">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 始業未報告ブロック ── */
-  if (!hasStartReported) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 48 }}>⚠️</div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            始業報告が提出されていません
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            残業報告は始業報告を提出した後に<br />行うことができます
-          </p>
-          <Link href="/report/start">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>始業報告する</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  /* ── 提出済みブロック（再訪時） ── */
-  if (hasOvertimeReported) {
-    return (
-      <div className="page-root">
-        <div className="page-subheader">
-          <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <HiArrowLeft style={{ width: 20, height: 20 }} />
-          </Link>
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <div style={{ fontSize: 56 }}>🎉</div>
-          <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>
-            提出完了。お疲れ様でした！
-          </p>
-          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>
-            本日の残業報告は完了しています。
-          </p>
-          <Link href="/report">
-            <button className="btn btn-primary" style={{ marginTop: 8 }}>報告一覧に戻る</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const blockInfo = (!hasStartReported && isOvertimeReportedToday)
+    ? { icon: "🎉", title: "提出完了。お疲れ様でした！", desc: "本日の残業報告は完了しています。", href: "/report", btnLabel: "報告一覧に戻る" }
+    : (!hasStartReported && overtimeReportedDate && overtimeReportedDate !== todayStr)
+    ? { icon: "📋", title: "始業報告を行ってください", desc: "新しい日が始まりました。まずは始業報告を提出しましょう。", href: "/report/start", btnLabel: "始業報告する" }
+    : !hasStartReported
+    ? { icon: "⚠️", title: "始業報告が提出されていません", desc: "残業報告は始業報告を提出した後に行うことができます", href: "/report/start", btnLabel: "始業報告する" }
+    : hasOvertimeReported
+    ? { icon: "🎉", title: "提出完了。お疲れ様でした！", desc: "本日の残業報告は完了しています。", href: "/report", btnLabel: "報告一覧に戻る" }
+    : null;
 
   return (
     <div className="page-root">
+      {blockInfo && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
+            <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
+            <Link href={blockInfo.href} style={{ display: "inline-block" }}>
+              <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
+            </Link>
+          </div>
+        </div>
+      )}
       {/* サブヘッダー */}
       <div className="page-subheader">
         <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
