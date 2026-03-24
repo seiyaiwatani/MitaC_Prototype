@@ -1,5 +1,7 @@
 # MitaC_Prototype
 
+# 接続URL: [https://seiyaiwatani.github.io/MitaC_Prototype/]
+
 ## 2026/03/10 修正履歴
 
 ### 1. 報告関連の修正 — kikuchi-hibiki（15:28）
