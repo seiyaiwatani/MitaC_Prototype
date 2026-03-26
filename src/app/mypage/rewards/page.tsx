@@ -64,7 +64,7 @@ export default function RewardsPage() {
               style={{
                 padding: "4px 12px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700,
                 cursor: "pointer",
-                background: category === cat ? "#f59e0b" : "#f3f4f6",
+                background: category === cat ? "#007aff" : "#f3f4f6",
                 color:      category === cat ? "white"   : "#6b7280",
               }}
             >

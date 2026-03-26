@@ -489,7 +489,7 @@ export default function EndReport() {
         <button
           className="btn"
           disabled={totalMin === 0}
-          style={{ flex: 2, background: totalMin === 0 ? "#d1d5db" : "linear-gradient(90deg,#f59e0b,#d97706)", color: totalMin === 0 ? "#9ca3af" : "white", cursor: totalMin === 0 ? "not-allowed" : "pointer" }}
+          style={{ flex: 2, background: totalMin === 0 ? "#d1d5db" : "#007aff", color: totalMin === 0 ? "#9ca3af" : "white", cursor: totalMin === 0 ? "not-allowed" : "pointer" }}
           onClick={() => setShowConfirmModal(true)}
         >
           提出
@@ -506,7 +506,7 @@ export default function EndReport() {
             style={{ background: "white", borderRadius: 16, width: 360, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#6366f1,#4f46e5)", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ background: "linear-gradient(135deg,#2d8aff,#007aff)", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               <button onClick={() => setEditingRepoCa(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
             </div>
@@ -564,7 +564,7 @@ export default function EndReport() {
             </div>
             <div style={{ padding: "10px 18px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
-              <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#6366f1,#4f46e5)", color: "white" }}
+              <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#2d8aff,#007aff)", color: "white" }}
                 disabled={!editDraft.projectId || !editDraft.label || !editDraft.content?.trim() || (editTab === "開発" && !editDraft.implScope)}
                 onClick={saveEdit}>
                 保存
@@ -586,7 +586,7 @@ export default function EndReport() {
               style={{ background: "white", borderRadius: 16, width: "60vw", maxWidth: "60vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ background: "linear-gradient(135deg,#f59e0b,#d97706)", padding: "16px 20px" }}>
+              <div style={{ background: "#007aff", padding: "16px 20px" }}>
                 <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>終業報告の確認</p>
               </div>
               <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
@@ -631,7 +631,7 @@ export default function EndReport() {
               </div>
               <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
-                <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
+                <button className="btn" style={{ flex: 2, background: "#007aff", color: "white" }}
                   onClick={() => {
                     // 完了状態を allRepoCas に一括同期
                     bulkUpdateCompleted(completed);

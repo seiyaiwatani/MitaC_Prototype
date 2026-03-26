@@ -323,7 +323,7 @@ function SortableNewsItem({
           display: "flex",
           alignItems: "flex-start",
           gap: 10,
-          borderLeft: isEditing ? "3px solid #4f46e5" : "3px solid transparent",
+          borderLeft: isEditing ? "3px solid #007aff" : "3px solid transparent",
         }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -470,7 +470,7 @@ export default function AdminPage() {
       <header style={{
         height: 48, flexShrink: 0,
         display: "flex", alignItems: "center", padding: "0 16px", gap: 8,
-        background: "#1e1b4b", color: "white",
+        background: "#003878", color: "white",
       }}>
         <HiCog style={{ width: 18, height: 18, opacity: 0.9 }} />
         <span style={{ fontWeight: 800, fontSize: 15 }}>管理者</span>
@@ -572,7 +572,7 @@ export default function AdminPage() {
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                           <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>メンバー</div>
-                          <span style={{ fontSize: 14, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                          <span style={{ fontSize: 14, color: "#007aff", cursor: "pointer", fontWeight: 600 }}>
                             メンバーを見る &gt;
                           </span>
                         </div>
@@ -589,7 +589,7 @@ export default function AdminPage() {
                       <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 14, marginBottom: 14 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                           <div style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>主な仕様技術</div>
-                          <span style={{ fontSize: 14, color: "#4f46e5", cursor: "pointer", fontWeight: 600 }}>
+                          <span style={{ fontSize: 14, color: "#007aff", cursor: "pointer", fontWeight: 600 }}>
                             すべて見る &gt;
                           </span>
                         </div>
@@ -680,11 +680,11 @@ export default function AdminPage() {
                             onClick={() => setSelectedDailyMemberId(m.id)}
                             style={{
                               padding: "8px 14px 8px 20px", fontSize: 13,
-                              background: selectedDailyMemberId === m.id ? "#eef2ff" : "white",
-                              color: selectedDailyMemberId === m.id ? "#4f46e5" : "#374151",
+                              background: selectedDailyMemberId === m.id ? "#e8f2ff" : "white",
+                              color: selectedDailyMemberId === m.id ? "#007aff" : "#374151",
                               fontWeight: selectedDailyMemberId === m.id ? 700 : 400,
                               cursor: "pointer",
-                              borderLeft: selectedDailyMemberId === m.id ? "3px solid #4f46e5" : "3px solid transparent",
+                              borderLeft: selectedDailyMemberId === m.id ? "3px solid #007aff" : "3px solid transparent",
                               borderBottom: "1px solid #f9fafb",
                             }}
                           >
@@ -706,7 +706,7 @@ export default function AdminPage() {
                     {/* 日付クリック → カレンダー */}
                     <button
                       onClick={() => setShowCalendar((v) => !v)}
-                      style={{ fontSize: 14, fontWeight: 600, color: "#4f46e5", background: "none", border: "1.5px solid #c7d2fe", borderRadius: 6, padding: "2px 10px", cursor: "pointer" }}
+                      style={{ fontSize: 14, fontWeight: 600, color: "#007aff", background: "none", border: "1.5px solid #c7d2fe", borderRadius: 6, padding: "2px 10px", cursor: "pointer" }}
                     >
                       {selYear}年{selMonth}月{selDay}日
                     </button>
@@ -736,7 +736,7 @@ export default function AdminPage() {
                                 style={{
                                   textAlign: "center", fontSize: 12, padding: "4px 0",
                                   borderRadius: 6, border: "none", cursor: "pointer",
-                                  background: isSelected ? "#4f46e5" : "transparent",
+                                  background: isSelected ? "#007aff" : "transparent",
                                   color: isSelected ? "white" : isSun ? "#ef4444" : isSat ? "#3b82f6" : "#374151",
                                   fontWeight: isSelected ? 700 : hasData ? 600 : 400,
                                   opacity: hasData || isSelected ? 1 : 0.35,
@@ -745,7 +745,7 @@ export default function AdminPage() {
                               >
                                 {day}
                                 {hasData && !isSelected && (
-                                  <span style={{ position: "absolute", bottom: 1, left: "50%", transform: "translateX(-50%)", width: 4, height: 4, borderRadius: "50%", background: "#4f46e5", display: "block" }} />
+                                  <span style={{ position: "absolute", bottom: 1, left: "50%", transform: "translateX(-50%)", width: 4, height: 4, borderRadius: "50%", background: "#007aff", display: "block" }} />
                                 )}
                               </button>
                             );
@@ -914,8 +914,8 @@ export default function AdminPage() {
                           onClick={submitComment}
                           style={{
                             width: "100%", padding: "8px 0",
-                            background: commentInput.trim() ? "#4f46e5" : "white",
-                            border: `1.5px solid ${commentInput.trim() ? "#4f46e5" : "#d1d5db"}`,
+                            background: commentInput.trim() ? "#007aff" : "white",
+                            border: `1.5px solid ${commentInput.trim() ? "#007aff" : "#d1d5db"}`,
                             borderRadius: 8, fontSize: 13, fontWeight: 600,
                             cursor: "pointer",
                             color: commentInput.trim() ? "white" : "#374151",
@@ -965,7 +965,7 @@ export default function AdminPage() {
                         <span
                           onClick={() => openModal(m, "monthly")}
                           style={{
-                            fontSize: 14, fontWeight: 700, color: "#4f46e5",
+                            fontSize: 14, fontWeight: 700, color: "#007aff",
                             cursor: "pointer", userSelect: "none",
                             textDecoration: "underline", textDecorationStyle: "dotted",
                           }}
@@ -1135,8 +1135,8 @@ export default function AdminPage() {
                             <label key={m.id} style={{
                               display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
                               padding: "5px 8px", borderRadius: 6,
-                              background: checked ? "#eef2ff" : "#f9fafb",
-                              border: `1px solid ${checked ? "#a5b4fc" : "#e5e7eb"}`,
+                              background: checked ? "#e8f2ff" : "#f9fafb",
+                              border: `1px solid ${checked ? "#80b8ff" : "#e5e7eb"}`,
                               transition: "background 0.1s",
                             }}>
                               <input
@@ -1145,9 +1145,9 @@ export default function AdminPage() {
                                 onChange={() => setMTargetIds((prev) =>
                                   checked ? prev.filter((id) => id !== m.id) : [...prev, m.id]
                                 )}
-                                style={{ width: 14, height: 14, accentColor: "#4f46e5", cursor: "pointer" }}
+                                style={{ width: 14, height: 14, accentColor: "#007aff", cursor: "pointer" }}
                               />
-                              <span style={{ fontSize: 13, fontWeight: checked ? 600 : 400, color: checked ? "#4f46e5" : "#374151" }}>
+                              <span style={{ fontSize: 13, fontWeight: checked ? 600 : 400, color: checked ? "#007aff" : "#374151" }}>
                                 {m.name}
                               </span>
                               <span style={{ marginLeft: "auto", fontSize: 11, color: "#9ca3af" }}>{m.cohort}卒</span>
@@ -1269,8 +1269,8 @@ export default function AdminPage() {
                           <div key={m.id} className="card" style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
                             <div style={{
                               width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                              background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 14, fontWeight: 700, color: "#4f46e5",
+                              background: "#e8f2ff", display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 14, fontWeight: 700, color: "#007aff",
                             }}>
                               {m.name.charAt(0)}
                             </div>
@@ -1593,7 +1593,7 @@ export default function AdminPage() {
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 2 }}>稼働率</div>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#4f46e5" }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: "#007aff" }}>
                         {Math.round((totalMin / maxMin) * 100)}<span style={{ fontSize: 14, color: "#6b7280" }}>%</span>
                       </div>
                     </div>

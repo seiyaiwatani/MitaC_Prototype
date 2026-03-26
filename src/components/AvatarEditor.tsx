@@ -67,8 +67,8 @@ export function AvatarEditor({
   /* 共通の選択ボタンスタイル生成 */
   const itemBtn = (selected: boolean, color?: string) => ({
     width: 68, height: 68, borderRadius: 12,
-    border: `2px solid ${selected ? (color ?? "#4f46e5") : "#e5e7eb"}`,
-    background: selected ? (color ? color + "18" : "#eef2ff") : "#f9fafb",
+    border: `2px solid ${selected ? (color ?? "#007aff") : "#e5e7eb"}`,
+    background: selected ? (color ? color + "18" : "#e8f2ff") : "#f9fafb",
     display: "flex" as const, flexDirection: "column" as const,
     alignItems: "center" as const, justifyContent: "center" as const,
     cursor: "pointer" as const, gap: 3, padding: 4,
@@ -111,7 +111,7 @@ export function AvatarEditor({
           <div style={{ flex: "0 0 280px", display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{
               display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
-              background: "linear-gradient(135deg,#f0f4ff,#e0e7ff)", borderRadius: 14, padding: "28px 0 20px",
+              background: "linear-gradient(135deg,#b8c9e7,#e0e7ff)", borderRadius: 14, padding: "28px 0 20px",
               flex: 1, minHeight: 260,
             }}>
               <AvatarWithCostume
@@ -121,7 +121,7 @@ export function AvatarEditor({
                 size={200}
               />
               {(draftHead || draftBody) && (
-                <div style={{ marginTop: 8, fontSize: 14, color: "#4f46e5", fontWeight: 700 }}>
+                <div style={{ marginTop: 8, fontSize: 14, color: "#007aff", fontWeight: 700 }}>
                   ✨ 装備中
                 </div>
               )}
@@ -171,7 +171,7 @@ export function AvatarEditor({
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={opt.src} alt={opt.label} style={{ width: 38, height: 38, objectFit: "contain", imageRendering: "pixelated" }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#007aff" : "#9ca3af" }}>
                         {opt.label}
                       </span>
                     </button>
@@ -204,7 +204,7 @@ export function AvatarEditor({
                       ) : (
                         <span style={{ fontSize: 20, color: "#d1d5db" }}>—</span>
                       )}
-                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#007aff" : "#9ca3af" }}>
                         {opt.label}
                       </span>
                     </button>
@@ -237,7 +237,7 @@ export function AvatarEditor({
                       ) : (
                         <span style={{ fontSize: 20, color: "#d1d5db" }}>—</span>
                       )}
-                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#4f46e5" : "#9ca3af" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? "#007aff" : "#9ca3af" }}>
                         {opt.label}
                       </span>
                     </button>
@@ -272,7 +272,7 @@ export function AvatarEditor({
                       <span style={{ fontSize: eff ? 22 : 20, color: eff ? undefined : "#d1d5db" }}>
                         {eff ? eff.emoji : "—"}
                       </span>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? (eff?.color ?? "#4f46e5") : "#9ca3af", lineHeight: 1.2, textAlign: "center" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: selected ? (eff?.color ?? "#007aff") : "#9ca3af", lineHeight: 1.2, textAlign: "center" }}>
                         {opt.label}
                       </span>
                       {eff && (
@@ -292,7 +292,7 @@ export function AvatarEditor({
               style={{
                 width: "100%", padding: "10px 0",
                 borderRadius: 10, border: "none",
-                background: "#4f46e5", color: "white",
+                background: "#007aff", color: "white",
                 fontWeight: 700, fontSize: 14, cursor: "pointer",
                 letterSpacing: "0.05em", marginTop: 4,
               }}

@@ -350,7 +350,7 @@ function WorkResultModal({
           }}
         >
           {[
-            { label: "勤務時間", value: timeStr, icon: "⏱️", color: "#4f46e5" },
+            { label: "勤務時間", value: timeStr, icon: "⏱️", color: "#007aff" },
             {
               label: "完了RepoCa",
               value: `${completedCount} / ${totalTasks} 件`,
@@ -389,7 +389,7 @@ function WorkResultModal({
             padding: "13px",
             borderRadius: 12,
             border: "none",
-            background: "linear-gradient(90deg,#6366f1,#a855f7)",
+            background: "linear-gradient(90deg,#2d8aff,#a855f7)",
             color: "white",
             fontWeight: 700,
             fontSize: 14,
@@ -658,7 +658,7 @@ export default function Home() {
           style={{
             fontSize: 14,
             fontWeight: 700,
-            color: "#4f46e5",
+            color: "#007aff",
             flexShrink: 0,
             display: "flex",
             alignItems: "center",
@@ -671,8 +671,8 @@ export default function Home() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: "#4f46e5",
-              border: "1px solid #4f46e5",
+              color: "#007aff",
+              border: "1px solid #007aff",
               borderRadius: 4,
               padding: "1px 6px",
               lineHeight: 1.4,
@@ -745,7 +745,7 @@ export default function Home() {
               {/* バナー */}
               <div
                 style={{
-                  background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+                  background: "#007aff",
                   padding: "10px 16px",
                   color: "white",
                   display: "flex",
@@ -772,8 +772,8 @@ export default function Home() {
                 >
                   <div
                     style={{
-                      background: "#f59e0b",
-                      color: "#78350f",
+                      background: "#007aff",
+                      color: "white",
                       fontSize: 14,
                       fontWeight: 800,
                       padding: "3px 9px",
@@ -882,7 +882,7 @@ export default function Home() {
                           left: firstMilCenterX,
                           width: progressLineW,
                           height: 2,
-                          background: "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                          background: "#007aff",
                           zIndex: 1,
                         }}
                       />
@@ -957,12 +957,12 @@ export default function Home() {
                               height: 36,
                               borderRadius: "50%",
                               background: claimed
-                                ? "#4f46e5"
+                                ? "#007aff"
                                 : isCur
                                   ? "#e0e7ff"
                                   : "white",
                               border: isCur
-                                ? "2px solid #4f46e5"
+                                ? "2px solid #007aff"
                                 : claimed
                                   ? "none"
                                   : "2px solid #c4b5fd",
@@ -973,7 +973,7 @@ export default function Home() {
                               color: claimed
                                 ? "white"
                                 : isCur
-                                  ? "#4f46e5"
+                                  ? "#007aff"
                                   : "#9ca3af",
                               boxShadow: isCur
                                 ? "0 0 0 3px #e0e7ff"
@@ -991,7 +991,7 @@ export default function Home() {
                               marginTop: 3,
                               fontWeight: 700,
                               color: isCur
-                                ? "#4f46e5"
+                                ? "#007aff"
                                 : claimed
                                   ? "#9ca3af"
                                   : "#374151",
@@ -1070,7 +1070,7 @@ export default function Home() {
                     fontSize: 14,
                     fontWeight: 700,
                     cursor: "pointer",
-                    background: taskFilter === f ? "#4f46e5" : "#f3f4f6",
+                    background: taskFilter === f ? "#007aff" : "#f3f4f6",
                     color: taskFilter === f ? "white" : "#6b7280",
                   }}
                 >
@@ -1500,7 +1500,7 @@ export default function Home() {
                     gap: 3,
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "#4f46e5",
+                    color: "#007aff",
                   }}
                 >
                   <HiPencilAlt style={{ width: 11, height: 11 }} />
@@ -1752,7 +1752,7 @@ export default function Home() {
                       gap: 3,
                       fontSize: 14,
                       fontWeight: 700,
-                      color: "#4f46e5",
+                      color: "#007aff",
                     }}
                   >
                     <HiPencilAlt style={{ width: 11, height: 11 }} />
@@ -1910,8 +1910,8 @@ export default function Home() {
                     style={{
                       fontSize: 14,
                       fontWeight: 700,
-                      color: "#4f46e5",
-                      background: "#eef2ff",
+                      color: "#007aff",
+                      background: "#e8f2ff",
                       padding: "2px 16px",
                       borderRadius: 99,
                       cursor: "pointer",
@@ -1937,7 +1937,7 @@ export default function Home() {
                         cursor: "pointer",
                         fontSize: 13,
                         fontWeight: active ? 700 : 400,
-                        background: active ? "#4f46e5" : "#f3f4f6",
+                        background: active ? "#007aff" : "#f3f4f6",
                         color: active ? "white" : "#6b7280",
                         transition: "all 0.15s",
                       }}
@@ -2067,9 +2067,7 @@ export default function Home() {
                               width: `${pct}%`,
                               height: "100%",
                               borderRadius: 2,
-                              background: done
-                                ? "#10b981"
-                                : "linear-gradient(90deg,#4f46e5,#7c3aed)",
+                              background: done ? "#10b981" : "#007aff",
                               transition: "width 0.3s",
                             }}
                           />
@@ -2180,7 +2178,7 @@ export default function Home() {
             >
               <div
                 style={{
-                  background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+                  background: "#007aff",
                   padding: "16px 20px",
                   flexShrink: 0,
                   display: "flex",
@@ -2248,7 +2246,7 @@ export default function Home() {
                           height: 44,
                           borderRadius: "50%",
                           flexShrink: 0,
-                          background: claimed ? "#4f46e5" : "#ede9fe",
+                          background: claimed ? "#007aff" : "#ede9fe",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -2270,7 +2268,7 @@ export default function Home() {
                             style={{
                               fontSize: 14,
                               fontWeight: 700,
-                              color: "#4f46e5",
+                              color: "#007aff",
                             }}
                           >
                             Lv.{reward.level}
@@ -2452,7 +2450,7 @@ function TaskDetailModal({
         {/* ヘッダー */}
         <div
           style={{
-            background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+            background: "#007aff",
             padding: "14px 18px",
           }}
         >
@@ -2509,7 +2507,7 @@ function TaskDetailModal({
                         ? "#10b981"
                         : "#9ca3af"
                       : r.label === "獲得XP"
-                        ? "#4f46e5"
+                        ? "#007aff"
                         : "#1f2937",
                   fontWeight: r.label === "獲得XP" ? 700 : 500,
                 }}

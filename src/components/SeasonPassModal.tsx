@@ -60,7 +60,7 @@ export function SeasonPassModal({ onClose }: Props) {
     >
       <div
         style={{
-          background: "#f0f4ff",
+          background: "#b8c9e7",
           borderRadius: 18,
           width: "min(680px, 100%)",
           maxHeight: "85vh",
@@ -82,7 +82,7 @@ export function SeasonPassModal({ onClose }: Props) {
 
           {/* シーズンバナー */}
           <div style={{
-            background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+            background: "#007aff",
             borderRadius: 14, padding: "14px 18px", color: "white",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
@@ -126,7 +126,7 @@ export function SeasonPassModal({ onClose }: Props) {
               <div style={{ display: "flex", minWidth: `${totalTrackW + 28}px`, position: "relative", padding: "16px 14px 6px" }}>
                 <div style={{ position: "absolute", top: 36, left: firstMilCenterX, right: 14 + lastMilHalfW, height: 3, background: "#e5e7eb", zIndex: 0 }} />
                 {showProgress && (
-                  <div style={{ position: "absolute", top: 36, left: firstMilCenterX, width: progressW, height: 3, background: "linear-gradient(90deg,#4f46e5,#7c3aed)", zIndex: 1 }} />
+                  <div style={{ position: "absolute", top: 36, left: firstMilCenterX, width: progressW, height: 3, background: "#007aff", zIndex: 1 }} />
                 )}
                 {rewards.map((reward, idx) => {
                   const prevLevel  = idx === 0 ? 0 : rewards[idx - 1].level;
@@ -139,16 +139,16 @@ export function SeasonPassModal({ onClose }: Props) {
                     <div key={reward.level} style={{ width: MILESTONE_W, flexShrink: 0, marginLeft, display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 2 }}>
                       <div style={{
                         width: 40, height: 40, borderRadius: "50%",
-                        background: claimed ? "#4f46e5" : isCurrent ? "#e0e7ff" : "white",
-                        border: isCurrent ? "3px solid #4f46e5" : (claimed ? "none" : "2px solid #c4b5fd"),
+                        background: claimed ? "#007aff" : isCurrent ? "#e0e7ff" : "white",
+                        border: isCurrent ? "3px solid #007aff" : (claimed ? "none" : "2px solid #c4b5fd"),
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: claimed ? 16 : 18,
-                        color: claimed ? "white" : isCurrent ? "#4f46e5" : "#9ca3af",
+                        color: claimed ? "white" : isCurrent ? "#007aff" : "#9ca3af",
                         boxShadow: isCurrent ? "0 0 0 4px #e0e7ff" : (!claimed ? "0 0 0 3px #ede9fe" : "none"),
                       }}>
                         {reward.icon}
                       </div>
-                      <span style={{ fontSize: 14, marginTop: 4, fontWeight: 700, color: isCurrent ? "#4f46e5" : claimed ? "#9ca3af" : "#374151" }}>
+                      <span style={{ fontSize: 14, marginTop: 4, fontWeight: 700, color: isCurrent ? "#007aff" : claimed ? "#9ca3af" : "#374151" }}>
                         Lv.{reward.level}
                       </span>
                       {chip && (

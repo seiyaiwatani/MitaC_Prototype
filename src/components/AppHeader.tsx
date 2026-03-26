@@ -57,7 +57,7 @@ export default function AppHeader() {
         style={{
           width: "10%",
           minWidth: 80,
-          background: "#4f46e5",
+          background: "#007aff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -102,7 +102,7 @@ export default function AppHeader() {
             <HiExclamation style={{ width: 14, height: 14, color: "#4c1d95", flexShrink: 0 }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: "#4c1d95", whiteSpace: "nowrap" }}>残業報告が未提出です</span>
             <Link href="/report/overtime">
-              <button style={{ background: "#4f46e5", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+              <button style={{ background: "#007aff", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
                 残業報告する
               </button>
             </Link>
@@ -112,7 +112,7 @@ export default function AppHeader() {
             <HiExclamation style={{ width: 14, height: 14, color: "#9a3412", flexShrink: 0 }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: "#9a3412", whiteSpace: "nowrap" }}>終業報告が未提出です</span>
             <Link href="/report/end">
-              <button style={{ background: "#ea580c", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
+              <button style={{ background: "#007aff", color: "white", border: "none", borderRadius: 99, fontSize: 12, fontWeight: 700, padding: "2px 10px", cursor: "pointer" }}>
                 終業報告する
               </button>
             </Link>

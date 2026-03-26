@@ -35,7 +35,7 @@ export default function ReportIndex() {
 
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <HiClipboardList style={{ width: 18, height: 18, color: "#4f46e5" }} />
+        <HiClipboardList style={{ width: 18, height: 18, color: "#007aff" }} />
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>報告</span>
       </div>
 
@@ -239,7 +239,7 @@ export default function ReportIndex() {
               style={{ background: "white", borderRadius: 16, width: 320, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", padding: "16px 20px", display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <div style={{ background: "#007aff", padding: "16px 20px", display: "flex", alignItems: "flex-start", gap: 10 }}>
                 <div style={{ flex: 1 }}>
                   {proj && (
                     <span style={{ fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: proj.color, color: proj.textColor, display: "inline-block", marginBottom: 6 }}>
@@ -258,7 +258,7 @@ export default function ReportIndex() {
                     <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
                     <span style={{
                       color: r.label === "ステータス" ? (selectedRc.isCompleted ? "#10b981" : "#9ca3af") :
-                             r.label === "獲得XP"     ? "#4f46e5" : "#1f2937",
+                             r.label === "獲得XP"     ? "#007aff" : "#1f2937",
                       fontWeight: r.label === "獲得XP" ? 700 : 500,
                     }}>
                       {r.value}

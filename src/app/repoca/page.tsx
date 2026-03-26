@@ -9,7 +9,7 @@ import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
 const SCOPE_COLOR: Record<string, string> = {
-  フロント: "#4f46e5", バック: "#10b981", インフラ: "#f59e0b",
+  フロント: "#007aff", バック: "#10b981", インフラ: "#f59e0b",
   フルスタック: "#ef4444", その他: "#6b7280",
 };
 const TASK_ICON: Record<string, string> = { 開発: "💻", MTG: "🤝", その他: "📌", デイリースクラム: "🔄", 実装: "⚙️" };
@@ -168,7 +168,7 @@ export default function RepoCaList() {
     });
 
   const stats = [
-    { label: "作成済み", value: allRepoCas.length,                               Icon: HiCollection,  color: "#4f46e5" },
+    { label: "作成済み", value: allRepoCas.length,                               Icon: HiCollection,  color: "#007aff" },
     { label: "完了",     value: allRepoCas.filter((r) => r.isCompleted).length,  Icon: HiCheckCircle, color: "#10b981" },
     { label: "総XP",    value: `${allRepoCas.reduce((s, r) => s + r.xp, 0)}XP`, Icon: HiStar,        color: "#f59e0b" },
   ];
@@ -179,7 +179,7 @@ export default function RepoCaList() {
       <header style={{
         height: 48, flexShrink: 0,
         display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
-        background: "linear-gradient(90deg,#10b981,#059669)", color: "white",
+        background: "#007aff", color: "white",
       }}>
         <span style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 5 }}>
           <HiCollection style={{ width: 18, height: 18 }} /> RepoCa
@@ -217,8 +217,8 @@ export default function RepoCaList() {
               flex: 1, padding: "10px 0",
               border: "none", background: "none", cursor: "pointer",
               fontSize: 14, fontWeight: mainTab === tab ? 700 : 500,
-              color: mainTab === tab ? "#10b981" : "#6b7280",
-              borderBottom: `2px solid ${mainTab === tab ? "#10b981" : "transparent"}`,
+              color: mainTab === tab ? "#007aff" : "#6b7280",
+              borderBottom: `2px solid ${mainTab === tab ? "#007aff" : "transparent"}`,
               marginBottom: -2,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
             }}
@@ -257,12 +257,12 @@ export default function RepoCaList() {
                   onClick={() => setFilter(f.key)}
                   style={{
                     flex: 1, padding: "5px 2px", borderRadius: 20,
-                    border: filter === f.key ? "1.5px solid #10b981" : "1.5px solid #d1d5db",
+                    border: filter === f.key ? "1.5px solid #007aff" : "1.5px solid #d1d5db",
                     fontSize: 14, fontWeight: 600, cursor: "pointer",
-                    background: filter === f.key ? "#10b981" : "white",
+                    background: filter === f.key ? "#007aff" : "white",
                     color: filter === f.key ? "white" : "#6b7280",
                     boxShadow: filter === f.key
-                      ? "0 2px 6px rgba(16,185,129,0.35)"
+                      ? "0 2px 6px rgba(0,122,255,0.35)"
                       : "0 1px 3px rgba(0,0,0,0.08)",
                     transition: "all 0.15s",
                   }}
@@ -305,10 +305,10 @@ export default function RepoCaList() {
                 style={{
                   flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
                   gap: 6, padding: "9px 0", borderRadius: 10,
-                  background: "linear-gradient(135deg,#10b981,#059669)",
+                  background: "#007aff",
                   color: "white", fontWeight: 700, fontSize: 14,
                   textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(16,185,129,0.35)",
+                  boxShadow: "0 2px 8px rgba(0,122,255,0.35)",
                 }}
               >
                 <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> 新規作成
@@ -482,7 +482,7 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected }: {
         <p style={{ fontSize: 14, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
         <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
           <span className="chip chip-gray" style={{ fontSize: 14 }}>{rc.label}</span>
-          <span style={{ fontSize: 14, color: "#4f46e5", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
+          <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
         </div>
       </div>
     </div>
@@ -534,7 +534,7 @@ function ProjectsContent() {
                 padding: isSelected ? "13px 14px" : "11px 14px",
                 borderBottom: "1px solid #f3f4f6",
                 cursor: "pointer",
-                background: isSelected ? "#f0fdf4" : "white",
+                background: isSelected ? "#e8f2ff" : "white",
                 transition: "background 0.1s",
               }}
             >
@@ -599,7 +599,7 @@ function ProjectsContent() {
                     display: "flex", justifyContent: "space-between", alignItems: "center",
                     padding: "6px 10px",
                     borderBottom: i < detail.memberList.length - 1 ? "1px solid #f3f4f6" : "none",
-                    background: m.name.includes("自分") ? "#f0fdf4" : "white",
+                    background: m.name.includes("自分") ? "#e8f2ff" : "white",
                     fontSize: 14,
                   }}
                 >
@@ -609,7 +609,7 @@ function ProjectsContent() {
                     {m.name}
                   </span>
                   <span style={{
-                    color: m.name.includes("自分") ? "#10b981" : "#6b7280",
+                    color: m.name.includes("自分") ? "#007aff" : "#6b7280",
                     fontWeight: m.name.includes("自分") ? 700 : 400,
                     fontSize: 14,
                   }}>
@@ -685,7 +685,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
       >
         {/* ヘッダー */}
         <div style={{
-          background: "linear-gradient(135deg,#10b981,#059669)",
+          background: "#007aff",
           padding: "16px 20px",
           display: "flex", alignItems: "flex-start", gap: 10,
         }}>
@@ -730,7 +730,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
               <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
               <span style={{
                 color: r.label === "ステータス" ? (rc.isCompleted ? "#10b981" : "#9ca3af") :
-                       r.label === "獲得XP"     ? "#4f46e5" : "#1f2937",
+                       r.label === "獲得XP"     ? "#007aff" : "#1f2937",
                 fontWeight: r.label === "獲得XP" ? 700 : 500,
               }}>
                 {r.value}

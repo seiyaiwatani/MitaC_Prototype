@@ -73,7 +73,7 @@ export default function SeasonPassPage() {
   return (
     <div className="page-root">
       <div className="page-subheader">
-        <Link href="/" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>シーズンパス</span>
@@ -84,7 +84,7 @@ export default function SeasonPassPage() {
 
         {/* ─── シーズンバナー ─── */}
         <div style={{
-          background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+          background: "#007aff",
           borderRadius: 16, padding: "16px 20px", color: "white", flexShrink: 0,
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
@@ -94,7 +94,7 @@ export default function SeasonPassPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
               <div style={{
-                background: "#f59e0b", color: "#78350f",
+                background: "#007aff", color: "white",
                 fontSize: 14, fontWeight: 800,
                 padding: "5px 12px", borderRadius: 99, whiteSpace: "nowrap",
               }}>
@@ -165,7 +165,7 @@ export default function SeasonPassPage() {
                 <div style={{
                   position: "absolute", top: 40, left: firstMilestoneCenterX,
                   width: progressLineWidth, height: 3,
-                  background: "linear-gradient(90deg, #4f46e5, #7c3aed)",
+                  background: "#007aff",
                   zIndex: 1,
                 }} />
               )}
@@ -188,7 +188,7 @@ export default function SeasonPassPage() {
                   }}>
                     <div style={{
                       width: circleSize, height: circleSize, borderRadius: "50%",
-                      background: claimed ? "#4f46e5" : "white",
+                      background: claimed ? "#007aff" : "white",
                       border: claimed ? "none" : "2px solid #c4b5fd",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: claimed ? 16 : 18,
@@ -256,7 +256,7 @@ export default function SeasonPassPage() {
           >
             {/* ヘッダー */}
             <div style={{
-              background: "linear-gradient(135deg,#4f46e5,#7c3aed)",
+              background: "#007aff",
               padding: "16px 20px", flexShrink: 0,
               display: "flex", justifyContent: "space-between", alignItems: "center",
             }}>
@@ -290,7 +290,7 @@ export default function SeasonPassPage() {
                   }}>
                     <div style={{
                       width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
-                      background: claimed ? "#4f46e5" : "#ede9fe",
+                      background: claimed ? "#007aff" : "#ede9fe",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 22,
                     }}>
@@ -298,7 +298,7 @@ export default function SeasonPassPage() {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: "#4f46e5" }}>Lv.{reward.level}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: "#007aff" }}>Lv.{reward.level}</span>
                         {chip && (
                           <span style={{
                             fontSize: 14, fontWeight: 700, padding: "1px 6px", borderRadius: 4,

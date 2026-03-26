@@ -83,7 +83,7 @@ function NewRepoCaContent() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/repoca" style={{ color: "#10b981", textDecoration: "none", lineHeight: 1, display: "flex", alignItems: "center" }}>
+        <Link href="/repoca" style={{ color: "#007aff", textDecoration: "none", lineHeight: 1, display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>RepoCa作成</span>
@@ -171,7 +171,7 @@ function NewRepoCaContent() {
                 }}
                   style={{
                     padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
-                    background: tab === t ? "#4f46e5" : "#f3f4f6",
+                    background: tab === t ? "#007aff" : "#f3f4f6",
                     color: tab === t ? "white" : "#6b7280",
                   }}>
                   {t}
@@ -267,7 +267,7 @@ function NewRepoCaContent() {
             <div style={{ display: "flex", gap: 6 }}>
               <button
                 className="btn"
-                style={{ flex: 1, fontSize: 14, padding: "6px", background: "#10b981", color: "white" }}
+                style={{ flex: 1, fontSize: 14, padding: "6px", background: "#007aff", color: "white" }}
                 disabled={!isValid}
                 onClick={addAndReport}
               >
@@ -285,7 +285,7 @@ function NewRepoCaContent() {
         </Link>
         <button
           className="btn"
-          style={{ flex: 2, background: "linear-gradient(90deg,#10b981,#059669)", color: "white" }}
+          style={{ flex: 2, background: "#007aff", color: "white" }}
           onClick={submitAll}
           disabled={created.length === 0 && !draft.content.trim()}
         >

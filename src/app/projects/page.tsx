@@ -164,7 +164,7 @@ export default function ProjectsPage() {
                   background: isActive ? "white" : "transparent",
                   border: "none", borderBottom: "1px solid #e5e7eb",
                   cursor: "pointer", textAlign: "left",
-                  borderLeft: isActive ? "3px solid #4f46e5" : "3px solid transparent",
+                  borderLeft: isActive ? "3px solid #007aff" : "3px solid transparent",
                 }}
               >
                 <div style={{

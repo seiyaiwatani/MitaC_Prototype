@@ -93,7 +93,7 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
         <div>
           {badge.acquired && badge.exp !== undefined && (
             <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
-              EXP: <span style={{ fontWeight: 700, color: "#4f46e5" }}>
+              EXP: <span style={{ fontWeight: 700, color: "#007aff" }}>
                 {badge.exp.toLocaleString()}
               </span>
             </div>
@@ -199,7 +199,7 @@ export default function MyPage() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>バッジ一覧</span>
@@ -250,8 +250,8 @@ export default function MyPage() {
                       display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                       cursor: "pointer",
                       padding: 4, borderRadius: 10,
-                      background: isSelected ? "rgba(79,70,229,0.08)" : "transparent",
-                      border: `2px solid ${isSelected ? "#4f46e5" : "transparent"}`,
+                      background: isSelected ? "rgba(0,122,255,0.08)" : "transparent",
+                      border: `2px solid ${isSelected ? "#007aff" : "transparent"}`,
                       transition: "all 0.15s",
                     }}
                   >

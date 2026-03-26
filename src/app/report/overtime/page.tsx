@@ -52,7 +52,7 @@ export default function OvertimeReport() {
       )}
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/report" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/report" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>残業報告</span>
@@ -69,8 +69,8 @@ export default function OvertimeReport() {
               onClick={() => setHasOvertime(true)}
               style={{
                 padding: "16px 8px", borderRadius: 10,
-                border: `2px solid ${hasOvertime === true ? "#4f46e5" : "#e5e7eb"}`,
-                background: hasOvertime === true ? "#4f46e5" : "#f9fafb",
+                border: `2px solid ${hasOvertime === true ? "#007aff" : "#e5e7eb"}`,
+                background: hasOvertime === true ? "#007aff" : "#f9fafb",
                 color: hasOvertime === true ? "white" : "#374151",
                 cursor: "pointer", fontWeight: 700, fontSize: 14,
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
@@ -83,8 +83,8 @@ export default function OvertimeReport() {
               onClick={() => setHasOvertime(false)}
               style={{
                 padding: "16px 8px", borderRadius: 10,
-                border: `2px solid ${hasOvertime === false ? "#10b981" : "#e5e7eb"}`,
-                background: hasOvertime === false ? "#10b981" : "#f9fafb",
+                border: `2px solid ${hasOvertime === false ? "#007aff" : "#e5e7eb"}`,
+                background: hasOvertime === false ? "#007aff" : "#f9fafb",
                 color: hasOvertime === false ? "white" : "#374151",
                 cursor: "pointer", fontWeight: 700, fontSize: 14,
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
@@ -145,7 +145,7 @@ export default function OvertimeReport() {
         </Link>
         <button
           className="btn"
-          style={{ flex: 2, color: "white", background: hasOvertime === null ? "#d1d5db" : "linear-gradient(90deg,#1e1b4b,#312e81)" }}
+          style={{ flex: 2, color: "white", background: hasOvertime === null ? "#d1d5db" : "#007aff" }}
           disabled={hasOvertime === null}
           onClick={() => setShowConfirmModal(true)}
         >
@@ -163,7 +163,7 @@ export default function OvertimeReport() {
             style={{ background: "white", borderRadius: 16, width: 340, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#1e1b4b,#312e81)", padding: "16px 20px" }}>
+            <div style={{ background: "#007aff", padding: "16px 20px" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>残業報告の確認</p>
             </div>
             <div style={{ padding: "14px 20px" }}>
@@ -182,7 +182,7 @@ export default function OvertimeReport() {
             </div>
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
-              <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#1e1b4b,#312e81)", color: "white" }}
+              <button className="btn" style={{ flex: 2, background: "#007aff", color: "white" }}
                 onClick={() => { setShowConfirmModal(false); handleSubmit(); }}>
                 送信
               </button>

@@ -7,7 +7,7 @@ import { HiArrowLeft } from "react-icons/hi";
 import type { Mission } from "@/types";
 
 const TABS: { key: Mission["type"]; label: string; accent: string; desc: string }[] = [
-  { key: "daily",     label: "デイリー",     accent: "#4f46e5", desc: "毎日リセット" },
+  { key: "daily",     label: "デイリー",     accent: "#007aff", desc: "毎日リセット" },
   { key: "monthly",   label: "今月",         accent: "#10b981", desc: "月末リセット" },
   { key: "unlimited", label: "無期限",       accent: "#f59e0b", desc: "達成まで継続" },
 ];
@@ -25,7 +25,7 @@ export default function MissionsPage() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>ミッション</span>

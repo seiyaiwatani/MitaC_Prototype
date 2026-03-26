@@ -36,8 +36,8 @@ export function RoleSelectModal() {
             onClick={() => setRole("user")}
             style={{
               padding: "14px 0", borderRadius: 12,
-              border: "2px solid #4f46e5",
-              background: "#4f46e5", color: "white",
+              border: "2px solid #007aff",
+              background: "#007aff", color: "white",
               fontSize: 15, fontWeight: 700, cursor: "pointer",
             }}
           >

@@ -33,7 +33,7 @@ function AccountTab() {
                 value={v}
                 checked={startNotif === v}
                 onChange={() => setStartNotif(v)}
-                style={{ accentColor: "#4f46e5" }}
+                style={{ accentColor: "#007aff" }}
               />
               <span>{v === "on" ? "ON" : "OFF"}</span>
             </label>
@@ -47,7 +47,7 @@ function AccountTab() {
                 value={v}
                 checked={overtimeNotif === v}
                 onChange={() => setOvertimeNotif(v)}
-                style={{ accentColor: "#4f46e5" }}
+                style={{ accentColor: "#007aff" }}
               />
               <span>{v === "on" ? "ON" : "OFF"}</span>
             </label>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/" style={{ color: "#1e1b4b", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>設定</span>

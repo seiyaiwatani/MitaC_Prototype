@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f0f4ff;
+  --bg: #b8c9e7;
   --fg: #1a1a2e;
-  --primary: #4f46e5;
-  --primary-dark: #3730a3;
+  --primary: #007aff;
+  --primary-dark: #005ea5;
   --accent: #f59e0b;
   --success: #10b981;
   --danger: #ef4444;
@@ -118,7 +118,7 @@ body {
 .repoca-card:hover  { border-color: var(--primary); }
 .repoca-card.selected {
   border-color: var(--primary);
-  background: #eef2ff;
+  background: #e8f2ff;
 }
 .repoca-card.slot-empty {
   border-style: dashed;
@@ -158,7 +158,7 @@ body {
   overflow-wrap: break-word;
 }
 .repoca-mini:hover { border-color: var(--primary); }
-.repoca-mini.selected { border-color: var(--primary); background: #eef2ff; }
+.repoca-mini.selected { border-color: var(--primary); background: #e8f2ff; }
 
 /* ボタン */
 .btn {
@@ -189,7 +189,7 @@ body {
 }
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), #7c3aed);
+  background: var(--primary);
   border-radius: 3px;
   transition: width 0.4s ease;
 }
@@ -207,7 +207,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.chip-indigo { background: #eef2ff; color: #4f46e5; }
+.chip-indigo { background: #e8f2ff; color: #007aff; }
 .chip-green  { background: #dcfce7; color: #166534; }
 .chip-yellow { background: #fef9c3; color: #92400e; }
 .chip-red    { background: #fee2e2; color: #991b1b; }
@@ -240,7 +240,7 @@ body {
   border-radius: 6px;
   margin: 3px 2px;
 }
-.nav-item.active, .nav-item:hover { color: var(--primary); background: #eef2ff; }
+.nav-item.active, .nav-item:hover { color: var(--primary); background: #e8f2ff; }
 
 /* 分割レイアウト（報告画面等）: 左広め右サイドバー */
 .report-layout {
@@ -394,7 +394,7 @@ body {
   overflow: hidden;
 }
 .admin-sidebar {
-  background: #1e1b4b;
+  background: #003878;
   padding: 12px 8px;
   overflow-y: auto;
 }
@@ -409,7 +409,7 @@ body {
   gap: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  color: #a5b4fc;
+  color: #80b8ff;
   font-size: var(--fs-md);
   font-weight: 500;
   cursor: pointer;

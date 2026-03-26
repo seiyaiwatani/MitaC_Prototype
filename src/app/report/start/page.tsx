@@ -162,7 +162,7 @@ export default function StartReport() {
       )}
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/report" style={{ color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/report" style={{ color: "#007aff", textDecoration: "none", display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>始業報告</span>
@@ -371,7 +371,7 @@ export default function StartReport() {
             style={{ background: "white", borderRadius: 16, width: "60vw", maxWidth: "60vw", maxHeight: "60vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", padding: "16px 20px" }}>
+            <div style={{ background: "#007aff", padding: "16px 20px" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>始業報告の確認</p>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
@@ -384,7 +384,7 @@ export default function StartReport() {
                 if (!rc) return null;
                 return (
                   <div key={id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f3f4f6" }}>
-                    <HiCheck style={{ width: 14, height: 14, color: "#4f46e5", flexShrink: 0 }} />
+                    <HiCheck style={{ width: 14, height: 14, color: "#007aff", flexShrink: 0 }} />
                     <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
                     <span style={{ fontSize: 14, color: "#374151" }}>{truncate(rc.content)}</span>
                   </div>
@@ -412,7 +412,7 @@ export default function StartReport() {
             style={{ background: "white", borderRadius: 16, width: 400, maxWidth: "92vw", maxHeight: "85vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#1e1b4b,#312e81)", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ background: "linear-gradient(135deg,#003878,#004d96)", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               {/* タブ */}
               <div style={{ display: "flex", gap: 4 }}>
@@ -424,7 +424,7 @@ export default function StartReport() {
                     style={{
                       padding: "3px 10px", borderRadius: 99, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
                       background: editTab === t ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.2)",
-                      color: editTab === t ? "#1e1b4b" : "rgba(255,255,255,0.8)",
+                      color: editTab === t ? "#003878" : "rgba(255,255,255,0.8)",
                     }}>
                     {t}
                   </button>
@@ -491,7 +491,7 @@ export default function StartReport() {
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
               <button
                 className="btn"
-                style={{ flex: 2, background: "linear-gradient(90deg,#1e1b4b,#312e81)", color: "white" }}
+                style={{ flex: 2, background: "linear-gradient(90deg,#003878,#004d96)", color: "white" }}
                 disabled={!editContent.trim()}
                 onClick={saveEdit}
               >
