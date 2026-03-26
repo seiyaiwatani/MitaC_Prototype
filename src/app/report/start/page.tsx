@@ -412,7 +412,7 @@ export default function StartReport() {
             style={{ background: "white", borderRadius: 16, width: 400, maxWidth: "92vw", maxHeight: "85vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#003878,#004d96)", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ background: "#007aff", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               {/* タブ */}
               <div style={{ display: "flex", gap: 4 }}>
@@ -490,8 +490,8 @@ export default function StartReport() {
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
               <button
-                className="btn"
-                style={{ flex: 2, background: "linear-gradient(90deg,#003878,#004d96)", color: "white" }}
+                className="btn btn-primary"
+                style={{ flex: 2 }}
                 disabled={!editContent.trim()}
                 onClick={saveEdit}
               >

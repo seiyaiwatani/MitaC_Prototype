@@ -506,7 +506,7 @@ export default function EndReport() {
             style={{ background: "white", borderRadius: 16, width: 360, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#2d8aff,#007aff)", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ background: "#007aff", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               <button onClick={() => setEditingRepoCa(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
             </div>
@@ -564,7 +564,7 @@ export default function EndReport() {
             </div>
             <div style={{ padding: "10px 18px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
-              <button className="btn" style={{ flex: 2, background: "linear-gradient(90deg,#2d8aff,#007aff)", color: "white" }}
+              <button className="btn btn-primary" style={{ flex: 2 }}
                 disabled={!editDraft.projectId || !editDraft.label || !editDraft.content?.trim() || (editTab === "開発" && !editDraft.implScope)}
                 onClick={saveEdit}>
                 保存

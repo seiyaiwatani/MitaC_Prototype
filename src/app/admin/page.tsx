@@ -470,7 +470,7 @@ export default function AdminPage() {
       <header style={{
         height: 48, flexShrink: 0,
         display: "flex", alignItems: "center", padding: "0 16px", gap: 8,
-        background: "#003878", color: "white",
+        background: "#007aff", color: "white",
       }}>
         <HiCog style={{ width: 18, height: 18, opacity: 0.9 }} />
         <span style={{ fontWeight: 800, fontSize: 15 }}>管理者</span>
@@ -706,7 +706,7 @@ export default function AdminPage() {
                     {/* 日付クリック → カレンダー */}
                     <button
                       onClick={() => setShowCalendar((v) => !v)}
-                      style={{ fontSize: 14, fontWeight: 600, color: "#007aff", background: "none", border: "1.5px solid #c7d2fe", borderRadius: 6, padding: "2px 10px", cursor: "pointer" }}
+                      style={{ fontSize: 14, fontWeight: 600, color: "#007aff", background: "none", border: "1.5px solid #b8c9e7", borderRadius: 6, padding: "2px 10px", cursor: "pointer" }}
                     >
                       {selYear}年{selMonth}月{selDay}日
                     </button>
@@ -754,7 +754,7 @@ export default function AdminPage() {
                       </div>
                     )}
 
-                    <span style={{ marginLeft: "auto", fontSize: 14, color: "#374151" }}>
+                    <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: "#1f2937" }}>
                       勤務時間　：　{Math.floor(totalMin / 60)}時間
                     </span>
                   </div>
@@ -844,7 +844,7 @@ export default function AdminPage() {
                           <span style={{
                             position: "absolute", top: "50%", right: 0,
                             transform: "translateY(-50%)",
-                            fontSize: 9, color: "#c4b5fd", whiteSpace: "nowrap", lineHeight: 1,
+                            fontSize: 9, color: "#9ca3af", whiteSpace: "nowrap", lineHeight: 1,
                           }}>4h</span>
                         </div>
                         {/* 右: バー本体 */}
@@ -878,7 +878,7 @@ export default function AdminPage() {
                             return (
                               <div key={pt.projectId} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                 {Icon && <Icon style={{ width: 18, height: 18, color, flexShrink: 0 }} />}
-                                <span style={{ flex: 1, fontSize: 13, color: "#374151" }}>{proj?.name ?? "PJ名"}</span>
+                                <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#1f2937" }}>{proj?.name ?? "PJ名"}</span>
                                 <span style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{(pt.min / 60).toFixed(2)}時間</span>
                               </div>
                             );
@@ -1085,7 +1085,7 @@ export default function AdminPage() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
                               <span style={{ fontSize: 14, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
                               {m.passExpReward ? (
-                                <span style={{ fontSize: 14, color: "#1e40af", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
+                                <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
                               ) : null}
                             </div>
                           </div>
@@ -1113,14 +1113,14 @@ export default function AdminPage() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
-                        <label style={{ fontSize: 14, fontWeight: 600, color: "#ea580c", display: "block", marginBottom: 3 }}>アカウントXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>アカウントXP</label>
                         <input type="number" min={0} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
-                          style={{ width: "100%", border: "1px solid #fed7aa", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
+                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 14, fontWeight: 600, color: "#1e40af", display: "block", marginBottom: 3 }}>パスEXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>パスEXP</label>
                         <input type="number" min={0} value={mPassExp} onChange={(e) => setMPassExp(Number(e.target.value))}
-                          style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
+                          style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                     </div>
                     <div>
@@ -1136,7 +1136,7 @@ export default function AdminPage() {
                               display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
                               padding: "5px 8px", borderRadius: 6,
                               background: checked ? "#e8f2ff" : "#f9fafb",
-                              border: `1px solid ${checked ? "#80b8ff" : "#e5e7eb"}`,
+                              border: `1px solid ${checked ? "#007aff" : "#e5e7eb"}`,
                               transition: "background 0.1s",
                             }}>
                               <input
@@ -1345,9 +1345,10 @@ export default function AdminPage() {
 
           {/* ── プロジェクト作成 ── */}
           {view === "new-project" && (
-            <>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 24 }}>
+              <div style={{ width: "100%", maxWidth: 480 }}>
               <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 12 }}>プロジェクト作成</div>
-              <div className="card" style={{ padding: 16, maxWidth: 480 }}>
+              <div className="card" style={{ padding: 16 }}>
 
                 {/* プロジェクト名 */}
                 <div style={{ marginBottom: 14 }}>
@@ -1431,7 +1432,8 @@ export default function AdminPage() {
                   </button>
                 </div>
               </div>
-            </>
+              </div>
+            </div>
           )}
 
         </div>

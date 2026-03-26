@@ -27,6 +27,7 @@ export default function AppHeader() {
   const { clearRole } = useRole();
   const router = useRouter();
   const [showEditor, setShowEditor] = useState(false);
+  const isWorking = typeof window !== "undefined" && localStorage.getItem("mitac_attendance") === "working";
 
   const handleLogout = () => {
     resetDailyReports();
@@ -221,6 +222,7 @@ export default function AppHeader() {
         initialHeadCostume={headCostume}
         initialBodyCostume={bodyCostume}
         initialOmamori={omamori}
+        disableOmamori={isWorking}
         onConfirm={(av, head, body, om) => { setAvatarKey(av); setHeadCostume(head); setBodyCostume(body); setOmamori(om); }}
         onClose={() => setShowEditor(false)}
       />

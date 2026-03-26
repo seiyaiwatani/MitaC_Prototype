@@ -136,7 +136,7 @@ export const repoCas: RepoCa[] = [
     taskType: "MTG",
     label: "その他",
     implScope: "その他",
-    content: "チームリーダーtom1",
+    content: "チームリーダー1on1",
     isFavorite: true,
     isCompleted: false,
     duration: 0,

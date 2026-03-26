@@ -2067,7 +2067,7 @@ export default function Home() {
                               width: `${pct}%`,
                               height: "100%",
                               borderRadius: 2,
-                              background: done ? "#10b981" : "#007aff",
+                              background: "#007aff",
                               transition: "width 0.3s",
                             }}
                           />

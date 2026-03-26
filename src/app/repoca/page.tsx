@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { RepoCa } from "@/types";
+import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck } from "react-icons/hi";
+import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck, HiPencilAlt, HiOutlineStar } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
@@ -103,7 +103,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 export default function RepoCaList() {
-  const { allRepoCas, removeRepoCa } = useRepoCa();
+  const { allRepoCas, removeRepoCa, updateRepoCa } = useRepoCa();
   const { projects } = useProjects();
   const [mainTab, setMainTab]           = useState<"repoca" | "projects">("repoca");
   const [filter, setFilter]             = useState<"all" | "favorite" | "incomplete" | "completed">("all");
@@ -113,6 +113,28 @@ export default function RepoCaList() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds]     = useState<Set<string>>(new Set());
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+  const [editingRc, setEditingRc]         = useState<RepoCa | null>(null);
+  const [editTab, setEditTab]             = useState<"開発" | "その他">("開発");
+  const [editDraft, setEditDraft]         = useState<{ projectId: string; label: TaskLabel; implScope: ImplScope; content: string; isFavorite: boolean }>({
+    projectId: "", label: "新規作成", implScope: "フロント", content: "", isFavorite: false,
+  });
+
+  const openEdit = (rc: RepoCa) => {
+    setEditingRc(rc);
+    const tab = (rc.taskType === "開発" || rc.taskType === "実装") ? "開発" : "その他";
+    setEditTab(tab);
+    setEditDraft({ projectId: rc.projectId, label: rc.label as TaskLabel, implScope: rc.implScope as ImplScope, content: rc.content, isFavorite: rc.isFavorite });
+  };
+
+  const saveEdit = () => {
+    if (!editingRc) return;
+    updateRepoCa(editingRc.id, {
+      ...editDraft,
+      taskType: editTab === "開発" ? "開発" : "その他",
+      xp: editTab === "開発" ? 50 : 20,
+    });
+    setEditingRc(null);
+  };
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -371,6 +393,8 @@ export default function RepoCaList() {
                     onClick={() => selectionMode ? toggleSelect(rc.id) : setSelectedRc(rc)}
                     selectionMode={selectionMode}
                     isSelected={selectedIds.has(rc.id)}
+                    onEdit={() => openEdit(rc)}
+                    onDelete={() => removeRepoCa(rc.id)}
                   />
                 ))
               )}
@@ -388,6 +412,90 @@ export default function RepoCaList() {
           onClose={() => setSelectedRc(null)}
           onDelete={(id) => { removeRepoCa(id); setSelectedRc(null); }}
         />
+      )}
+
+      {/* 編集モーダル */}
+      {editingRc && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setEditingRc(null)}
+        >
+          <div
+            style={{ background: "white", borderRadius: 16, width: 360, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ background: "#007aff", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["開発", "その他"] as const).map((t) => (
+                  <button key={t} onClick={() => {
+                    setEditTab(t);
+                    setEditDraft((d) => ({ ...d, label: t === "開発" ? "新規作成" : "調査" }));
+                  }}
+                    style={{
+                      padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      background: editTab === t ? "white" : "rgba(255,255,255,0.25)",
+                      color: editTab === t ? "#007aff" : "white",
+                    }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setEditingRc(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
+            </div>
+            <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
+              <button onClick={() => setEditDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
+                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 14, padding: 0 }}>
+                <span style={{ fontSize: 16, color: editDraft.isFavorite ? "#f59e0b" : "#d1d5db" }}>{editDraft.isFavorite ? "★" : "☆"}</span>
+                <span style={{ color: editDraft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り</span>
+              </button>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>PJ名 <span style={{ color: "#ef4444" }}>*</span></label>
+                <select value={editDraft.projectId} onChange={(e) => setEditDraft((d) => ({ ...d, projectId: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                  {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>ラベル <span style={{ color: "#ef4444" }}>*</span></label>
+                <select value={editDraft.label} onChange={(e) => setEditDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                  {(editTab === "開発"
+                    ? ["新規作成", "修正", "調査", "レビュー", "その他"]
+                    : ["調査", "MTG", "外部対応", "その他"]
+                  ).map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
+              {editTab === "開発" && (
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>実装範囲 <span style={{ color: "#ef4444" }}>*</span></label>
+                  <select value={editDraft.implScope} onChange={(e) => setEditDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
+                    {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>タスク内容 <span style={{ color: "#ef4444" }}>*</span></label>
+                <textarea
+                  value={editDraft.content}
+                  onChange={(e) => setEditDraft((d) => ({ ...d, content: e.target.value }))}
+                  rows={3}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, resize: "none", color: "#374151", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+            <div style={{ padding: "10px 18px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRc(null)}>キャンセル</button>
+              <button className="btn btn-primary" style={{ flex: 2 }}
+                disabled={!editDraft.projectId || !editDraft.content.trim() || (editTab === "開発" && !editDraft.implScope)}
+                onClick={saveEdit}>
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* 一括削除確認モーダル */}
@@ -436,11 +544,13 @@ export default function RepoCaList() {
 }
 
 // ---- RepoCaカード ----
-function RepoCaCard({ rc, onClick, selectionMode, isSelected }: {
+function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }: {
   rc: RepoCa;
   onClick: () => void;
   selectionMode?: boolean;
   isSelected?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
@@ -485,6 +595,22 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected }: {
           <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700, marginLeft: "auto" }}>+{rc.xp} XP</span>
         </div>
       </div>
+      {!selectionMode && (
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}
+          >
+            <HiPencilAlt style={{ width: 14, height: 14 }} />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}
+          >
+            <HiTrash style={{ width: 14, height: 14 }} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
