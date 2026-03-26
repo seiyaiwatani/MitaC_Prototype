@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { currentUser, badges, missions } from "@/lib/mock-data";
+import { badges } from "@/lib/mock-data";
 import { BADGE_ICON_MAP, TIER_STYLE, TIER_ORDER } from "@/lib/badge-config";
 import type { Badge } from "@/types";
-import { HiArrowLeft, HiChevronRight } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 
 const bronzeCount = badges.filter((b) => b.tier === "bronze").length;
 const silverCount = badges.filter((b) => b.tier === "silver").length;
@@ -140,9 +140,14 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
             </div>
           )}
           {isMaxTier && badge.exp !== undefined && (
-            <div style={{ fontSize: 14, color: "#10b981", marginTop: 4 }}>
-              ゴールド取得後も経験値を蓄積中
-            </div>
+            <>
+              <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, overflow: "hidden", marginTop: 6 }}>
+                <div style={{ width: "100%", height: "100%", borderRadius: 3, background: "#f5c842" }} />
+              </div>
+              <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 3 }}>
+                累計 {badge.exp.toLocaleString()} EXP
+              </div>
+            </>
           )}
         </div>
 
@@ -188,7 +193,6 @@ function BadgeDetailPanel({ badge }: { badge: Badge }) {
 
 export default function MyPage() {
   const [selectedBadge, setSelectedBadge] = useState<Badge>(badges[0]);
-  const missionDone = missions.filter((m) => m.completed).length;
   const acquiredCount = badges.filter((b) => b.acquired).length;
 
   return (
@@ -217,7 +221,7 @@ export default function MyPage() {
       {/* 2カラムボディ */}
       <div style={{
         flex: 1, overflow: "hidden",
-        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0,
+        display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.5fr)", gap: 0,
       }}>
 
         {/* ===== 左: バッジグリッド ===== */}
@@ -279,51 +283,6 @@ export default function MyPage() {
             </div>
           </div>
 
-          {/* ミッションリンク */}
-          <Link href="/mypage/missions" style={{ textDecoration: "none" }}>
-            <div className="card" style={{
-              padding: "12px 14px",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              marginBottom: 10, cursor: "pointer",
-            }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", marginBottom: 2 }}>ミッション</div>
-                <div style={{ fontSize: 14, color: "#6b7280" }}>達成 {missionDone}/{missions.length} 件</div>
-              </div>
-              <HiChevronRight style={{ width: 18, height: 18, color: "#9ca3af" }} />
-            </div>
-          </Link>
-
-          {/* ステータス */}
-          <div className="card" style={{ padding: 12 }}>
-            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8, color: "#1a1a2e" }}>ステータス</div>
-            <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 3 }}>
-                  <span>Lv.{currentUser.level} → Lv.{currentUser.level + 1}</span>
-                  <span>{currentUser.xp} / {currentUser.xpToNext} XP</span>
-                </div>
-                <div className="xp-bar">
-                  <div
-                    className="xp-bar-fill"
-                    style={{ width: `${Math.round((currentUser.xp / currentUser.xpToNext) * 100)}%` }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
-                {[
-                  { v: currentUser.level,    label: "Lv",   color: "#4f46e5" },
-                  { v: acquiredCount,        label: "バッジ", color: "#10b981" },
-                  { v: currentUser.currency, label: "コイン", color: "#f59e0b" },
-                ].map(({ v, label, color }) => (
-                  <div key={label} style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 16, fontWeight: 800, color }}>{v.toLocaleString()}</div>
-                    <div style={{ fontSize: 14, color: "#6b7280" }}>{label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* ===== 右: バッジ詳細パネル ===== */}

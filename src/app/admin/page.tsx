@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRole } from "@/contexts/RoleContext";
 import {
   HiFolder, HiChartBar, HiCalendar, HiPlus, HiCog, HiX, HiFlag, HiCheck,
-  HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer, HiBell, HiPencil, HiTrash,
+  HiGlobeAlt, HiDeviceMobile, HiShoppingCart, HiDesktopComputer, HiBell, HiPencil, HiTrash, HiUserGroup,
 } from "react-icons/hi";
 import { useMission } from "@/contexts/MissionContext";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -28,11 +28,12 @@ import { CSS } from "@dnd-kit/utilities";
 import { Mission } from "@/types";
 
 /* ── 型定義 ── */
-type DailyTask = { name: string; min: number };
-type DailySeg  = { projectId: string; min: number; tasks: DailyTask[] };
+type DailyTask   = { name: string; min: number };
+type DailySeg    = { projectId: string; min: number; tasks: DailyTask[] };
+type TeamMember  = { id: string; name: string; reported: boolean; cohort: number };
 
 /* ── モックデータ ── */
-const TEAM_MEMBERS = [
+const INITIAL_TEAM_MEMBERS: TeamMember[] = [
   { id: "m1", name: "田中 太郎", reported: true,  cohort: 24 },
   { id: "m2", name: "鈴木 花子", reported: true,  cohort: 24 },
   { id: "m3", name: "佐藤 健",   reported: false, cohort: 24 },
@@ -252,24 +253,15 @@ const MONTHLY_WORK: Record<string, Record<string, number>> = {
   m5: { p1: 2880, p2: 2880, p3: 1440 },
 };
 
-const UNUSED_REPOCA: Record<string, { id: string; name: string; projectId: string; date: string }[]> = {
-  m1: [
-    { id: "u1", name: "Context作成",  projectId: "p1", date: "2026/2/3 18:37" },
-    { id: "u2", name: "レビュー修正", projectId: "p3", date: "2026/2/3 18:37" },
-  ],
-  m2: [
-    { id: "u3", name: "テスト作成", projectId: "p1", date: "2026/2/4 10:12" },
-  ],
-  m3: [], m4: [], m5: [],
-};
 
-type View = "projects" | "daily" | "monthly" | "new-project" | "missions" | "news";
+type View = "projects" | "daily" | "monthly" | "new-project" | "missions" | "news" | "members";
 
 const NAV_ITEMS: { key: View; label: string; Icon: React.ComponentType<{ style?: React.CSSProperties }> }[] = [
   { key: "projects",    label: "プロジェクト一覧", Icon: HiFolder },
   { key: "daily",       label: "工数管理/日",      Icon: HiChartBar },
   { key: "monthly",     label: "工数管理/月",      Icon: HiCalendar },
   { key: "new-project", label: "プロジェクト作成", Icon: HiPlus },
+  { key: "members",     label: "メンバー管理",     Icon: HiUserGroup },
   { key: "missions",    label: "ミッション管理",   Icon: HiFlag },
   { key: "news",        label: "ニュース管理",     Icon: HiBell },
 ];
@@ -284,7 +276,7 @@ type TooltipState = {
 } | null;
 
 type ModalState = {
-  member: typeof TEAM_MEMBERS[number];
+  member: TeamMember;
   mode: "daily" | "monthly";
 } | null;
 
@@ -386,13 +378,18 @@ export default function AdminPage() {
   ];
   const { missions, toggleMission, addMission } = useMission();
 
+  // チームメンバー管理
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(INITIAL_TEAM_MEMBERS);
+  const [newMemberName, setNewMemberName]   = useState("");
+  const [newMemberCohort, setNewMemberCohort] = useState(25);
+
   // ミッション作成フォーム
   const [mTitle, setMTitle]       = useState("");
   const [mDesc, setMDesc]         = useState("");
-  const [mType, setMType]         = useState<Mission["type"]>("daily");
   const [mReward, setMReward]     = useState(30);
   const [mPassExp, setMPassExp]   = useState(20);
   const [mGoal, setMGoal]         = useState(1);
+  const [mTargetIds, setMTargetIds] = useState<string[]>([]);
 
   const { projects, addProject } = useProjects();
   const { newsList, addNews, updateNews, deleteNews, reorderNews } = useNews();
@@ -461,7 +458,7 @@ export default function AdminPage() {
     setCommentInput("");
   };
 
-  const openModal = (member: typeof TEAM_MEMBERS[number], mode: "daily" | "monthly") =>
+  const openModal = (member: TeamMember, mode: "daily" | "monthly") =>
     setModal({ member, mode });
   const closeModal = () => setModal(null);
 
@@ -627,15 +624,14 @@ export default function AdminPage() {
 
           {/* ── 工数管理/日 ── */}
           {view === "daily" && (() => {
-            const selMember   = TEAM_MEMBERS.find((m) => m.id === selectedDailyMemberId) ?? TEAM_MEMBERS[0];
+            const selMember   = teamMembers.find((m) => m.id === selectedDailyMemberId) ?? teamMembers[0];
             const dayData     = DAILY_WORK_BY_DATE[selectedDate] ?? {};
             const segs        = dayData[selMember.id] ?? [];
             const tasks       = segs.flatMap((seg) => seg.tasks.map((t) => ({ ...t, projectId: seg.projectId })));
             const totalMin    = tasks.reduce((s, t) => s + t.min, 0);
             const maxMin      = 480;
             const projTotals  = segs.map((seg) => ({ projectId: seg.projectId, min: seg.min }));
-            const unusedList  = UNUSED_REPOCA[selMember.id] ?? [];
-            const cohorts     = Array.from(new Set(TEAM_MEMBERS.map((m) => m.cohort))).sort();
+            const cohorts     = Array.from(new Set(teamMembers.map((m) => m.cohort))).sort();
             const BAR_H       = 360;
 
             // カレンダー (2026年3月)
@@ -650,7 +646,7 @@ export default function AdminPage() {
             while (calCells.length % 7 !== 0) calCells.push(null);
 
             return (
-              <div style={{ display: "flex", height: "100%", margin: "-16px", overflow: "hidden" }}>
+              <div style={{ display: "flex", height: "100%", margin: "-12px", overflow: "hidden" }}>
 
                 {/* 左: チームメンバーリスト */}
                 <div style={{ width: 192, flexShrink: 0, borderRight: "1px solid #e5e7eb", overflowY: "auto", background: "white" }}>
@@ -665,7 +661,7 @@ export default function AdminPage() {
 
                   {/* コホート別 */}
                   {teamExpanded && cohorts.map((cohort) => {
-                    const members    = TEAM_MEMBERS.filter((m) => m.cohort === cohort);
+                    const members    = teamMembers.filter((m) => m.cohort === cohort);
                     const isExpanded = expandedCohorts.includes(cohort);
                     return (
                       <div key={cohort}>
@@ -785,26 +781,34 @@ export default function AdminPage() {
                                 <span>{proj.name}</span>
                               </div>
                               {seg.tasks.map((task, i) => {
-                                const cardH = Math.max(Math.round((task.min / maxMin) * BAR_H), 52);
+                                const isZero = task.min === 0;
                                 return (
                                   <div key={i} className="card" style={{
                                     padding: "8px 10px",
-                                    height: cardH,
+                                    height: 72,
+                                    position: "relative",
                                     display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                     marginBottom: 4,
                                     flexShrink: 0,
+                                    borderColor: isZero ? "#fca5a5" : undefined,
                                   }}>
-                                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                                      <span style={{ fontSize: 11, fontWeight: 700, background: proj.color, color: proj.textColor, borderRadius: 4, padding: "1px 6px" }}>
-                                        {(task.min / 60).toFixed(2)}h
-                                      </span>
+                                    <span style={{
+                                      position: "absolute", top: 6, right: 8,
+                                      fontSize: 11, fontWeight: 700, background: isZero ? "#fee2e2" : proj.color, color: isZero ? "#ef4444" : proj.textColor, borderRadius: 4, padding: "1px 6px",
+                                    }}>
+                                      {isZero ? "0分" : `${(task.min / 60).toFixed(2)}h`}
+                                    </span>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: isZero ? "#ef4444" : "#1f2937", width: "100%", padding: "0 4px" }}>
+                                      {task.name}
                                     </div>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>{task.name}</div>
-                                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "right" }}>
+                                    <span style={{
+                                      position: "absolute", bottom: 6, right: 8,
+                                      fontSize: 10, color: "#9ca3af",
+                                    }}>
                                       {selYear}/{selMonth}/{selDay}
-                                    </div>
+                                    </span>
                                   </div>
                                 );
                               })}
@@ -814,8 +818,37 @@ export default function AdminPage() {
                       </div>
 
                       {/* バー + 時間軸 */}
-                      <div style={{ width: 28, flexShrink: 0, display: "flex", flexDirection: "column", position: "relative" }}>
-                        <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb" }}>
+                      <div style={{ width: 60, flexShrink: 0, display: "flex", gap: 3 }}>
+                        {/* 左: 時間ラベル列 */}
+                        <div style={{ flex: 1, position: "relative" }}>
+                          {/* セグメント境界ラベル */}
+                          {(() => {
+                            let cum = 0;
+                            return segs.slice(0, -1).map((seg, i) => {
+                              cum += seg.min;
+                              const pct = (cum / maxMin) * 100;
+                              if (pct > 95) return null;
+                              return (
+                                <span key={i} style={{
+                                  position: "absolute", top: `${pct}%`, right: 0,
+                                  transform: "translateY(-50%)",
+                                  fontSize: 9, color: "#9ca3af", whiteSpace: "nowrap", lineHeight: 1,
+                                  background: "white", padding: "0 1px",
+                                }}>
+                                  {(cum / 60).toFixed(1)}h
+                                </span>
+                              );
+                            });
+                          })()}
+                          {/* 4h固定ライン */}
+                          <span style={{
+                            position: "absolute", top: "50%", right: 0,
+                            transform: "translateY(-50%)",
+                            fontSize: 9, color: "#c4b5fd", whiteSpace: "nowrap", lineHeight: 1,
+                          }}>4h</span>
+                        </div>
+                        {/* 右: バー本体 */}
+                        <div style={{ width: 20, flexShrink: 0, display: "flex", flexDirection: "column", borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb" }}>
                           {segs.map((seg) => {
                             const proj = projects.find((p) => p.id === seg.projectId);
                             return (
@@ -828,39 +861,12 @@ export default function AdminPage() {
                           })}
                           <div style={{ flex: 1, background: "#f3f4f6" }} />
                         </div>
-                        <span style={{ position: "absolute", left: 32, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>— 4h</span>
-                        <span style={{ position: "absolute", left: 32, bottom: 0, fontSize: 10, color: "#9ca3af", whiteSpace: "nowrap" }}>8h</span>
                       </div>
 
                     </div>
 
                     {/* 右パネル */}
-                    <div style={{ width: 256, flexShrink: 0, display: "flex", flexDirection: "column", gap: 10, overflow: "auto" }}>
-
-                      {/* 未使用RepoCa */}
-                      <div style={{ background: "white", borderRadius: 8, border: "1px solid #e5e7eb", padding: "10px 12px" }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 8 }}>未使用RepoCa</div>
-                        {unusedList.length === 0 ? (
-                          <div style={{ fontSize: 12, color: "#9ca3af", textAlign: "center", padding: "8px 0" }}>なし</div>
-                        ) : (
-                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                            {unusedList.map((r) => {
-                              const Icon  = PROJ_ICONS[r.projectId];
-                              const color     = PROJ_COLOR[r.projectId] ?? "#f3f4f6";
-                              const textColor = PROJ_TEXT_COLOR[r.projectId] ?? "#6b7280";
-                              return (
-                                <div key={r.id} style={{ border: `1px solid ${textColor}44`, borderLeft: `3px solid ${textColor}`, borderRadius: 8, padding: "8px 10px", background: color }}>
-                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1f2937" }}>{r.name}</span>
-                                    {Icon && <Icon style={{ width: 14, height: 14, color: textColor }} />}
-                                  </div>
-                                  <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{r.date}</div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
+                    <div style={{ width: 256, flexShrink: 0, display: "flex", flexDirection: "column", gap: 10, overflowY: "auto", overflowX: "hidden" }}>
 
                       {/* プロジェクト工数サマリー */}
                       <div style={{ background: "white", borderRadius: 8, border: "1px solid #e5e7eb", padding: "10px 12px" }}>
@@ -945,7 +951,7 @@ export default function AdminPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {TEAM_MEMBERS.map((m) => {
+                {teamMembers.map((m) => {
                   const pjMap    = MONTHLY_WORK[m.id] ?? {};
                   const segs     = Object.entries(pjMap).map(([pid, min]) => ({ projectId: pid, min }));
                   const totalMin = segs.reduce((s, x) => s + x.min, 0);
@@ -1092,7 +1098,7 @@ export default function AdminPage() {
 
               {/* 右: ミッション作成フォーム */}
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>ミッション追加</div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>無期限ミッション追加</div>
                 <div className="card" style={{ padding: 14 }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     <div>
@@ -1104,15 +1110,6 @@ export default function AdminPage() {
                       <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>説明</label>
                       <input value={mDesc} onChange={(e) => setMDesc(e.target.value)} placeholder="ミッションの詳細説明"
                         style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>種別</label>
-                      <select value={mType} onChange={(e) => setMType(e.target.value as Mission["type"])}
-                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 6px", fontSize: 14 }}>
-                        <option value="daily">日次</option>
-                        <option value="monthly">月次</option>
-                        <option value="unlimited">無期限</option>
-                      </select>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
@@ -1126,14 +1123,47 @@ export default function AdminPage() {
                           style={{ width: "100%", border: "1px solid #bfdbfe", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                     </div>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 5 }}>
+                        対象者
+                        <span style={{ fontSize: 12, fontWeight: 400, color: "#9ca3af", marginLeft: 6 }}>（未選択で全員対象）</span>
+                      </label>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {teamMembers.map((m) => {
+                          const checked = mTargetIds.includes(m.id);
+                          return (
+                            <label key={m.id} style={{
+                              display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+                              padding: "5px 8px", borderRadius: 6,
+                              background: checked ? "#eef2ff" : "#f9fafb",
+                              border: `1px solid ${checked ? "#a5b4fc" : "#e5e7eb"}`,
+                              transition: "background 0.1s",
+                            }}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => setMTargetIds((prev) =>
+                                  checked ? prev.filter((id) => id !== m.id) : [...prev, m.id]
+                                )}
+                                style={{ width: 14, height: 14, accentColor: "#4f46e5", cursor: "pointer" }}
+                              />
+                              <span style={{ fontSize: 13, fontWeight: checked ? 600 : 400, color: checked ? "#4f46e5" : "#374151" }}>
+                                {m.name}
+                              </span>
+                              <span style={{ marginLeft: "auto", fontSize: 11, color: "#9ca3af" }}>{m.cohort}卒</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                   <button
                     className="btn btn-primary"
                     style={{ width: "100%", marginTop: 12, fontSize: 14 }}
                     disabled={!mTitle.trim()}
                     onClick={() => {
-                      addMission({ type: mType, title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false });
-                      setMTitle(""); setMDesc(""); setMType("daily"); setMReward(30); setMPassExp(20); setMGoal(1);
+                      addMission({ type: "unlimited", title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false });
+                      setMTitle(""); setMDesc(""); setMReward(30); setMPassExp(20); setMGoal(1); setMTargetIds([]);
                     }}
                   >
                     追加
@@ -1222,6 +1252,97 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* ── メンバー管理 ── */}
+          {view === "members" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
+
+              {/* 左: メンバー一覧 */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>チームメンバー一覧</div>
+                {(() => {
+                  const cohorts = Array.from(new Set(teamMembers.map((m) => m.cohort))).sort();
+                  return cohorts.map((cohort) => (
+                    <div key={cohort} style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#6b7280", marginBottom: 6 }}>{cohort}卒</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                        {teamMembers.filter((m) => m.cohort === cohort).map((m) => (
+                          <div key={m.id} className="card" style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+                            <div style={{
+                              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                              background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 14, fontWeight: 700, color: "#4f46e5",
+                            }}>
+                              {m.name.charAt(0)}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>{m.name}</div>
+                              <div style={{ fontSize: 12, color: "#9ca3af" }}>{m.cohort}卒</div>
+                            </div>
+                            <div style={{
+                              fontSize: 12, fontWeight: 600, padding: "2px 8px", borderRadius: 99,
+                              background: m.reported ? "#dcfce7" : "#fee2e2",
+                              color: m.reported ? "#166534" : "#991b1b",
+                            }}>
+                              {m.reported ? "報告済み" : "未報告"}
+                            </div>
+                            <button
+                              onClick={() => setTeamMembers((prev) => prev.filter((x) => x.id !== m.id))}
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#ef4444" }}
+                              title="削除"
+                            >
+                              <HiTrash style={{ width: 15, height: 15 }} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* 右: メンバー追加フォーム */}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>メンバー追加</div>
+                <div className="card" style={{ padding: 14 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>氏名</label>
+                      <input
+                        value={newMemberName}
+                        onChange={(e) => setNewMemberName(e.target.value)}
+                        placeholder="例: 山田 太郎"
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 3 }}>卒業年度</label>
+                      <input
+                        type="number"
+                        min={20}
+                        max={30}
+                        value={newMemberCohort}
+                        onChange={(e) => setNewMemberCohort(Number(e.target.value))}
+                        style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    style={{ width: "100%", marginTop: 12, fontSize: 14 }}
+                    disabled={!newMemberName.trim()}
+                    onClick={() => {
+                      const id = `m${Date.now()}`;
+                      setTeamMembers((prev) => [...prev, { id, name: newMemberName.trim(), reported: false, cohort: newMemberCohort }]);
+                      setNewMemberName("");
+                    }}
+                  >
+                    追加
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ── プロジェクト作成 ── */}
           {view === "new-project" && (
             <>
@@ -1281,7 +1402,7 @@ export default function AdminPage() {
                 <div style={{ marginBottom: 18 }}>
                   <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 6 }}>メンバー配属</label>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {TEAM_MEMBERS.map((m) => {
+                    {teamMembers.map((m) => {
                       const checked = projMembers.includes(m.id);
                       return (
                         <label key={m.id} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "6px 10px", borderRadius: 8, background: checked ? projColor : "#f9fafb", border: `1px solid ${checked ? projTextColor + "44" : "#e5e7eb"}`, transition: "background 0.1s" }}>

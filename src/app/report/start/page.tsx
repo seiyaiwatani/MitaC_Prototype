@@ -442,18 +442,6 @@ export default function StartReport() {
                 />
               </div>
 
-              {/* 種別 */}
-              <div>
-                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>種別</label>
-                <select
-                  value={editTaskType}
-                  onChange={(e) => setEditTaskType(e.target.value as TaskType)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
-                >
-                  {TASK_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-
               {/* ラベル */}
               <div>
                 <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>ラベル</label>

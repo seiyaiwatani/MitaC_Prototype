@@ -17,7 +17,7 @@ export const projects: Project[] = [
   { id: "p2",     name: "コーポレートサイトリニューアル", teamId: "t1", color: "#e9d5ff", textColor: "#581c87", icon: "🏢" },
   { id: "p3",     name: "モバイルアプリ開発",             teamId: "t2", color: "#bfdbfe", textColor: "#1e3a8a", icon: "📱" },
   { id: "p4",     name: "データ基盤構築",                 teamId: "t1", color: "#fde68a", textColor: "#78350f", icon: "🗄️" },
-  { id: "p_other", name: "その他",                        teamId: "t1", color: "#f3f4f6", textColor: "#6b7280", icon: "📌" },
+  { id: "p_other", name: "その他",                        teamId: "t1", color: "#fed7aa", textColor: "#7c2d12", icon: "📌" },
 ];
 
 export const repoCas: RepoCa[] = [
@@ -151,7 +151,7 @@ export const todaySelectedIds: string[] = ["rc1", "rc2", "rc3", "rc4", "rc5"];
 export const badges: Badge[] = [
   {
     id: "b1", name: "Next", description: "Next.jsを使用したPJに参加",
-    icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold", exp: 14500,
+    icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold", exp: 87300,
     tierHistory: [
       { tier: "bronze", date: "2025-08-10", note: "ITS-xLPでNext.jsを初採用" },
       { tier: "silver", date: "2025-11-05", note: "Next.jsプロジェクト5件を完了" },

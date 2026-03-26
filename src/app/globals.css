@@ -400,6 +400,7 @@ body {
 }
 .admin-content {
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px;
 }
 .admin-nav-item {

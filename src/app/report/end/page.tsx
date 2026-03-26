@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
+import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiCheck, HiTrash, HiPencilAlt } from "react-icons/hi";
 import { fmtDuration, DURATION_OPTIONS } from "@/lib/utils";
 import { useRepoCa } from "@/contexts/RepoCaContext";
@@ -49,7 +49,7 @@ function shortDur(min: number): string {
 }
 
 export default function EndReport() {
-  const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, updateRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
+  const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, toggleFavorite, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, updateRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
 
@@ -273,7 +273,15 @@ export default function EndReport() {
                                 始
                               </span>
                             )}
-                            <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateRepoCa(rc.id, { isFavorite: !rc.isFavorite });
+                                toggleFavorite(rc.id);
+                                setSelectedRepoCas((prev) => prev.map((r) => r.id === rc.id ? { ...r, isFavorite: !r.isFavorite } : r));
+                              }}
+                              style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: 0, color: rc.isFavorite ? "#f59e0b" : "#e5e7eb" }}
+                            >
                               ★
                             </button>
                           </div>
@@ -347,12 +355,9 @@ export default function EndReport() {
                 <div style={{ flexShrink: 0, position: "relative", minWidth: 28 }}>
                   {(() => {
                     let cum = 0;
-                    let lastPct = -20;
                     return pjTotals.slice(0, -1).map(({ pjId, totalMin: tMin }) => {
                       cum += tMin;
                       const pct = (cum / totalMin) * 100;
-                      if (pct < 8 || pct > 92 || pct - lastPct < 18) return null;
-                      lastPct = pct;
                       return (
                         <span key={pjId} style={{
                           position: "absolute",
@@ -483,7 +488,8 @@ export default function EndReport() {
         </Link>
         <button
           className="btn"
-          style={{ flex: 2, background: "linear-gradient(90deg,#f59e0b,#d97706)", color: "white" }}
+          disabled={totalMin === 0}
+          style={{ flex: 2, background: totalMin === 0 ? "#d1d5db" : "linear-gradient(90deg,#f59e0b,#d97706)", color: totalMin === 0 ? "#9ca3af" : "white", cursor: totalMin === 0 ? "not-allowed" : "pointer" }}
           onClick={() => setShowConfirmModal(true)}
         >
           提出
@@ -505,15 +511,12 @@ export default function EndReport() {
               <button onClick={() => setEditingRepoCa(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
-              {/* タスク種別タブ */}
-              <div style={{ display: "flex", gap: 4 }}>
-                {(["開発", "その他"] as const).map((t) => (
-                  <button key={t} onClick={() => { setEditTab(t); setEditDraft((d) => ({ ...d, taskType: t === "開発" ? "開発" as TaskType : "その他" as TaskType })); }}
-                    style={{ padding: "3px 14px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", background: editTab === t ? "#4f46e5" : "#f3f4f6", color: editTab === t ? "white" : "#6b7280" }}>
-                    {t}
-                  </button>
-                ))}
-              </div>
+              {/* お気に入り */}
+              <button onClick={() => setEditDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
+                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 14, padding: 0 }}>
+                <span style={{ fontSize: 16, color: editDraft.isFavorite ? "#f59e0b" : "#d1d5db" }}>{editDraft.isFavorite ? "★" : "☆"}</span>
+                <span style={{ color: editDraft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り</span>
+              </button>
               {/* PJ名 */}
               <div>
                 <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>PJ名 <span style={{ color: "#ef4444" }}>*</span></label>
@@ -555,12 +558,6 @@ export default function EndReport() {
                 />
                 <div style={{ textAlign: "right", fontSize: 12, color: "#9ca3af" }}>{(editDraft.content ?? "").length}文字</div>
               </div>
-              {/* お気に入り */}
-              <button onClick={() => setEditDraft((d) => ({ ...d, isFavorite: !d.isFavorite }))}
-                style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 14, padding: 0 }}>
-                <span style={{ fontSize: 16, color: editDraft.isFavorite ? "#f59e0b" : "#d1d5db" }}>{editDraft.isFavorite ? "★" : "☆"}</span>
-                <span style={{ color: editDraft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り</span>
-              </button>
             </div>
             <div style={{ padding: "10px 18px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setEditingRepoCa(null)}>キャンセル</button>
