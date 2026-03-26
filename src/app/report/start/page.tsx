@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { RepoCa, TaskType, TaskLabel, ImplScope } from "@/types";
+import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { HiArrowLeft, HiCheck, HiX, HiStar, HiOutlineStar, HiPencil, HiTrash } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
@@ -32,8 +32,6 @@ function clearStartDraft() {
   sessionStorage.removeItem(START_DRAFT_KEY);
 }
 
-const TASK_TYPES: TaskType[] = ["開発", "実装", "MTG", "デイリースクラム", "その他"];
-const TASK_LABELS: TaskLabel[] = ["新規作成", "修正", "調査", "レビュー", "その他"];
 const IMPL_SCOPES: ImplScope[] = ["フロント", "バック", "インフラ", "フルスタック", "その他"];
 
 // page.tsx と同じ変換ロジックで出勤済みか判定
@@ -88,7 +86,7 @@ export default function StartReport() {
 
   // 編集フォーム用の一時state
   const [editContent, setEditContent] = useState("");
-  const [editTaskType, setEditTaskType] = useState<TaskType>("開発");
+  const [editTab, setEditTab] = useState<"開発" | "その他">("開発");
   const [editLabel, setEditLabel] = useState<TaskLabel>("新規作成");
   const [editImplScope, setEditImplScope] = useState<ImplScope>("フロント");
   const [editProjectId, setEditProjectId] = useState("");
@@ -96,7 +94,8 @@ export default function StartReport() {
   const openEditModal = (rc: RepoCa) => {
     setEditingRepoCa(rc);
     setEditContent(rc.content);
-    setEditTaskType(rc.taskType);
+    const tab = (rc.taskType === "開発" || rc.taskType === "実装") ? "開発" : "その他";
+    setEditTab(tab);
     setEditLabel(rc.label);
     setEditImplScope(rc.implScope);
     setEditProjectId(rc.projectId);
@@ -106,7 +105,7 @@ export default function StartReport() {
     if (!editingRepoCa) return;
     updateRepoCa(editingRepoCa.id, {
       content: editContent,
-      taskType: editTaskType,
+      taskType: editTab === "開発" ? "開発" : "その他",
       label: editLabel,
       implScope: editImplScope,
       projectId: editProjectId,
@@ -413,8 +412,24 @@ export default function StartReport() {
             style={{ background: "white", borderRadius: 16, width: 400, maxWidth: "92vw", maxHeight: "85vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ background: "linear-gradient(135deg,#1e1b4b,#312e81)", padding: "16px 20px" }}>
+            <div style={{ background: "linear-gradient(135deg,#1e1b4b,#312e81)", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
+              {/* タブ */}
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["開発", "その他"] as const).map((t) => (
+                  <button key={t} onClick={() => {
+                    setEditTab(t);
+                    setEditLabel(t === "開発" ? "新規作成" : "調査");
+                  }}
+                    style={{
+                      padding: "3px 10px", borderRadius: 99, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      background: editTab === t ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.2)",
+                      color: editTab === t ? "#1e1b4b" : "rgba(255,255,255,0.8)",
+                    }}>
+                    {t}
+                  </button>
+                ))}
+              </div>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
               {/* プロジェクト */}
@@ -431,17 +446,6 @@ export default function StartReport() {
                 </select>
               </div>
 
-              {/* 内容 */}
-              <div>
-                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>内容</label>
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  rows={2}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
-                />
-              </div>
-
               {/* ラベル */}
               <div>
                 <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>ラベル</label>
@@ -450,20 +454,37 @@ export default function StartReport() {
                   onChange={(e) => setEditLabel(e.target.value as TaskLabel)}
                   style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
                 >
-                  {TASK_LABELS.map((l) => <option key={l} value={l}>{l}</option>)}
+                  {(editTab === "開発"
+                    ? ["新規作成", "修正", "調査", "レビュー", "その他"]
+                    : ["調査", "MTG", "外部対応", "その他"]
+                  ).map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
 
-              {/* 実装範囲 */}
+              {/* 実装範囲（開発タブのみ） */}
+              {editTab === "開発" && (
+                <div>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>実装範囲</label>
+                  <select
+                    value={editImplScope}
+                    onChange={(e) => setEditImplScope(e.target.value as ImplScope)}
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
+                  >
+                    {IMPL_SCOPES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {/* 内容 */}
               <div>
-                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>実装範囲</label>
-                <select
-                  value={editImplScope}
-                  onChange={(e) => setEditImplScope(e.target.value as ImplScope)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
-                >
-                  {IMPL_SCOPES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>タスク内容</label>
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  rows={3}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
+                />
+                <div style={{ textAlign: "right", fontSize: 12, color: "#9ca3af" }}>{editContent.length}文字</div>
               </div>
             </div>
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>

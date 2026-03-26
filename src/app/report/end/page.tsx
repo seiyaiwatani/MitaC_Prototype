@@ -530,7 +530,10 @@ export default function EndReport() {
                 <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>ラベル <span style={{ color: "#ef4444" }}>*</span></label>
                 <select value={editDraft.label ?? ""} onChange={(e) => setEditDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
                   style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "5px 8px", fontSize: 14, color: "#374151" }}>
-                  {(["新規作成", "修正", "調査", "レビュー", "MTG", "外部対応", "その他"] as TaskLabel[]).map((l) => (
+                  {(editTab === "開発"
+                    ? ["新規作成", "修正", "調査", "レビュー", "その他"]
+                    : ["調査", "MTG", "外部対応", "その他"]
+                  ).map((l) => (
                     <option key={l} value={l}>{l}</option>
                   ))}
                 </select>

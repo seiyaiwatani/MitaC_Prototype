@@ -2135,6 +2135,7 @@ export default function Home() {
           initialHeadCostume={headCostume}
           initialBodyCostume={bodyCostume}
           initialOmamori={omamori}
+          disableOmamori={attendance === "working"}
           onConfirm={(a, h, b, o) => {
             setAvatarKey(a);
             setHeadCostume(h);
@@ -2418,7 +2419,6 @@ function TaskDetailModal({
 }) {
   const rows = [
     { label: "プロジェクト", value: proj?.name ?? "—" },
-    { label: "タスク種別", value: rc.taskType },
     { label: "ラベル", value: rc.label },
     { label: "実装スコープ", value: rc.implScope },
     { label: "工数", value: rc.duration > 0 ? `${rc.duration}分` : "未記入" },

@@ -161,7 +161,14 @@ function NewRepoCaContent() {
             {/* 開発/その他タブ */}
             <div style={{ display: "flex", gap: 2 }}>
               {(["開発", "その他"] as Tab[]).map((t) => (
-                <button key={t} onClick={() => { setTab(t); setDraft((d) => ({ ...d, taskType: t === "開発" ? "開発" : "その他" })); }}
+                <button key={t} onClick={() => {
+                  setTab(t);
+                  setDraft((d) => ({
+                    ...d,
+                    taskType: t === "開発" ? "開発" : "その他",
+                    label: t === "開発" ? "新規作成" : "調査",
+                  }));
+                }}
                   style={{
                     padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
                     background: tab === t ? "#4f46e5" : "#f3f4f6",
@@ -217,7 +224,10 @@ function NewRepoCaContent() {
               </label>
               <select value={draft.label} onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
-                {(["新規作成", "修正", "調査", "レビュー", "MTG", "外部対応", "その他"] as TaskLabel[]).map((l) => (
+                {(tab === "開発"
+                  ? ["新規作成", "修正", "調査", "レビュー", "その他"]
+                  : ["調査", "MTG", "外部対応", "その他"]
+                ).map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}
               </select>

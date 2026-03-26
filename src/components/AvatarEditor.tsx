@@ -35,6 +35,7 @@ interface Props {
   initialOmamori: OmamorType;
   onConfirm: (avatar: string, head: HeadCostume, body: BodyCostume, omamori: OmamorType) => void;
   onClose: () => void;
+  disableOmamori?: boolean;
 }
 
 export function AvatarEditor({
@@ -44,6 +45,7 @@ export function AvatarEditor({
   initialOmamori,
   onConfirm,
   onClose,
+  disableOmamori = false,
 }: Props) {
   const [draftAvatar, setDraftAvatar]   = useState(initialAvatar);
   const [draftHead, setDraftHead]       = useState<HeadCostume>(initialHeadCostume);
@@ -245,11 +247,16 @@ export function AvatarEditor({
             </div>
 
             {/* おまもり */}
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6, letterSpacing: "0.05em" }}>
+            <div style={{ position: "relative" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", marginBottom: 6, letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: 6 }}>
                 おまもり
+                {disableOmamori && (
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#ef4444", background: "#fee2e2", padding: "1px 6px", borderRadius: 99 }}>
+                    出勤中は変更不可
+                  </span>
+                )}
               </div>
-              <div style={{ display: "flex", gap: 6 }}>
+              <div style={{ display: "flex", gap: 6, opacity: disableOmamori ? 0.4 : 1, pointerEvents: disableOmamori ? "none" : "auto" }}>
                 {OMAMORI_OPTIONS.map((opt) => {
                   const selected = draftOmamori === opt.key;
                   const eff = opt.key ? OMAMORI_EFFECTS[opt.key] : null;
