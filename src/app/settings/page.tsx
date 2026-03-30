@@ -16,12 +16,12 @@ function AccountTab() {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {/* アカウント情報 */}
       <div style={{
-        background: "#e5e7eb", borderRadius: 8, height: 44,
+        background: "white", borderRadius: 8, height: 44,
       }} />
 
       {/* 通知設定 */}
       <div style={{
-        background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
+        background: "white", borderRadius: 8, padding: "14px 16px",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 14, color: "#374151" }}>
           <span>始業通知</span>
@@ -57,7 +57,7 @@ function AccountTab() {
 
       {/* ご意見フォーム */}
       <div style={{
-        background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
+        background: "white", borderRadius: 8, padding: "14px 16px",
         display: "flex", flexDirection: "column", gap: 8,
       }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#374151" }}>ご意見フォーム</div>
@@ -68,7 +68,7 @@ function AccountTab() {
 
       {/* クレジット */}
       <div style={{
-        background: "#e5e7eb", borderRadius: 8, padding: "14px 16px",
+        background: "white", borderRadius: 8, padding: "14px 16px",
         display: "flex", flexDirection: "column", gap: 8,
       }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#374151" }}>クレジット</div>
@@ -86,7 +86,7 @@ function FlexTab() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
+      <div style={{ background: "white", borderRadius: 8, padding: "14px 16px" }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 12 }}>
           フレックスタイム設定
         </div>
@@ -117,7 +117,7 @@ function FlexTab() {
 
 function TextTab({ title, content }: { title: string; content: string }) {
   return (
-    <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
+    <div style={{ background: "white", borderRadius: 8, padding: "14px 16px" }}>
       <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 8 }}>{title}</div>
       <div style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.8 }}>{content}</div>
     </div>
@@ -132,7 +132,7 @@ function OtherTab() {
 function ExternalTab() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ background: "#e5e7eb", borderRadius: 8, padding: "14px 16px" }}>
+      <div style={{ background: "white", borderRadius: 8, padding: "14px 16px" }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 8 }}>外部連携</div>
         <div style={{ fontSize: 14, color: "#6b7280" }}>
           テキストテキストテキストテキストテキストテキスト

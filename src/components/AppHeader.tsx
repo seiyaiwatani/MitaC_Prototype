@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiExclamation, HiLogout } from "react-icons/hi";
+import { HiExclamation, HiLogout, HiCog } from "react-icons/hi";
 import { currentUser } from "@/lib/mock-data";
 import { useAvatar } from "@/contexts/AvatarContext";
 import { useSeasonPass } from "@/contexts/SeasonPassContext";
@@ -24,7 +24,7 @@ export default function AppHeader() {
   const { avatarKey, headCostume, bodyCostume, omamori, setAvatarKey, setHeadCostume, setBodyCostume, setOmamori } = useAvatar();
   const { passLevel, passExp, passExpToNext } = useSeasonPass();
   const { hasStartReported, hasOvertimeReported, hasEndReported, showEndOfWork, resetDailyReports } = useRepoCa();
-  const { clearRole } = useRole();
+  const { role, clearRole } = useRole();
   const router = useRouter();
   const [showEditor, setShowEditor] = useState(false);
   const isWorking = typeof window !== "undefined" && localStorage.getItem("mitac_attendance") === "working";
@@ -71,6 +71,21 @@ export default function AppHeader() {
           <span style={{ color: "#facc15" }}>=C</span>
         </span>
       </Link>
+
+      {/* 管理者バッジ */}
+      {role === "admin" && (
+        <Link href="/admin" style={{ textDecoration: "none", flexShrink: 0, marginLeft: 12, display: "flex", alignItems: "center" }}>
+          <div style={{
+            padding: "5px 16px", borderRadius: 99,
+            display: "flex", alignItems: "center",
+            background: "#1d4ed8", color: "white",
+            fontSize: 13, fontWeight: 800, gap: 6,
+          }}>
+            <HiCog style={{ width: 14, height: 14 }} />
+            管理者
+          </div>
+        </Link>
+      )}
 
       {/* 中央: 警告バナー */}
       <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 16px" }}>

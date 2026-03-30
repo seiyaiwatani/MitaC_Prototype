@@ -390,21 +390,23 @@ button:hover, a[href]:hover { opacity: 0.7; }
 /* 管理者サイドバー */
 .admin-layout {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  height: 100%;
+  grid-template-columns: 210px 1fr;
+  height: calc(100% - 36px);
   overflow: hidden;
+  margin: 18px 18px 18px 0;
+  column-gap: 18px;
 }
 .admin-sidebar {
   background: #007aff;
   padding: 12px 8px;
   overflow-y: auto;
-  border-top: 6px solid #005ea5;
+  border-radius: 10px;
 }
 .admin-content {
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px;
-  background: white;
+  padding: 0;
+  background: var(--bg);
 }
 .admin-nav-item {
   display: flex;

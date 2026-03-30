@@ -15,8 +15,15 @@ export default function OvertimeReport() {
   const [content, setContent] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+  const totalMin = hours * 60 + minutes;
+  const canSubmit = hasOvertime === null
+    ? false
+    : hasOvertime === false
+    ? true
+    : totalMin > 0 && content.trim() !== "";
+
   const handleSubmit = () => {
-    if (hasOvertime === null) return;
+    if (!canSubmit) return;
     setHasOvertimeReported(true);
     setOvertimeReportedDate(new Date().toDateString());
     setCompletionType('overtime');
@@ -101,26 +108,36 @@ export default function OvertimeReport() {
           <div className="card" style={{ padding: 14, flexShrink: 0, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontWeight: 700, fontSize: 14, color: "#374151" }}>残業詳細</div>
             <div>
-              <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>残業時間</label>
+              <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>
+                残業時間 <span style={{ color: "#ef4444" }}>*</span>
+              </label>
               <div style={{ display: "flex", gap: 8 }}>
                 <select value={hours} onChange={(e) => setHours(Number(e.target.value))}
-                  style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }}>
+                  style={{ flex: 1, border: `1px solid ${totalMin === 0 ? "#ef4444" : "#e5e7eb"}`, borderRadius: 6, padding: "6px 8px", fontSize: 14 }}>
                   {[0,1,2,3,4,5].map((h) => <option key={h} value={h}>{h}時間</option>)}
                 </select>
                 <select value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}
-                  style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }}>
+                  style={{ flex: 1, border: `1px solid ${totalMin === 0 ? "#ef4444" : "#e5e7eb"}`, borderRadius: 6, padding: "6px 8px", fontSize: 14 }}>
                   {[0,15,30,45].map((m) => <option key={m} value={m}>{m}分</option>)}
                 </select>
               </div>
+              {totalMin === 0 && (
+                <p style={{ fontSize: 13, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>0時間0分では提出できません</p>
+              )}
             </div>
             <div>
-              <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>残業内容</label>
+              <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>
+                残業内容 <span style={{ color: "#ef4444" }}>*</span>
+              </label>
               <textarea
                 value={content} onChange={(e) => setContent(e.target.value)}
                 placeholder="残業で行う作業内容を入力してください..."
                 rows={3}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
+                style={{ width: "100%", border: `1px solid ${content.trim() === "" ? "#ef4444" : "#e5e7eb"}`, borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
               />
+              {content.trim() === "" && (
+                <p style={{ fontSize: 13, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>残業内容を入力してください</p>
+              )}
             </div>
           </div>
         )}
@@ -145,8 +162,8 @@ export default function OvertimeReport() {
         </Link>
         <button
           className="btn"
-          style={{ flex: 2, color: "white", background: hasOvertime === null ? "#d1d5db" : "#007aff" }}
-          disabled={hasOvertime === null}
+          style={{ flex: 2, color: "white", background: canSubmit ? "#007aff" : "#d1d5db", cursor: canSubmit ? "pointer" : "not-allowed" }}
+          disabled={!canSubmit}
           onClick={() => setShowConfirmModal(true)}
         >
           <HiPaperAirplane style={{ width: 15, height: 15, transform: "rotate(90deg)" }} /> 提出する

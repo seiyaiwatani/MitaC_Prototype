@@ -1236,15 +1236,30 @@ export default function Home() {
               borderTop: "1px solid #e5e7eb",
             }}
           >
-            <Link href="/report/start" style={{ flex: 1 }}>
-              <button
-                className="btn btn-primary"
-                style={{ width: "100%", fontSize: 14, padding: "7px 4px" }}
-              >
-                始業報告
-              </button>
-            </Link>
-            {hasStartReported ? (
+            {hasStartReported || hasEndReported || attendance !== "working" ? (
+              <div style={{ flex: 1 }}>
+                <button
+                  className="btn"
+                  disabled
+                  style={{
+                    width: "100%", fontSize: 14, padding: "7px 4px",
+                    background: "#e5e7eb", color: "#9ca3af", cursor: "not-allowed",
+                  }}
+                >
+                  始業報告
+                </button>
+              </div>
+            ) : (
+              <Link href="/report/start" style={{ flex: 1 }}>
+                <button
+                  className="btn btn-primary"
+                  style={{ width: "100%", fontSize: 14, padding: "7px 4px" }}
+                >
+                  始業報告
+                </button>
+              </Link>
+            )}
+            {hasStartReported && hasOvertimeReported ? (
               <Link href="/report/end" style={{ flex: 1 }}>
                 <button
                   className="btn"

@@ -69,13 +69,14 @@ export default function MissionsPage() {
 
         {/* 達成状況サマリー */}
         <div style={{
-          flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center",
-          background: accent + "12", borderRadius: 10, padding: "8px 14px",
+          flexShrink: 0, alignSelf: "flex-start", display: "flex", alignItems: "center", gap: 16,
+          background: "white", borderRadius: 10, padding: "8px 16px",
+          border: `1px solid ${accent}`,
         }}>
           <span style={{ fontSize: 14, color: accent, fontWeight: 700 }}>
             {TABS.find((t) => t.key === activeTab)!.desc}
           </span>
-          <span style={{ fontSize: 14, color: accent, fontWeight: 700 }}>
+          <span style={{ fontSize: 14, color: accent, fontWeight: 800 }}>
             {doneCount}/{items.length} 達成
           </span>
         </div>

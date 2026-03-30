@@ -466,19 +466,6 @@ export default function AdminPage() {
 
   return (
     <div className="page-root">
-      {/* ヘッダー */}
-      <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center", padding: "0 16px", gap: 8,
-        background: "#007aff", color: "white",
-      }}>
-        <HiCog style={{ width: 18, height: 18, opacity: 0.9 }} />
-        <span style={{ fontWeight: 800, fontSize: 15 }}>管理者</span>
-        <span style={{ marginLeft: "auto", fontSize: 14, opacity: 0.7 }}>
-          {NAV_ITEMS.find((n) => n.key === view)?.label}
-        </span>
-      </header>
-
       {/* サイドバー＋コンテンツ */}
       <div className="page-body admin-layout">
 
@@ -506,17 +493,18 @@ export default function AdminPage() {
             const selDetail = selProj ? (PROJ_DETAIL[selProj.id] ?? PROJ_DETAIL.p1) : null;
             return (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                {/* ページタイトル */}
-                <div style={{ fontWeight: 800, fontSize: 16, color: "#1a1a2e", marginBottom: 14 }}>
-                  アサインされているプロジェクト一覧
-                </div>
 
                 {/* マスター・詳細 レイアウト */}
                 <div style={{
-                  display: "flex", flex: 1, overflow: "hidden",
+                  display: "flex", flexDirection: "column", flex: 1, overflow: "hidden",
                   border: "1px solid #e5e7eb", borderRadius: 10,
                   background: "white",
                 }}>
+                {/* ページタイトル */}
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#1a1a2e", padding: "12px 16px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+                  アサインされているプロジェクト一覧
+                </div>
+                <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
                   {/* 左: プロジェクトリスト */}
                   <div style={{
                     width: 230, flexShrink: 0,
@@ -617,7 +605,8 @@ export default function AdminPage() {
                       </div>
                     </div>
                   )}
-                </div>
+                </div>{/* end inner row */}
+                </div>{/* end white bg */}
               </div>
             );
           })()}
@@ -646,7 +635,7 @@ export default function AdminPage() {
             while (calCells.length % 7 !== 0) calCells.push(null);
 
             return (
-              <div style={{ display: "flex", height: "100%", margin: "-12px", overflow: "hidden" }}>
+              <div style={{ display: "flex", height: "100%", margin: 0, overflow: "hidden", borderRadius: 10, border: "1px solid #e5e7eb" }}>
 
                 {/* 左: チームメンバーリスト */}
                 <div style={{ width: 192, flexShrink: 0, borderRight: "1px solid #e5e7eb", overflowY: "auto", background: "white" }}>
@@ -934,7 +923,7 @@ export default function AdminPage() {
 
           {/* ── 工数管理/月 ── */}
           {view === "monthly" && (
-            <>
+            <div style={{ background: "white", borderRadius: 12, padding: 16, height: "100%", overflowY: "auto", boxSizing: "border-box" }}>
               <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>工数管理 / 月 — 2026年2月</div>
               <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 12 }}>
                 各メンバーの月合計工数をプロジェクト別に集計しています
@@ -1041,11 +1030,12 @@ export default function AdminPage() {
               <div style={{ marginTop: 16, borderTop: "1px solid #f3f4f6", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 14, color: "#9ca3af" }}>
                 <span>0h</span><span>40h</span><span>80h</span><span>120h</span><span>160h</span>
               </div>
-            </>
+            </div>
           )}
 
           {/* ── ミッション管理 ── */}
           {view === "missions" && (
+            <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, height: "100%", overflowY: "auto", boxSizing: "border-box" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
 
               {/* 左: ミッション一覧 */}
@@ -1171,10 +1161,12 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+            </div>
           )}
 
           {/* ── ニュース管理 ── */}
           {view === "news" && (
+            <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, height: "100%", overflowY: "auto", boxSizing: "border-box" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
 
               {/* 左: ニュース一覧 */}
@@ -1250,10 +1242,12 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+            </div>
           )}
 
           {/* ── メンバー管理 ── */}
           {view === "members" && (
+            <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", padding: 16, height: "100%", overflowY: "auto", boxSizing: "border-box" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16 }}>
 
               {/* 左: メンバー一覧 */}
@@ -1341,72 +1335,75 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+            </div>
           )}
 
           {/* ── プロジェクト作成 ── */}
           {view === "new-project" && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 24 }}>
-              <div style={{ width: "100%", maxWidth: 480 }}>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 12 }}>プロジェクト作成</div>
-              <div className="card" style={{ padding: 16 }}>
+            <div style={{ background: "white", borderRadius: 10, border: "1px solid #e5e7eb", height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              {/* タイトル */}
+              <div style={{ fontWeight: 800, fontSize: 16, color: "#1a1a2e", padding: "12px 16px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+                プロジェクト作成
+              </div>
+              {/* 2カラム */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 0, flex: 1, overflow: "hidden" }}>
 
-                {/* プロジェクト名 */}
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト名</label>
-                  <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="例: 社内基盤システム刷新"
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, boxSizing: "border-box" }} />
-                </div>
-
-                {/* メモ */}
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>メモ</label>
-                  <textarea value={projMemo} onChange={(e) => setProjMemo(e.target.value)} placeholder="プロジェクトの概要・備考" rows={3}
-                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }} />
-                </div>
-
-                {/* 識別カラー */}
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 6 }}>識別カラー</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {COLOR_PALETTE.map((p) => {
-                      const selected = projColor === p.color;
-                      return (
-                        <button
-                          key={p.color}
-                          title={p.label}
-                          onClick={() => { setProjColor(p.color); setProjTextColor(p.textColor); }}
-                          style={{
-                            width: 36, height: 36, borderRadius: 8,
-                            background: p.color,
-                            border: selected ? `3px solid ${p.textColor}` : "2px solid transparent",
-                            cursor: "pointer",
-                            boxShadow: selected ? `0 0 0 1px ${p.textColor}44` : "none",
-                            outline: "none",
-                            position: "relative",
-                          }}
-                        >
-                          {selected && (
-                            <span style={{ color: p.textColor, fontSize: 16, fontWeight: 800, lineHeight: 1 }}>✓</span>
-                          )}
-                        </button>
-                      );
-                    })}
+                {/* 左: フォーム */}
+                <div style={{ padding: 20, overflowY: "auto", borderRight: "1px solid #e5e7eb" }}>
+                  {/* プロジェクト名 */}
+                  <div style={{ marginBottom: 18 }}>
+                    <label style={{ fontSize: 13, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 6 }}>プロジェクト名</label>
+                    <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="例: 社内基盤システム刷新"
+                      style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "8px 10px", fontSize: 14, boxSizing: "border-box" }} />
                   </div>
-                  {/* プレビュー */}
-                  <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: projColor, color: projTextColor, borderRadius: 6, padding: "3px 10px", fontSize: 13, fontWeight: 600 }}>
-                    <span>📁</span>
-                    <span>{projName.trim() || "プロジェクト名"}</span>
+
+                  {/* メモ */}
+                  <div style={{ marginBottom: 18 }}>
+                    <label style={{ fontSize: 13, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 6 }}>メモ</label>
+                    <textarea value={projMemo} onChange={(e) => setProjMemo(e.target.value)} placeholder="プロジェクトの概要・備考" rows={4}
+                      style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "8px 10px", fontSize: 14, resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }} />
+                  </div>
+
+                  {/* 識別カラー */}
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 8 }}>識別カラー</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {COLOR_PALETTE.map((p) => {
+                        const selected = projColor === p.color;
+                        return (
+                          <button
+                            key={p.color}
+                            title={p.label}
+                            onClick={() => { setProjColor(p.color); setProjTextColor(p.textColor); }}
+                            style={{
+                              width: 36, height: 36, borderRadius: 8,
+                              background: p.color,
+                              border: selected ? `3px solid ${p.textColor}` : "2px solid transparent",
+                              cursor: "pointer",
+                              boxShadow: selected ? `0 0 0 1px ${p.textColor}44` : "none",
+                              outline: "none", position: "relative",
+                            }}
+                          >
+                            {selected && <span style={{ color: p.textColor, fontSize: 16, fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 6, background: projColor, color: projTextColor, borderRadius: 6, padding: "4px 12px", fontSize: 13, fontWeight: 600 }}>
+                      <span>📁</span>
+                      <span>{projName.trim() || "プロジェクト名"}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* メンバー配属 */}
-                <div style={{ marginBottom: 18 }}>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 6 }}>メンバー配属</label>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {/* 右: メンバー配属 + ボタン */}
+                <div style={{ display: "flex", flexDirection: "column", padding: 20, overflowY: "auto" }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "#6b7280", marginBottom: 10 }}>メンバー配属</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
                     {teamMembers.map((m) => {
                       const checked = projMembers.includes(m.id);
                       return (
-                        <label key={m.id} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "6px 10px", borderRadius: 8, background: checked ? projColor : "#f9fafb", border: `1px solid ${checked ? projTextColor + "44" : "#e5e7eb"}`, transition: "background 0.1s" }}>
+                        <label key={m.id} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "8px 10px", borderRadius: 8, background: checked ? projColor : "#f9fafb", border: `1px solid ${checked ? projTextColor + "44" : "#e5e7eb"}`, transition: "background 0.1s" }}>
                           <input
                             type="checkbox"
                             checked={checked}
@@ -1419,19 +1416,18 @@ export default function AdminPage() {
                       );
                     })}
                   </div>
+                  <div style={{ display: "flex", gap: 8, marginTop: 20, flexShrink: 0 }}>
+                    <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }}
+                      onClick={() => { setView("projects"); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); }}>
+                      キャンセル
+                    </button>
+                    <button className="btn btn-primary" style={{ flex: 2, fontSize: 14 }} disabled={!projName.trim()}
+                      onClick={() => { addProject(projName.trim(), projColor, projTextColor); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); setView("projects"); }}>
+                      登録
+                    </button>
+                  </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button className="btn btn-ghost" style={{ flex: 1, fontSize: 14 }}
-                    onClick={() => { setView("projects"); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); }}>
-                    キャンセル
-                  </button>
-                  <button className="btn btn-primary" style={{ flex: 2, fontSize: 14 }} disabled={!projName.trim()}
-                    onClick={() => { addProject(projName.trim(), projColor, projTextColor); setProjName(""); setProjMemo(""); setProjMembers([]); setProjColor("#bbf7d0"); setProjTextColor("#065f46"); setView("projects"); }}>
-                    登録
-                  </button>
-                </div>
-              </div>
               </div>
             </div>
           )}

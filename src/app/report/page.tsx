@@ -144,26 +144,27 @@ export default function ReportIndex() {
       <div style={{
         flexShrink: 0, padding: "16px 12px",
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
-        background: "#f3f4f6", borderTop: "1px solid #e5e7eb",
       }}>
         {([
           { href: "/report/start",    label: "始業報告" },
           { href: "/report/overtime", label: "残業報告" },
         ] as const).map((btn) => (
-          <Link key={btn.href} href={btn.href}>
+          <Link key={btn.href} href={btn.href} style={{ padding: "0 5px" }}>
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
               border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
             }}>
               {btn.label}
             </button>
           </Link>
         ))}
         {hasStartReported ? (
-          <Link href="/report/end">
+          <Link href="/report/end" style={{ padding: "0 5px" }}>
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
               border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
             }}>
               終業報告
             </button>
@@ -173,8 +174,9 @@ export default function ReportIndex() {
             className="btn"
             onClick={() => setShowEndBlockModal(true)}
             style={{
-              width: "100%", background: "white", color: "#374151",
+              width: "calc(100% - 10px)", margin: "0 5px", background: "white", color: "#374151",
               border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
             }}
           >
             終業報告

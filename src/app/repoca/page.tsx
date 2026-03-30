@@ -590,16 +590,18 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }
         </div>
       </div>
       {!selectionMode && (
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+        <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
           <button
             onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}
+            disabled={rc.isCompleted}
+            style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}
           >
             <HiPencilAlt style={{ width: 14, height: 14 }} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}
+            disabled={rc.isCompleted}
+            style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#ef4444" }}
           >
             <HiTrash style={{ width: 14, height: 14 }} />
           </button>

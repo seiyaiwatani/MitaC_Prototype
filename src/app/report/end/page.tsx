@@ -305,25 +305,34 @@ export default function EndReport() {
                           </select>
                         </div>
                         {/* 完了チェック */}
-                        <button
-                          onClick={() => { setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] })); toggleTodayRepoCa(rc.id); }}
-                          style={{
-                            display: "flex", alignItems: "center", gap: 4,
-                            background: "none", border: "none", cursor: "pointer",
-                            padding: "3px 0 0", fontSize: 14,
-                          }}
-                        >
-                          <span style={{
-                            width: 13, height: 13, borderRadius: 3,
-                            border: `1.5px solid ${done ? "#10b981" : "#d1d5db"}`,
-                            background: done ? "#10b981" : "white",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            color: "white", fontSize: 14,
-                          }}>
-                            {done && <HiCheck style={{ width: 9, height: 9 }} />}
-                          </span>
-                          <span style={{ color: done ? "#10b981" : "#9ca3af" }}>完了</span>
-                        </button>
+                        {(() => {
+                          const dur = durations[rc.id] ?? 0;
+                          const disabled = dur === 0;
+                          return (
+                            <button
+                              onClick={() => { if (disabled) return; setCompleted((p) => ({ ...p, [rc.id]: !p[rc.id] })); toggleTodayRepoCa(rc.id); }}
+                              disabled={disabled}
+                              style={{
+                                display: "flex", alignItems: "center", gap: 4,
+                                background: "none", border: "none",
+                                cursor: disabled ? "not-allowed" : "pointer",
+                                padding: "3px 0 0", fontSize: 14,
+                                opacity: disabled ? 0.4 : 1,
+                              }}
+                            >
+                              <span style={{
+                                width: 13, height: 13, borderRadius: 3,
+                                border: `1.5px solid ${done ? "#10b981" : "#d1d5db"}`,
+                                background: done ? "#10b981" : "white",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                color: "white", fontSize: 14,
+                              }}>
+                                {done && <HiCheck style={{ width: 9, height: 9 }} />}
+                              </span>
+                              <span style={{ color: done ? "#10b981" : disabled ? "#9ca3af" : "#1f2937" }}>完了</span>
+                            </button>
+                          );
+                        })()}
                       </div>
                     );
                   })}
@@ -418,13 +427,15 @@ export default function EndReport() {
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                         <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}>
+                          disabled={rc.isCompleted}
+                          style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}>
                           <HiPencilAlt style={{ width: 14, height: 14 }} />
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}>
+                          disabled={rc.isCompleted}
+                          style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#ef4444" }}>
                           <HiTrash style={{ width: 14, height: 14 }} />
                         </button>
                       </div>
@@ -451,13 +462,15 @@ export default function EndReport() {
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
                       <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                         <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#6b7280", display: "flex", alignItems: "center" }}>
+                          disabled={rc.isCompleted}
+                          style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}>
                           <HiPencilAlt style={{ width: 14, height: 14 }} />
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
-                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center" }}>
+                          disabled={rc.isCompleted}
+                          style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#ef4444" }}>
                           <HiTrash style={{ width: 14, height: 14 }} />
                         </button>
                       </div>
