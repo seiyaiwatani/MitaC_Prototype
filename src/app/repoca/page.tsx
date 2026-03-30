@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck, HiPencilAlt, HiOutlineStar } from "react-icons/hi";
+import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck, HiPencilAlt } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 
@@ -183,7 +183,7 @@ export default function RepoCaList() {
         return completedDiff !== 0 ? completedDiff : diff;
       }
       if (sortBy === "created") {
-        const diff = a.createdAt.localeCompare(b.createdAt);
+        const diff = b.createdAt.localeCompare(a.createdAt);
         return completedDiff !== 0 ? completedDiff : diff;
       }
       return completedDiff;
@@ -258,85 +258,6 @@ export default function RepoCaList() {
       <div className="page-body" style={{ flexDirection: "column", padding: 8, gap: 8, overflow: "hidden" }}>
         {mainTab === "repoca" ? (
           <>
-            {/* 統計 */}
-            <div style={{ flexShrink: 0, display: "flex", gap: 6 }}>
-              {stats.map((s) => (
-                <div key={s.label} className="card" style={{ flex: 1, padding: "8px 6px", textAlign: "center" }}>
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <s.Icon style={{ width: 20, height: 20, color: s.color }} />
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937" }}>{s.value}</div>
-                  <div style={{ fontSize: 14, color: "#6b7280" }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* フィルター */}
-            <div style={{ flexShrink: 0, display: "flex", gap: 4 }}>
-              {FILTERS.map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
-                  style={{
-                    flex: 1, padding: "5px 2px", borderRadius: 20,
-                    border: filter === f.key ? "1.5px solid #007aff" : "1.5px solid #d1d5db",
-                    fontSize: 14, fontWeight: 600, cursor: "pointer",
-                    background: filter === f.key ? "#007aff" : "white",
-                    color: filter === f.key ? "white" : "#6b7280",
-                    boxShadow: filter === f.key
-                      ? "0 2px 6px rgba(0,122,255,0.35)"
-                      : "0 1px 3px rgba(0,0,0,0.08)",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            {/* ソート + 選択ボタン + 新規作成ボタン */}
-            <div style={{ flexShrink: 0, display: "flex", gap: 6, alignItems: "center" }}>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortKey)}
-                style={{
-                  width: 90, flexShrink: 0, padding: "7px 4px", borderRadius: 8,
-                  border: "1.5px solid #d1d5db", fontSize: 14, fontWeight: 600,
-                  color: "#374151", background: "white", cursor: "pointer",
-                  textAlign: "center", textAlignLast: "center",
-                }}
-              >
-                {SORTS.map((s) => (
-                  <option key={s.key} value={s.key}>{s.label}</option>
-                ))}
-              </select>
-              <button
-                onClick={selectionMode ? exitSelectionMode : () => setSelectionMode(true)}
-                style={{
-                  flexShrink: 0, padding: "7px 12px", borderRadius: 8, cursor: "pointer",
-                  border: selectionMode ? "1.5px solid #ef4444" : "1.5px solid #d1d5db",
-                  background: selectionMode ? "#fef2f2" : "white",
-                  color: selectionMode ? "#ef4444" : "#6b7280",
-                  fontSize: 13, fontWeight: 700,
-                }}
-              >
-                {selectionMode ? "キャンセル" : "選択"}
-              </button>
-              <Link
-                href="/repoca/new"
-                style={{
-                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-                  gap: 6, padding: "9px 0", borderRadius: 10,
-                  background: "#007aff",
-                  color: "white", fontWeight: 700, fontSize: 14,
-                  textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(0,122,255,0.35)",
-                }}
-              >
-                <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> 新規作成
-              </Link>
-            </div>
-
             {/* 選択モード時: 一括操作バー */}
             {selectionMode && (
               <div style={{
@@ -378,27 +299,100 @@ export default function RepoCaList() {
               </div>
             )}
 
-            {/* カードリスト */}
-            <div className="scroll-y" style={{ flex: 1 }}>
-              {filtered.length === 0 ? (
-                <div style={{ textAlign: "center", padding: 32, color: "#9ca3af" }}>
-                  <div style={{ fontSize: 36, marginBottom: 8 }}>🃏</div>
-                  <p style={{ fontSize: 14 }}>RepoCaが見つかりませんでした</p>
-                </div>
-              ) : (
-                filtered.map((rc) => (
-                  <RepoCaCard
-                    key={rc.id}
-                    rc={rc}
-                    onClick={() => selectionMode ? toggleSelect(rc.id) : setSelectedRc(rc)}
-                    selectionMode={selectionMode}
-                    isSelected={selectedIds.has(rc.id)}
-                    onEdit={() => openEdit(rc)}
-                    onDelete={() => removeRepoCa(rc.id)}
-                  />
-                ))
-              )}
-            </div>
+            {/* カードリスト + 右サイドコントロール */}
+            <div style={{ flex: 1, display: "flex", gap: 12, overflow: "hidden" }}>
+
+              {/* カードリスト */}
+              <div className="scroll-y" style={{ flex: 1 }}>
+                {/* 新規作成エリア */}
+                <Link
+                  href="/repoca/new"
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: 10, marginBottom: 6, borderRadius: 10,
+                    minHeight: 90,
+                    border: "2px dashed #b8c9e7", background: "#f9fafb",
+                    color: "#9ca3af", fontWeight: 600, fontSize: 14,
+                    textDecoration: "none", cursor: "pointer",
+                    transition: "border-color 0.15s, color 0.15s",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "#007aff"; (e.currentTarget as HTMLElement).style.color = "#007aff"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "#b8c9e7"; (e.currentTarget as HTMLElement).style.color = "#9ca3af"; }}
+                >
+                  + 新規作成
+                </Link>
+                {filtered.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: 32, color: "#9ca3af" }}>
+                    <div style={{ fontSize: 36, marginBottom: 8 }}>🃏</div>
+                    <p style={{ fontSize: 14 }}>RepoCaが見つかりませんでした</p>
+                  </div>
+                ) : (
+                  filtered.map((rc) => (
+                    <RepoCaCard
+                      key={rc.id}
+                      rc={rc}
+                      onClick={() => selectionMode ? toggleSelect(rc.id) : setSelectedRc(rc)}
+                      selectionMode={selectionMode}
+                      isSelected={selectedIds.has(rc.id)}
+                      onEdit={() => openEdit(rc)}
+                      onDelete={() => removeRepoCa(rc.id)}
+                    />
+                  ))
+                )}
+              </div>
+
+              {/* 右サイドコントロール */}
+              <div style={{ width: 210, flexShrink: 0, display: "flex", flexDirection: "column", gap: 6, paddingLeft: 4 }}>
+                {/* フィルター */}
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setFilter(f.key)}
+                    style={{
+                      width: "100%", padding: "7px 6px", borderRadius: 8,
+                      border: filter === f.key ? "1.5px solid #007aff" : "1.5px solid #d1d5db",
+                      fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      background: filter === f.key ? "#007aff" : "white",
+                      color: filter === f.key ? "white" : "#6b7280",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+                {/* 区切り */}
+                <div style={{ borderTop: "1px solid #e5e7eb", margin: "2px 0" }} />
+                {/* ソート */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortKey)}
+                  style={{
+                    width: "100%", padding: "7px 4px", borderRadius: 8,
+                    border: "1.5px solid #d1d5db", fontSize: 13, fontWeight: 600,
+                    color: "#374151", background: "white", cursor: "pointer",
+                    textAlign: "center", textAlignLast: "center",
+                  }}
+                >
+                  {SORTS.map((s) => (
+                    <option key={s.key} value={s.key}>{s.label}</option>
+                  ))}
+                </select>
+                {/* 選択 */}
+                <button
+                  onClick={selectionMode ? exitSelectionMode : () => setSelectionMode(true)}
+                  style={{
+                    width: "100%", padding: "7px 6px", borderRadius: 8, cursor: "pointer",
+                    border: selectionMode ? "1.5px solid #ef4444" : "1.5px solid #d1d5db",
+                    background: selectionMode ? "#fef2f2" : "white",
+                    color: selectionMode ? "#ef4444" : "#6b7280",
+                    fontSize: 13, fontWeight: 700,
+                  }}
+                >
+                  {selectionMode ? "キャンセル" : "選択"}
+                </button>
+              </div>
+
+            </div>{/* end カードリスト + 右サイド */}
           </>
         ) : (
           <ProjectsContent />

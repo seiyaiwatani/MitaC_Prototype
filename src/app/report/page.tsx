@@ -116,21 +116,19 @@ export default function ReportIndex() {
           </div>
           <div style={{ padding: "12px 20px", flex: 1 }}>
             {reportStatus.map((s) => (
-              <Link key={s.key} href={s.href} style={{ textDecoration: "none" }}>
-                <div style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "12px 0", borderBottom: "1px solid #f3f4f6",
+              <div key={s.key} style={{
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "12px 0", borderBottom: "1px solid #f3f4f6",
+              }}>
+                <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>{s.label}</span>
+                <span style={{
+                  fontWeight: 700, fontSize: 14, padding: "3px 14px", borderRadius: 99,
+                  background: s.done ? "#dcfce7" : "#fee2e2",
+                  color: s.done ? "#166534" : "#991b1b",
                 }}>
-                  <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>{s.label}</span>
-                  <span style={{
-                    fontWeight: 700, fontSize: 14, padding: "3px 14px", borderRadius: 99,
-                    background: s.done ? "#dcfce7" : "#fee2e2",
-                    color: s.done ? "#166534" : "#991b1b",
-                  }}>
-                    {s.done ? "提出済" : "未提出"}
-                  </span>
-                </div>
-              </Link>
+                  {s.done ? "提出済" : "未提出"}
+                </span>
+              </div>
             ))}
             <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", alignItems: "center" }}>
               <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>完了タスク</span>
@@ -144,7 +142,7 @@ export default function ReportIndex() {
 
       {/* 下部3ボタン */}
       <div style={{
-        flexShrink: 0, padding: "8px 12px",
+        flexShrink: 0, padding: "16px 12px",
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
         background: "#f3f4f6", borderTop: "1px solid #e5e7eb",
       }}>
@@ -155,7 +153,7 @@ export default function ReportIndex() {
           <Link key={btn.href} href={btn.href}>
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
-              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
             }}>
               {btn.label}
             </button>
@@ -165,7 +163,7 @@ export default function ReportIndex() {
           <Link href="/report/end">
             <button className="btn" style={{
               width: "100%", background: "white", color: "#374151",
-              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
             }}>
               終業報告
             </button>
@@ -176,7 +174,7 @@ export default function ReportIndex() {
             onClick={() => setShowEndBlockModal(true)}
             style={{
               width: "100%", background: "white", color: "#374151",
-              border: "1px solid #e5e7eb", fontSize: 14, padding: "10px",
+              border: "1px solid #e5e7eb", fontSize: 14, padding: "22px",
             }}
           >
             終業報告

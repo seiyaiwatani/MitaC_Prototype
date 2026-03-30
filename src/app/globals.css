@@ -175,7 +175,8 @@ body {
   border: 1.5px solid transparent;
   box-sizing: border-box;
 }
-.btn:hover { opacity: 0.88; }
+button:hover, a[href]:hover { opacity: 0.7; }
+.btn:hover { opacity: 0.7; }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--primary); color: white; }
 .btn-success { background: var(--success); color: white; }

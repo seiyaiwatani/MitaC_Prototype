@@ -383,18 +383,9 @@ function WorkResultModal({
           ))}
         </div>
         <button
+          className="btn btn-primary"
           onClick={onClose}
-          style={{
-            width: "100%",
-            padding: "13px",
-            borderRadius: 12,
-            border: "none",
-            background: "linear-gradient(90deg,#2d8aff,#a855f7)",
-            color: "white",
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: "pointer",
-          }}
+          style={{ width: "100%" }}
         >
           閉じる
         </button>
