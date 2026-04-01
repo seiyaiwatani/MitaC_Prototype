@@ -112,12 +112,6 @@ const bronzeCount = badges.filter((b) => b.tier === "bronze").length;
 const silverCount = badges.filter((b) => b.tier === "silver").length;
 const goldCount = badges.filter((b) => b.tier === "gold").length;
 
-// ティア文字色（ブロンズ=茶, シルバー=グレー, ゴールド=黄）
-const TIER_TEXT_COLOR: Record<BadgeTier, string> = {
-  bronze: "#7c3e1d",
-  silver: "#4b5563",
-  gold: "#b45309",
-};
 
 function BadgeDetailPanel({
   badge,
@@ -155,16 +149,6 @@ function BadgeDetailPanel({
       )
     : 0;
   const goldExp = isMaxTier && badge.exp !== undefined ? badge.exp : 0;
-
-  // 取得条件
-  const condition = displayTier
-    ? badge.tierConditions?.[displayTier]
-    : undefined;
-
-  // 対応するhistoryエントリ
-  const historyEntry = displayTier
-    ? badge.tierHistory?.find((h) => h.tier === displayTier)
-    : null;
 
   return (
     <div
@@ -211,66 +195,19 @@ function BadgeDetailPanel({
         })}
       </div>
 
-      {/* 取得条件 */}
-      {condition && (
-        <div style={{ padding: "0 24px 14px", flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: "#9ca3af",
-              marginBottom: 4,
-              letterSpacing: "0.05em",
-            }}
-          >
-            {isAcquiredTier ? "取得条件" : "取得するには"}
+      {/* 取得日 */}
+      {isAcquiredTier && (() => {
+        const historyEntry = badge.tierHistory?.find((h) => h.tier === displayTier);
+        if (!historyEntry) return null;
+        return (
+          <div style={{ padding: "0 24px 14px", flexShrink: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", marginBottom: 4, letterSpacing: "0.05em" }}>取得日</div>
+            <div style={{ fontSize: 14, color: "#374151", background: "#f9fafb", borderRadius: 6, padding: "6px 10px" }}>
+              {historyEntry.date.replace(/-/g, "/")}
+            </div>
           </div>
-          <div
-            style={{
-              fontSize: 14,
-              color: isAcquiredTier ? "#374151" : "#6b7280",
-              background: "#f9fafb",
-              borderRadius: 6,
-              padding: "6px 10px",
-            }}
-          >
-            {condition}
-          </div>
-        </div>
-      )}
-
-      {/* 取得日・note（取得済みティア選択時） */}
-      {isAcquiredTier && historyEntry && (
-        <div style={{ padding: "0 24px 14px", flexShrink: 0 }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: "#9ca3af",
-              marginBottom: 4,
-              letterSpacing: "0.05em",
-            }}
-          >
-            取得日
-          </div>
-          <div
-            style={{
-              fontSize: 14,
-              color: "#374151",
-              background: "#f9fafb",
-              borderRadius: 6,
-              padding: "6px 10px",
-            }}
-          >
-            {historyEntry.date.replace(/-/g, "/")}
-            {historyEntry.note && (
-              <div style={{ color: "#9ca3af", marginTop: 3 }}>
-                {historyEntry.note}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* 進捗バー */}
       <div style={{ padding: "0 24px 20px", flexShrink: 0 }}>
@@ -329,63 +266,24 @@ function BadgeDetailPanel({
         </div>
       </div>
 
-      {/* 区切り */}
-      <div style={{ borderTop: "1px solid #e5e7eb", flexShrink: 0 }} />
-
-      {/* 取得履歴（全ティア） */}
-      <div>
-        {badge.tierHistory && badge.tierHistory.length > 0 ? (
-          [...badge.tierHistory].reverse().map((h, i) => {
-            const textColor = TIER_TEXT_COLOR[h.tier];
-            const bgColor =
-              h.tier === "bronze"
-                ? "#fdf6f3"
-                : h.tier === "silver"
-                  ? "#f3f4f6"
-                  : "#fffbeb";
-            return (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "10px 24px",
-                  borderBottom: "1px solid #f3f4f6",
-                  background: bgColor,
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: 14,
-                    color: "#9ca3af",
-                    flexShrink: 0,
-                    minWidth: 84,
-                  }}
-                >
-                  {h.date.replace(/-/g, "/")}
-                </span>
-                <span
-                  style={{ fontSize: 14, fontWeight: 700, color: textColor }}
-                >
-                  {TIER_STYLE[h.tier].label}バッジ取得
-                </span>
-              </div>
-            );
-          })
-        ) : (
-          <div
-            style={{
-              padding: 32,
-              textAlign: "center",
-              color: "#9ca3af",
-              fontSize: 14,
-            }}
-          >
-            取得履歴なし
+      {/* 取得履歴 */}
+      {badge.tierHistory && badge.tierHistory.length > 0 && (
+        <>
+          <div style={{ borderTop: "1px solid #e5e7eb", flexShrink: 0 }} />
+          <div>
+            {[...badge.tierHistory].reverse().map((h, i) => {
+              const ts = TIER_STYLE[h.tier];
+              const bgColor = h.tier === "bronze" ? "#fdf6f3" : h.tier === "silver" ? "#f3f4f6" : "#fffbeb";
+              return (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 24px", borderBottom: "1px solid #f3f4f6", background: bgColor }}>
+                  <span style={{ fontSize: 14, color: "#9ca3af", flexShrink: 0, minWidth: 84 }}>{h.date.replace(/-/g, "/")}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: ts.labelColor }}>{ts.label}バッジ取得</span>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
@@ -393,6 +291,7 @@ function BadgeDetailPanel({
 export default function MyPage() {
   const [selectedBadge, setSelectedBadge] = useState<Badge>(badges[0]);
   const [selectedTier, setSelectedTier] = useState<BadgeTier | null>(null);
+  const [badgeFilter, setBadgeFilter] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>("standard");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -424,6 +323,7 @@ export default function MyPage() {
   const selectBadge = (b: Badge) => {
     setSelectedBadge(b);
     setSelectedTier(null);
+    setBadgeFilter(b.name);
   };
 
   const filteredForSearch = badges.filter((b) =>
@@ -835,41 +735,42 @@ export default function MyPage() {
         </div>
 
         {/* ===== 他のユーザーのバッジ取得状況 ===== */}
-        <div
-          style={{
-            flexShrink: 0,
-            borderTop: "1px solid #e5e7eb",
-            background: "#fafafa",
-          }}
-        >
-          <div
-            style={{
-              padding: "6px 0 4px 20px",
-              fontSize: 12,
-              fontWeight: 700,
-              color: "#6b7280",
-            }}
-          >
-            他のユーザーのバッジ取得状況
-          </div>
-          {/* 横スクロールコンテナ */}
-          <div
-            style={{
-              overflowX: "auto",
-              padding: "0 10px 8px",
-              scrollbarWidth: "thin",
-            }}
-          >
-            {/* 中央揃え＋max-contentで自然なスクロール */}
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                width: "max-content",
-                margin: "0 auto",
-              }}
-            >
-              {OTHER_USERS.map((user) => (
+        {(() => {
+          const displayUsers = badgeFilter
+            ? OTHER_USERS.filter((u) => u.badges.some((b) => b.name === badgeFilter))
+            : OTHER_USERS;
+          return (
+            <div style={{ flexShrink: 0, borderTop: "1px solid #e5e7eb", background: "#fafafa" }}>
+              <div style={{ padding: "6px 20px 4px", display: "flex", alignItems: "center", gap: 8 }}>
+                {badgeFilter ? (
+                  <>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#6b7280" }}>
+                      {badgeFilter} を持つユーザー
+                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 700, background: "#e0e7ff", color: "#3730a3", borderRadius: 99, padding: "1px 7px" }}>
+                      {displayUsers.length}人
+                    </span>
+                    <button
+                      onClick={() => setBadgeFilter(null)}
+                      style={{ marginLeft: 4, fontSize: 11, color: "#dc2626", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 99, padding: "2px 10px", cursor: "pointer", fontWeight: 700 }}
+                    >
+                      ✕ 解除
+                    </button>
+                  </>
+                ) : (
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#6b7280" }}>
+                    他のユーザーのバッジ取得状況
+                  </span>
+                )}
+              </div>
+              <div style={{ overflowX: "auto", padding: "0 10px 8px", scrollbarWidth: "thin" }}>
+                {badgeFilter && displayUsers.length === 0 ? (
+                  <div style={{ padding: "12px 10px", fontSize: 13, color: "#9ca3af" }}>
+                    このバッジを持つユーザーはいません
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", gap: 10, width: "max-content", margin: "0 auto" }}>
+                    {displayUsers.map((user) => (
                 <div
                   key={user.id}
                   style={{
@@ -999,10 +900,13 @@ export default function MyPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
+          );
+        })()}
       </div>
       {/* end コンテンツ全体ラッパー */}
 
