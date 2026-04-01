@@ -17,7 +17,6 @@ export const projects: Project[] = [
   { id: "p2",     name: "コーポレートサイトリニューアル", teamId: "t1", color: "#e9d5ff", textColor: "#581c87", icon: "🏢" },
   { id: "p3",     name: "モバイルアプリ開発",             teamId: "t2", color: "#bfdbfe", textColor: "#1e3a8a", icon: "📱" },
   { id: "p4",     name: "データ基盤構築",                 teamId: "t1", color: "#fde68a", textColor: "#78350f", icon: "🗄️" },
-  { id: "p_other", name: "その他",                        teamId: "t1", color: "#fed7aa", textColor: "#7c2d12", icon: "📌" },
 ];
 
 export const repoCas: RepoCa[] = [
@@ -152,83 +151,141 @@ export const badges: Badge[] = [
   {
     id: "b1", name: "Next", description: "Next.jsを使用したPJに参加",
     icon: "▤", acquired: true, acquiredAt: "2026-01-15", tier: "gold", exp: 87300,
+    tierConditions: {
+      bronze: "合計10時間Next.jsを使用",
+      silver: "合計50時間Next.jsを使用",
+      gold:   "合計100時間Next.jsを使用",
+    },
     tierHistory: [
       { tier: "bronze", date: "2025-08-10", note: "ITS-xLPでNext.jsを初採用" },
       { tier: "silver", date: "2025-11-05", note: "Next.jsプロジェクト5件を完了" },
       { tier: "gold",   date: "2026-01-15", note: "Next.jsプロジェクト15件以上を経験" },
     ],
-    nextTierCondition: "全ティア取得済み",
   },
   {
     id: "b2", name: "SCSS", description: "SCSSを使用したPJに参加",
     icon: "🤖", acquired: true, acquiredAt: "2026-02-01", tier: "silver", exp: 7200,
+    tierConditions: {
+      bronze: "合計10時間SCSSを使用",
+      silver: "合計50時間SCSSを使用",
+      gold:   "合計100時間SCSSを使用",
+    },
     tierHistory: [
       { tier: "bronze", date: "2025-09-20", note: "コーポレートサイトリニューアルでSCSS導入" },
       { tier: "silver", date: "2026-02-01", note: "SCSSを使ったPJ10件に参加" },
     ],
-    nextTierCondition: "SCSSプロジェクト20件に参加", nextTierProgress: 12, nextTierGoal: 20,
+    nextTierProgress: 72, nextTierGoal: 100,
   },
   {
     id: "b3", name: "Java", description: "Javaを使用したPJに参加",
     icon: "〜", acquired: true, acquiredAt: "2026-02-10", tier: "bronze", exp: 1800,
+    tierConditions: {
+      bronze: "合計10時間Javaを使用",
+      silver: "合計50時間Javaを使用",
+      gold:   "合計100時間Javaを使用",
+    },
     tierHistory: [
       { tier: "bronze", date: "2026-02-10", note: "データ基盤構築PJでJavaバックエンドを担当" },
     ],
-    nextTierCondition: "Javaプロジェクト5件に参加", nextTierProgress: 1, nextTierGoal: 5,
+    nextTierProgress: 18, nextTierGoal: 50,
   },
   {
     id: "b4", name: "PHP", description: "PHPを使用したPJに参加",
     icon: "○", acquired: false,
-    nextTierCondition: "PHPプロジェクトに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間PHPを使用",
+      silver: "合計50時間PHPを使用",
+      gold:   "合計100時間PHPを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b5", name: "WordPress", description: "WordPressを使用したPJに参加",
     icon: "△", acquired: false,
-    nextTierCondition: "WordPressプロジェクトに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間WordPressを使用",
+      silver: "合計50時間WordPressを使用",
+      gold:   "合計100時間WordPressを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b6", name: "AWS", description: "AWSを使用したPJに参加",
     icon: "☆", acquired: false,
-    nextTierCondition: "AWSを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間AWSを使用",
+      silver: "合計50時間AWSを使用",
+      gold:   "合計100時間AWSを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b7", name: "TypeScript", description: "TypeScriptを活用",
     icon: "▤", acquired: true, acquiredAt: "2026-01-20", tier: "silver", exp: 8500,
+    tierConditions: {
+      bronze: "合計10時間TypeScriptを使用",
+      silver: "合計50時間TypeScriptを使用",
+      gold:   "合計100時間TypeScriptを使用",
+    },
     tierHistory: [
       { tier: "bronze", date: "2025-10-01", note: "ITS-xLPフロント開発でTypeScriptを初導入" },
       { tier: "silver", date: "2026-01-20", note: "TypeScript採用PJ10件に参加" },
     ],
-    nextTierCondition: "TypeScriptプロジェクト20件に参加", nextTierProgress: 15, nextTierGoal: 20,
+    nextTierProgress: 85, nextTierGoal: 100,
   },
   {
     id: "b8", name: "React", description: "Reactを使用したPJに参加",
     icon: "🤖", acquired: true, acquiredAt: "2026-01-25", tier: "gold", exp: 12000,
+    tierConditions: {
+      bronze: "合計10時間Reactを使用",
+      silver: "合計50時間Reactを使用",
+      gold:   "合計100時間Reactを使用",
+    },
     tierHistory: [
       { tier: "bronze", date: "2025-07-15", note: "モバイルアプリ開発PJでReactを初採用" },
       { tier: "silver", date: "2025-10-20", note: "ReactプロジェクトをSPA化・5件完了" },
       { tier: "gold",   date: "2026-01-25", note: "Reactを主軸としたPJ15件以上に参加" },
     ],
-    nextTierCondition: "全ティア取得済み",
   },
   {
     id: "b9", name: "Docker", description: "Dockerを使用したPJに参加",
     icon: "〜", acquired: false,
-    nextTierCondition: "Dockerを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間Dockerを使用",
+      silver: "合計50時間Dockerを使用",
+      gold:   "合計100時間Dockerを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b10", name: "PostgreSQL", description: "PostgreSQLを使用",
     icon: "○", acquired: false,
-    nextTierCondition: "PostgreSQLを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間PostgreSQLを使用",
+      silver: "合計50時間PostgreSQLを使用",
+      gold:   "合計100時間PostgreSQLを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b11", name: "GraphQL", description: "GraphQLを使用したPJに参加",
     icon: "△", acquired: false,
-    nextTierCondition: "GraphQLを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間GraphQLを使用",
+      silver: "合計50時間GraphQLを使用",
+      gold:   "合計100時間GraphQLを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
   {
     id: "b12", name: "Terraform", description: "Terraformを使用",
     icon: "☆", acquired: false,
-    nextTierCondition: "Terraformを使用したPJに1件参加", nextTierProgress: 0, nextTierGoal: 1,
+    tierConditions: {
+      bronze: "合計10時間Terraformを使用",
+      silver: "合計50時間Terraformを使用",
+      gold:   "合計100時間Terraformを使用",
+    },
+    nextTierProgress: 0, nextTierGoal: 10,
   },
 ];
 
@@ -315,17 +372,17 @@ export const missions: Mission[] = [
 export const seasonPass: SeasonPass = {
   id: "sp1",
   seasonName: "スプリングシーズン 2026",
-  endDate: "2026-04-01",
+  endDate: "2026-05-31",
   passLevel: 7,
   passExp: 350,
   passExpToNext: 500,
   maxPassLevel: 30,
   rewards: [
-    { level: 5,  type: "avatar_costume", name: "スプリングハット（仮）",  description: "シーズン限定アバター衣装", icon: "🎩", claimed: true  },
-    { level: 10, type: "physical",       name: "クオカード 500円（仮）",  description: "物理報酬",                 icon: "🎁", claimed: false },
-    { level: 15, type: "avatar_costume", name: "サマーコスチューム（仮）",description: "シーズン限定アバター衣装", icon: "👒", claimed: false },
-    { level: 20, type: "physical",       name: "スペシャル賞品（仮）",    description: "物理報酬",                 icon: "🏆", claimed: false },
-    { level: 25, type: "avatar_costume", name: "サマーハット（仮）",      description: "シーズン限定アバター衣装", icon: "🌸", claimed: false },
-    { level: 30, type: "physical",       name: "クオカード 1000円（仮）", description: "物理報酬",                 icon: "💳", claimed: false },
+    { level: 5,  type: "avatar_costume", name: "スプリングハット",  description: "シーズン限定アバター衣装", icon: "🎩", claimed: true  },
+    { level: 10, type: "physical",       name: "クオカード 500円",  description: "報酬",                 icon: "🎁", claimed: false },
+    { level: 15, type: "avatar_costume", name: "サマーコスチューム",description: "シーズン限定アバター衣装", icon: "👒", claimed: false },
+    { level: 20, type: "physical",       name: "スペシャル賞品",    description: "報酬",                 icon: "🏆", claimed: false },
+    { level: 25, type: "avatar_costume", name: "サマーハット",      description: "シーズン限定アバター衣装", icon: "🌸", claimed: false },
+    { level: 30, type: "physical",       name: "クオカード 1000円", description: "報酬",                 icon: "💳", claimed: false },
   ],
 };

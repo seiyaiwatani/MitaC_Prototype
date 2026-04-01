@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RepoCa, TaskLabel, ImplScope } from "@/types";
@@ -46,6 +46,7 @@ export default function StartReport() {
   const { allRepoCas, updateRepoCa, removeRepoCa, hasStartReported, setHasStartReported, setTodayFromIds, favoriteIds, toggleFavorite, startReportedDate, setStartReportedDate, pendingRepoCaIds, clearPendingRepoCaIds, setCompletionType, incompleteIdsFromLastEnd, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
+  const navigatingRef = useRef(false);
 
   const [attendanceResolved, setAttendanceResolved] = useState<"idle" | "working">("idle");
   useEffect(() => {
@@ -139,7 +140,7 @@ export default function StartReport() {
   const todayStr = new Date().toDateString();
   const isStartReportedToday = startReportedDate === todayStr;
 
-  const blockInfo = attendanceResolved === "idle"
+  const blockInfo = navigatingRef.current ? null : attendanceResolved === "idle"
     ? { icon: "🏠", title: "まず出勤してください", desc: "出勤ボタンを押してから始業報告を行ってください。", href: "/", btnLabel: "ホームに戻る" }
     : (hasStartReported || isStartReportedToday)
     ? { icon: "🌅", title: "提出完了。お疲れ様でした！", desc: "本日の始業報告は完了しています。", href: "/", btnLabel: "ホームに戻る" }
@@ -394,7 +395,7 @@ export default function StartReport() {
             <div style={{ padding: "12px 20px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8 }}>
               <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
               <button className="btn btn-primary" style={{ flex: 2 }}
-                onClick={() => { setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); clearStartDraft(); setShowConfirmModal(false); setCompletionType('start'); router.push('/'); }}>
+                onClick={() => { navigatingRef.current = true; setTodayFromIds(addedIds); setHasStartReported(true); setStartReportedDate(new Date().toDateString()); clearStartDraft(); setShowConfirmModal(false); setCompletionType('start'); router.push('/'); }}>
                 送信
               </button>
             </div>

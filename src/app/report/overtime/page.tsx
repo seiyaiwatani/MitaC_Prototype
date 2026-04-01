@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiArrowLeft, HiPaperAirplane, HiClock, HiCheckCircle } from "react-icons/hi";
@@ -14,6 +14,7 @@ export default function OvertimeReport() {
   const [minutes, setMinutes] = useState(0);
   const [content, setContent] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const navigatingRef = useRef(false);
 
   const totalMin = hours * 60 + minutes;
   const canSubmit = hasOvertime === null
@@ -24,6 +25,7 @@ export default function OvertimeReport() {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
+    navigatingRef.current = true;
     setHasOvertimeReported(true);
     setOvertimeReportedDate(new Date().toDateString());
     setCompletionType('overtime');
@@ -33,7 +35,7 @@ export default function OvertimeReport() {
   const todayStr = new Date().toDateString();
   const isOvertimeReportedToday = overtimeReportedDate === todayStr;
 
-  const blockInfo = (!hasStartReported && isOvertimeReportedToday)
+  const blockInfo = navigatingRef.current ? null : (!hasStartReported && isOvertimeReportedToday)
     ? { icon: "🎉", title: "提出完了。お疲れ様でした！", desc: "本日の残業報告は完了しています。", href: "/report", btnLabel: "報告一覧に戻る" }
     : (!hasStartReported && overtimeReportedDate && overtimeReportedDate !== todayStr)
     ? { icon: "📋", title: "始業報告を行ってください", desc: "新しい日が始まりました。まずは始業報告を提出しましょう。", href: "/report/start", btnLabel: "始業報告する" }

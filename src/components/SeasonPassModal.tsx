@@ -9,7 +9,7 @@ const MILESTONE_W = 80;
 
 const TYPE_CHIP: Partial<Record<SeasonRewardType, { label: string; bg: string; color: string }>> = {
   avatar_costume: { label: "衣装",    bg: "#ede9fe", color: "#5b21b6" },
-  physical:       { label: "物理報酬", bg: "#fef3c7", color: "#92400e" },
+  physical:       { label: "報酬", bg: "#fef3c7", color: "#92400e" },
 };
 
 function getDaysRemaining(endDate: string) {

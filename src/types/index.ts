@@ -55,6 +55,7 @@ export interface Badge {
   acquiredAt?: string;
   tier?: BadgeTier;
   tierHistory?: BadgeTierRecord[];
+  tierConditions?: Partial<Record<BadgeTier, string>>; // 各ティアの取得条件
   nextTierCondition?: string;
   nextTierProgress?: number;
   nextTierGoal?: number;

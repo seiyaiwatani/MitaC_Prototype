@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RepoCa, TaskLabel, ImplScope } from "@/types";
@@ -52,6 +52,7 @@ export default function EndReport() {
   const { allRepoCas, todayRepoCas, addTodayRepoCa, toggleTodayRepoCa, hasStartReported, hasOvertimeReported, setHasEndReported, resetDailyReports, endReportedDate, setEndReportedDate, favoriteIds, toggleFavorite, bulkUpdateCompleted, pendingRepoCaIds, clearPendingRepoCaIds, removeRepoCa, updateRepoCa, setCompletionType, setIncompleteIdsFromLastEnd } = useRepoCa();
   const router = useRouter();
   const { projects } = useProjects();
+  const navigatingRef = useRef(false);
 
   const [selectedRepoCas, setSelectedRepoCas] = useState<RepoCa[]>(() => {
     const draft = loadDraft();
@@ -156,7 +157,7 @@ export default function EndReport() {
   const todayStr = new Date().toDateString();
   const isEndReportedToday = endReportedDate === todayStr;
 
-  const blockInfo = (!hasStartReported && isEndReportedToday)
+  const blockInfo = navigatingRef.current ? null : (!hasStartReported && isEndReportedToday)
     ? { icon: "🎉", title: "提出完了。お疲れ様でした！", desc: "本日の全報告が完了しています。", href: "/", btnLabel: "ホームに戻る" }
     : (!hasStartReported && endReportedDate && endReportedDate !== todayStr)
     ? { icon: "📋", title: "始業報告を行ってください", desc: "新しい日が始まりました。まずは始業報告を提出しましょう。", href: "/report/start", btnLabel: "始業報告する" }
@@ -646,6 +647,7 @@ export default function EndReport() {
                 <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setShowConfirmModal(false)}>戻る</button>
                 <button className="btn" style={{ flex: 2, background: "#007aff", color: "white" }}
                   onClick={() => {
+                    navigatingRef.current = true;
                     // 完了状態を allRepoCas に一括同期
                     bulkUpdateCompleted(completed);
                     // 未完了のIDを次回始業報告のデフォルト選択として保存
