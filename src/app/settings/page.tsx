@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { HiArrowLeft } from "react-icons/hi";
-import Link from "next/link";
 
 type Tab = "アカウント" | "フレックス" | "利用規約" | "外部連携" | "その他";
 
@@ -160,11 +158,7 @@ export default function SettingsPage() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/" style={{ color: "#003878", textDecoration: "none", display: "flex", alignItems: "center" }}>
-          <HiArrowLeft style={{ width: 20, height: 20 }} />
-        </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>設定</span>
-        <div style={{ marginLeft: "auto", width: 20 }} />
       </div>
 
       {/* 2カラムボディ */}

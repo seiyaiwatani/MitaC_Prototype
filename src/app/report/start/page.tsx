@@ -153,7 +153,7 @@ export default function StartReport() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 16, padding: "32px 28px", width: 340, maxWidth: "88vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
             <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
             <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
             <Link href={blockInfo.href} style={{ display: "inline-block" }}>
               <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
@@ -295,7 +295,10 @@ export default function StartReport() {
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc.id)}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-                      <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
+                      {rc.taskType === "その他"
+                        ? <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+                        : <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
+                      }
                       <button onClick={(e) => { e.stopPropagation(); removeRepoCa(rc.id); }}
                         style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "#ef4444", display: "flex", alignItems: "center", flexShrink: 0 }}>
                         <HiTrash style={{ width: 14, height: 14 }} />
@@ -329,7 +332,7 @@ export default function StartReport() {
                       </button>
                     </div>
                     <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{truncate(rc.content)}</p>
-                    <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
+                    <span style={{ fontSize: 14, color: "#9ca3af" }}>{rc.taskType === "その他" ? "その他" : proj?.name}</span>
                   </div>
                 );
               })
@@ -373,7 +376,7 @@ export default function StartReport() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "#007aff", padding: "16px 20px" }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>始業報告の確認</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>始業報告の確認</p>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
               <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
@@ -386,7 +389,10 @@ export default function StartReport() {
                 return (
                   <div key={id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderBottom: "1px solid #f3f4f6" }}>
                     <HiCheck style={{ width: 14, height: 14, color: "#007aff", flexShrink: 0 }} />
-                    <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                    {rc.taskType === "その他"
+                      ? <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+                      : <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                    }
                     <span style={{ fontSize: 14, color: "#374151" }}>{truncate(rc.content)}</span>
                   </div>
                 );
@@ -414,7 +420,7 @@ export default function StartReport() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "#007aff", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               {/* タブ */}
               <div style={{ display: "flex", gap: 4 }}>
                 {(["開発", "その他"] as const).map((t) => (
@@ -423,7 +429,7 @@ export default function StartReport() {
                     setEditLabel(t === "開発" ? "新規作成" : "調査");
                   }}
                     style={{
-                      padding: "3px 10px", borderRadius: 99, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      padding: "3px 10px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
                       background: editTab === t ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.2)",
                       color: editTab === t ? "#003878" : "rgba(255,255,255,0.8)",
                     }}>

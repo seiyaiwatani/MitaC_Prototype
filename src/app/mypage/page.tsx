@@ -5,7 +5,7 @@ import Link from "next/link";
 import { badges } from "@/lib/mock-data";
 import { BADGE_ICON_MAP, TIER_STYLE, TIER_ORDER } from "@/lib/badge-config";
 import type { Badge, BadgeTier } from "@/types";
-import { HiArrowLeft, HiSearch, HiSortAscending } from "react-icons/hi";
+import { HiSearch, HiSortAscending } from "react-icons/hi";
 
 type SortMode = "standard" | "rank" | "acquired";
 
@@ -112,17 +112,6 @@ const bronzeCount = badges.filter((b) => b.tier === "bronze").length;
 const silverCount = badges.filter((b) => b.tier === "silver").length;
 const goldCount = badges.filter((b) => b.tier === "gold").length;
 
-function getBadgeSlots(badge: Badge) {
-  const tierIndex = badge.tier ? TIER_ORDER.indexOf(badge.tier) : -1;
-  return TIER_ORDER.map((tier) => {
-    const slotTierIndex = TIER_ORDER.indexOf(tier);
-    return {
-      slotTier: tier,
-      filled: badge.acquired && tierIndex >= slotTierIndex,
-    };
-  });
-}
-
 // ティア文字色（ブロンズ=茶, シルバー=グレー, ゴールド=黄）
 const TIER_TEXT_COLOR: Record<BadgeTier, string> = {
   bronze: "#7c3e1d",
@@ -133,9 +122,11 @@ const TIER_TEXT_COLOR: Record<BadgeTier, string> = {
 function BadgeDetailPanel({
   badge,
   viewTier,
+  onSelectTier,
 }: {
   badge: Badge;
   viewTier: BadgeTier | null;
+  onSelectTier: (tier: BadgeTier) => void;
 }) {
   const iconInfo = BADGE_ICON_MAP[badge.name];
 
@@ -175,61 +166,49 @@ function BadgeDetailPanel({
     ? badge.tierHistory?.find((h) => h.tier === displayTier)
     : null;
 
-  // アイコン色: 取得済みならティア色、未取得ならグレー
-  const iconBg =
-    isAcquiredTier && displayTierStyle ? displayTierStyle.bg : "#d1d5db";
-
   return (
     <div
       style={{ display: "flex", flexDirection: "column", background: "white" }}
     >
-      {/* バッジアイコン + 名前 + ティアラベル */}
-      <div
-        style={{
-          padding: "24px 16px 16px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 10,
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            width: 110,
-            height: 110,
-            borderRadius: "50%",
-            background: iconBg,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: isAcquiredTier ? 1 : 0.5,
-          }}
-        >
-          {iconInfo ? (
-            <iconInfo.Icon style={{ width: 60, height: 60, color: "white" }} />
-          ) : (
-            <span style={{ fontSize: 52 }}>{badge.icon}</span>
-          )}
-        </div>
-        <div style={{ fontWeight: 800, fontSize: 20, color: "#1a1a2e" }}>
-          {badge.name}
-        </div>
-        {displayTierStyle && (
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              padding: "2px 10px",
-              borderRadius: 99,
-              background: isAcquiredTier ? displayTierStyle.bg : "#e5e7eb",
-              color: isAcquiredTier ? "white" : "#9ca3af",
-            }}
-          >
-            {displayTierStyle.label}
-            {isAcquiredTier ? " 取得済み" : " 未取得"}
-          </span>
-        )}
+      {/* バッジ名 */}
+      <div style={{ padding: "16px 16px 0", textAlign: "center", fontWeight: 800, fontSize: 18, color: "#1a1a2e", flexShrink: 0 }}>
+        {badge.name}
+      </div>
+      {/* ティア選択行 */}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 20, padding: "14px 16px 16px", flexShrink: 0 }}>
+        {TIER_ORDER.map((tier) => {
+          const tierIdx = TIER_ORDER.indexOf(tier);
+          const isAcq = badge.acquired && tierIdx <= currentTierIndex;
+          const isDisp = tier === displayTier;
+          const ts = TIER_STYLE[tier];
+          const size = isDisp ? 80 : isAcq ? 60 : 44;
+          return (
+            <div
+              key={tier}
+              onClick={() => onSelectTier(tier)}
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, cursor: "pointer" }}
+            >
+              <div style={{
+                width: size, height: size, borderRadius: "50%",
+                background: isAcq ? ts.bg : "#d1d5db",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                opacity: isAcq ? 1 : 0.35,
+                outline: isDisp ? `3px solid ${ts.border}` : "none",
+                outlineOffset: 3,
+                transition: "all 0.2s",
+                flexShrink: 0,
+              }}>
+                {iconInfo ? (
+                  <iconInfo.Icon style={{ width: size * 0.5, height: size * 0.5, color: isAcq ? "white" : "#9ca3af" }} />
+                ) : (
+                  <span style={{ fontSize: size * 0.42 }}>{badge.icon}</span>
+                )}
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, color: isAcq ? ts.labelColor : "#9ca3af" }}>{ts.label}</span>
+              {isAcq && <span style={{ fontSize: 9, color: "#10b981", fontWeight: 700 }}>取得済</span>}
+            </div>
+          );
+        })}
       </div>
 
       {/* 取得条件 */}
@@ -248,7 +227,7 @@ function BadgeDetailPanel({
           </div>
           <div
             style={{
-              fontSize: 13,
+              fontSize: 14,
               color: isAcquiredTier ? "#374151" : "#6b7280",
               background: "#f9fafb",
               borderRadius: 6,
@@ -276,7 +255,7 @@ function BadgeDetailPanel({
           </div>
           <div
             style={{
-              fontSize: 13,
+              fontSize: 14,
               color: "#374151",
               background: "#f9fafb",
               borderRadius: 6,
@@ -313,7 +292,7 @@ function BadgeDetailPanel({
           >
             {isMaxTier ? "EXP蓄積" : "進捗"}
           </span>
-          <span style={{ fontSize: 13, color: "#6b7280" }}>
+          <span style={{ fontSize: 14, color: "#6b7280" }}>
             {isMaxTier
               ? `累計 ${goldExp.toLocaleString()} EXP`
               : hasProgress
@@ -378,7 +357,7 @@ function BadgeDetailPanel({
               >
                 <span
                   style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     color: "#9ca3af",
                     flexShrink: 0,
                     minWidth: 84,
@@ -387,7 +366,7 @@ function BadgeDetailPanel({
                   {h.date.replace(/-/g, "/")}
                 </span>
                 <span
-                  style={{ fontSize: 13, fontWeight: 700, color: textColor }}
+                  style={{ fontSize: 14, fontWeight: 700, color: textColor }}
                 >
                   {TIER_STYLE[h.tier].label}バッジ取得
                 </span>
@@ -447,12 +426,6 @@ export default function MyPage() {
     setSelectedTier(null);
   };
 
-  const selectTier = (b: Badge, tier: BadgeTier, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedBadge(b);
-    setSelectedTier(tier);
-  };
-
   const filteredForSearch = badges.filter((b) =>
     b.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -461,17 +434,6 @@ export default function MyPage() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link
-          href="/"
-          style={{
-            color: "#003878",
-            textDecoration: "none",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <HiArrowLeft style={{ width: 20, height: 20 }} />
-        </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>
           バッジ一覧
         </span>
@@ -807,76 +769,43 @@ export default function MyPage() {
                 style={{ borderTop: "1px solid #e5e7eb", marginBottom: 10 }}
               />
 
-              {/* バッジ行リスト */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                  alignItems: "center",
-                }}
-              >
+              {/* バッジグリッド（最高ティアのみ表示） */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
                 {sortedBadges.map((b) => {
                   const iconInfo = BADGE_ICON_MAP[b.name];
-                  const slots = getBadgeSlots(b);
-                  const isRowSelected = selectedBadge.id === b.id;
+                  const ts = b.tier ? TIER_STYLE[b.tier] : null;
+                  const isSelected = selectedBadge.id === b.id;
                   return (
                     <div
                       key={b.id}
                       onClick={() => selectBadge(b)}
                       style={{
-                        display: "inline-flex",
-                        gap: 8,
-                        padding: "6px 8px",
-                        borderRadius: 12,
-                        background: isRowSelected
-                          ? "rgba(0,122,255,0.06)"
-                          : "transparent",
-                        border: `2px solid ${isRowSelected ? "#007aff" : "transparent"}`,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4,
+                        padding: "8px 4px",
+                        borderRadius: 10,
                         cursor: "pointer",
+                        background: isSelected ? "rgba(0,122,255,0.06)" : "transparent",
+                        border: `2px solid ${isSelected ? "#007aff" : "transparent"}`,
                         transition: "all 0.15s",
                       }}
                     >
-                      {slots.map((slot, i) => {
-                        const slotTs = TIER_STYLE[slot.slotTier];
-                        const isTierSelected =
-                          isRowSelected && selectedTier === slot.slotTier;
-                        return (
-                          <div
-                            key={i}
-                            onClick={(e) => selectTier(b, slot.slotTier, e)}
-                            title={`${b.name} - ${slotTs.label}`}
-                            style={{
-                              width: 44,
-                              height: 44,
-                              borderRadius: "50%",
-                              flexShrink: 0,
-                              background: slot.filled ? slotTs.bg : "#e5e7eb",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              opacity: slot.filled ? 1 : 0.4,
-                              outline: isTierSelected
-                                ? `3px solid ${slotTs.border}`
-                                : "none",
-                              outlineOffset: 2,
-                              transition: "outline 0.1s",
-                            }}
-                          >
-                            {iconInfo ? (
-                              <iconInfo.Icon
-                                style={{
-                                  width: 22,
-                                  height: 22,
-                                  color: slot.filled ? "white" : "#9ca3af",
-                                }}
-                              />
-                            ) : (
-                              <span style={{ fontSize: 17 }}>{b.icon}</span>
-                            )}
-                          </div>
-                        );
-                      })}
+                      <div style={{
+                        width: 44, height: 44, borderRadius: "50%",
+                        background: ts ? ts.bg : "#e5e7eb",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        opacity: b.acquired ? 1 : 0.3,
+                        flexShrink: 0,
+                      }}>
+                        {iconInfo ? (
+                          <iconInfo.Icon style={{ width: 22, height: 22, color: b.acquired ? "white" : "#9ca3af" }} />
+                        ) : (
+                          <span style={{ fontSize: 18 }}>{b.icon}</span>
+                        )}
+                      </div>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#374151", textAlign: "center", lineHeight: 1.2 }}>{b.name}</span>
                     </div>
                   );
                 })}
@@ -896,7 +825,11 @@ export default function MyPage() {
             }}
           >
             <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
-              <BadgeDetailPanel badge={selectedBadge} viewTier={selectedTier} />
+              <BadgeDetailPanel
+                badge={selectedBadge}
+                viewTier={selectedTier}
+                onSelectTier={(tier) => setSelectedTier(tier)}
+              />
             </div>
           </div>
         </div>
@@ -1124,7 +1057,7 @@ export default function MyPage() {
                       border: "none",
                       cursor: "pointer",
                       color: "white",
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: 700,
                       borderRadius: 6,
                       padding: "3px 10px",
@@ -1150,7 +1083,7 @@ export default function MyPage() {
                   )}
                   <div>
                     <div
-                      style={{ fontSize: 15, fontWeight: 800, color: "white" }}
+                      style={{ fontSize: 16, fontWeight: 800, color: "white" }}
                     >
                       {detailUser.name}
                     </div>
@@ -1168,24 +1101,23 @@ export default function MyPage() {
                   </div>
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  setDetailUser(null);
+                  setModalBadge(null);
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "white",
+                  fontSize: 20,
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
             </div>
-            <button
-              onClick={() => {
-                setDetailUser(null);
-                setModalBadge(null);
-              }}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "white",
-                fontSize: 20,
-                lineHeight: 1,
-              }}
-            >
-              ×
-            </button>
-          </div>
 
           {/* コンテンツ */}
           <div style={{ overflowY: "auto", flex: 1 }}>
@@ -1250,7 +1182,7 @@ export default function MyPage() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
-                              fontSize: 15,
+                              fontSize: 16,
                               fontWeight: 700,
                               color: "#1a1a2e",
                             }}
@@ -1406,7 +1338,7 @@ export default function MyPage() {
                               <div
                                 style={{
                                   flex: 1,
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   color: isAcquired ? "#1a1a2e" : "#6b7280",
                                 }}
                               >
@@ -1426,6 +1358,7 @@ export default function MyPage() {
                 );
               })()
             )}
+          </div>
           </div>
         </div>
       )}

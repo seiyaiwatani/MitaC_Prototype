@@ -1,5 +1,5 @@
 export type TaskType = "開発" | "実装" | "MTG" | "デイリースクラム" | "その他";
-export type TaskLabel = "新規作成" | "修正" | "調査" | "レビュー" | "その他" | "MTG" | "外部対応";
+export type TaskLabel = "新規作成" | "修正" | "調査" | "レビュー" | "その他" | "MTG" | "外部対応" | "1on1" | "執務室対応" | "ユニット活動";
 export type ImplScope = "フロント" | "バック" | "インフラ" | "フルスタック" | "その他";
 export type ReportType = "始業" | "終業" | "残業";
 

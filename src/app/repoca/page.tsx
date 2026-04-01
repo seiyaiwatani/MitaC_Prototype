@@ -4,9 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-import { HiCollection, HiSearch, HiCheckCircle, HiStar, HiViewGrid, HiTrash, HiCheck, HiPencilAlt } from "react-icons/hi";
+import { HiCollection, HiSearch, HiViewGrid, HiTrash, HiCheck, HiPencilAlt } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
+import { useAvatar } from "@/contexts/AvatarContext";
+import { AvatarWithCostume } from "@/components/AvatarWithCostume";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const AVATAR_SRC: Record<string, string> = {
@@ -211,25 +213,8 @@ export default function RepoCaList() {
       return completedDiff;
     });
 
-  const stats = [
-    { label: "作成済み", value: allRepoCas.length,                               Icon: HiCollection,  color: "#007aff" },
-    { label: "完了",     value: allRepoCas.filter((r) => r.isCompleted).length,  Icon: HiCheckCircle, color: "#10b981" },
-    { label: "総XP",    value: `${allRepoCas.reduce((s, r) => s + r.xp, 0)}XP`, Icon: HiStar,        color: "#f59e0b" },
-  ];
-
   return (
     <div className="page-root">
-      {/* ヘッダー */}
-      <header style={{
-        height: 48, flexShrink: 0,
-        display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
-        background: "#007aff", color: "white",
-      }}>
-        <span style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 5 }}>
-          <HiCollection style={{ width: 18, height: 18 }} /> RepoCa
-        </span>
-      </header>
-
       {/* メインタブ切り替え */}
       <div style={{
         flexShrink: 0, display: "flex",
@@ -276,7 +261,7 @@ export default function RepoCaList() {
                     background: "#fef2f2", border: "2px solid #fecaca",
                     flexWrap: "wrap",
                   }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#991b1b", flex: 1, minWidth: 0 }}>
                       {selectedIds.size > 0 ? `${selectedIds.size}件を選択中` : "削除するRepoCaを選択してください"}
                     </span>
                     <button
@@ -301,7 +286,7 @@ export default function RepoCaList() {
                         display: "flex", alignItems: "center", gap: 4,
                         background: selectedIds.size > 0 ? "#ef4444" : "#d1d5db",
                         border: "none", borderRadius: 6, padding: "4px 10px",
-                        fontSize: 13, fontWeight: 700, color: "white",
+                        fontSize: 14, fontWeight: 700, color: "white",
                         cursor: selectedIds.size > 0 ? "pointer" : "not-allowed",
                       }}
                     >
@@ -372,7 +357,7 @@ export default function RepoCaList() {
                     style={{
                       width: "100%", padding: "7px 6px", borderRadius: 8,
                       border: filter === f.key ? "1.5px solid #007aff" : "1.5px solid #d1d5db",
-                      fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      fontSize: 14, fontWeight: 600, cursor: "pointer",
                       background: filter === f.key ? "#007aff" : "white",
                       color: filter === f.key ? "white" : "#6b7280",
                       transition: "all 0.15s",
@@ -389,7 +374,7 @@ export default function RepoCaList() {
                   onChange={(e) => setSortBy(e.target.value as SortKey)}
                   style={{
                     width: "100%", padding: "7px 4px", borderRadius: 8,
-                    border: "1.5px solid #d1d5db", fontSize: 13, fontWeight: 600,
+                    border: "1.5px solid #d1d5db", fontSize: 14, fontWeight: 600,
                     color: "#374151", background: "white", cursor: "pointer",
                     textAlign: "center", textAlignLast: "center",
                   }}
@@ -406,7 +391,7 @@ export default function RepoCaList() {
                     border: selectionMode ? "1.5px solid #ef4444" : "1.5px solid #d1d5db",
                     background: selectionMode ? "#fef2f2" : "white",
                     color: selectionMode ? "#ef4444" : "#6b7280",
-                    fontSize: 13, fontWeight: 700,
+                    fontSize: 14, fontWeight: 700,
                   }}
                 >
                   {selectionMode ? "キャンセル" : "まとめて削除"}
@@ -447,7 +432,7 @@ export default function RepoCaList() {
                     setEditDraft((d) => ({ ...d, label: t === "開発" ? "新規作成" : "調査" }));
                   }}
                     style={{
-                      padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      padding: "2px 10px", borderRadius: 99, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
                       background: editTab === t ? "white" : "rgba(255,255,255,0.25)",
                       color: editTab === t ? "#007aff" : "white",
                     }}>
@@ -524,13 +509,13 @@ export default function RepoCaList() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)", padding: "16px 20px" }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>まとめて削除</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>まとめて削除</p>
             </div>
             <div style={{ padding: "16px 20px" }}>
               <p style={{ fontSize: 14, color: "#374151", margin: "0 0 4px" }}>
                 選択した <span style={{ fontWeight: 800, color: "#ef4444" }}>{selectedIds.size}件</span> のRepoCaを削除します。
               </p>
-              <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>この操作は取り消せません。</p>
+              <p style={{ fontSize: 14, color: "#9ca3af", margin: 0 }}>この操作は取り消せません。</p>
             </div>
             <div style={{ padding: "0 20px 16px", display: "flex", gap: 8 }}>
               <button
@@ -596,9 +581,10 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }
         {/* タグ */}
         <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 4 }}>
           <span style={{ fontSize: 14 }}>{TASK_ICON[rc.taskType] ?? "📌"}</span>
-          <span className="chip chip-indigo" style={{ fontSize: 14, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis" }}>
-            {proj?.name}
-          </span>
+          {rc.taskType === "その他"
+            ? <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+            : <span className="chip chip-indigo" style={{ fontSize: 14, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{proj?.name}</span>
+          }
           <span className="chip" style={{ fontSize: 14, background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
             {rc.implScope}
           </span>
@@ -615,16 +601,16 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }
           <button
             onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
             disabled={rc.isCompleted}
-            style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}
+            style={{ background: "none", border: "none", padding: 4, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}
           >
-            <HiPencilAlt style={{ width: 14, height: 14 }} />
+            <HiPencilAlt style={{ width: 24, height: 24 }} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
             disabled={rc.isCompleted}
-            style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#ef4444" }}
+            style={{ background: "none", border: "none", padding: 4, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#ef4444" }}
           >
-            <HiTrash style={{ width: 14, height: 14 }} />
+            <HiTrash style={{ width: 24, height: 24 }} />
           </button>
         </div>
       )}
@@ -635,6 +621,7 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }
 // ---- プロジェクトタブコンテンツ ----
 function ProjectsContent() {
   const { projects } = useProjects();
+  const { avatarKey, headCostume, bodyCostume } = useAvatar();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const effectiveId = selectedId ?? projects[0]?.id ?? null;
   const selected    = projects.find((p) => p.id === effectiveId);
@@ -747,11 +734,23 @@ function ProjectsContent() {
                   }}
                 >
                   <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <img
-                      src={getMemberAvatar(m.name, i)}
-                      alt=""
-                      style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
-                    />
+                    {m.name.includes("自分") ? (
+                      <div style={{ width: 24, height: 24, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#e5e7eb" }}>
+                        <AvatarWithCostume
+                          avatarSrc={AVATAR_SRC[avatarKey] ?? AVATAR_SRC.fox}
+                          headCostume={headCostume}
+                          bodyCostume={bodyCostume}
+                          size={24}
+                          style={{ borderRadius: "50%" }}
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={getMemberAvatar(m.name, i)}
+                        alt=""
+                        style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+                      />
+                    )}
                     <span style={{ color: "#1a1a2e", fontWeight: m.name.includes("自分") ? 700 : 400 }}>
                       {m.name}
                     </span>
@@ -855,7 +854,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
               </span>
               {rc.isFavorite && <span style={{ fontSize: 14 }}>⭐</span>}
             </div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>
+            <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>
               {rc.content}
             </p>
           </div>
@@ -891,7 +890,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
         <div style={{ padding: "8px 20px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
           {confirmDelete ? (
             <div style={{ background: "#fef2f2", borderRadius: 10, padding: "10px 12px" }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#991b1b", margin: "0 0 8px", textAlign: "center" }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#991b1b", margin: "0 0 8px", textAlign: "center" }}>
                 本当に削除しますか？
               </p>
               <div style={{ display: "flex", gap: 8 }}>
@@ -899,7 +898,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
                   onClick={() => setConfirmDelete(false)}
                   style={{
                     flex: 1, padding: "8px 0", borderRadius: 8, border: "none",
-                    background: "#f3f4f6", fontWeight: 700, fontSize: 13, cursor: "pointer", color: "#374151",
+                    background: "#f3f4f6", fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151",
                   }}
                 >
                   キャンセル
@@ -908,7 +907,7 @@ function RepoCaDetailModal({ rc, onClose, onDelete }: { rc: RepoCa; onClose: () 
                   onClick={() => onDelete(rc.id)}
                   style={{
                     flex: 2, padding: "8px 0", borderRadius: 8, border: "none",
-                    background: "#ef4444", fontWeight: 700, fontSize: 13, cursor: "pointer", color: "white",
+                    background: "#ef4444", fontWeight: 700, fontSize: 14, cursor: "pointer", color: "white",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   }}
                 >

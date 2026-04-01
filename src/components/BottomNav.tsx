@@ -22,7 +22,9 @@ export default function BottomNav({ showAdmin }: { showAdmin: boolean }) {
     <nav className="bottom-nav">
       {navItems.map((item) => {
         const isActive =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          item.href === "/"
+            ? pathname === "/"
+            : !pathname.startsWith("/mypage/missions") && pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}

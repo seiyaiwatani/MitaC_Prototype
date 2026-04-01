@@ -76,6 +76,9 @@ body {
   gap: 8px;
   background: #f9fafb;
   border-bottom: 1px solid var(--border);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--fg);
 }
 
 .page-body {
@@ -178,11 +181,12 @@ body {
 button:hover, a[href]:hover { opacity: 0.7; }
 .btn:hover { opacity: 0.7; }
 .btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--primary); color: white; }
-.btn-success { background: var(--success); color: white; }
-.btn-ghost { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
-.btn-danger { background: var(--danger); color: white; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary   { background: var(--primary); color: white; }
+.btn-secondary { background: #f3f4f6; color: #374151; border-color: var(--border); }
+.btn-success   { background: var(--success); color: white; }
+.btn-ghost     { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-danger    { background: var(--danger); color: white; }
+.btn:disabled  { opacity: 0.4; cursor: not-allowed; }
 
 /* XPバー */
 .xp-bar {

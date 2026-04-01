@@ -100,7 +100,7 @@ export default function ReportIndex() {
                       }}>
                         {rc.content}
                       </p>
-                      <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
+                      <span style={{ fontSize: 14, color: "#9ca3af" }}>{rc.taskType === "その他" ? "その他" : proj?.name}</span>
                     </div>
                   </div>
                 );
@@ -120,7 +120,7 @@ export default function ReportIndex() {
                 display: "flex", justifyContent: "space-between", alignItems: "center",
                 padding: "12px 0", borderBottom: "1px solid #f3f4f6",
               }}>
-                <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>{s.label}</span>
+                <span style={{ fontSize: 16, color: "#374151", fontWeight: 500 }}>{s.label}</span>
                 <span style={{
                   fontWeight: 700, fontSize: 14, padding: "3px 14px", borderRadius: 99,
                   background: s.done ? "#dcfce7" : "#fee2e2",
@@ -131,8 +131,8 @@ export default function ReportIndex() {
               </div>
             ))}
             <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", alignItems: "center" }}>
-              <span style={{ fontSize: 15, color: "#374151", fontWeight: 500 }}>完了タスク</span>
-              <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>
+              <span style={{ fontSize: 16, color: "#374151", fontWeight: 500 }}>完了タスク</span>
+              <span style={{ fontWeight: 700, fontSize: 16, color: "#1a1a2e" }}>
                 {completedCount}/{todayRepoCas.length}
               </span>
             </div>
@@ -195,7 +195,7 @@ export default function ReportIndex() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", margin: "0 0 8px" }}>
+            <p style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e", margin: "0 0 8px" }}>
               始業報告が未提出です
             </p>
             <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 20px", lineHeight: 1.6 }}>
@@ -221,7 +221,7 @@ export default function ReportIndex() {
       {selectedRc && (() => {
         const proj = projects.find((p) => p.id === selectedRc.projectId);
         const rows = [
-          { label: "プロジェクト", value: proj?.name ?? "—" },
+          { label: "プロジェクト", value: selectedRc.taskType === "その他" ? "その他" : (proj?.name ?? "—") },
           { label: "タスク種別",   value: `${TASK_ICON[selectedRc.taskType] ?? "📌"} ${selectedRc.taskType}` },
           { label: "ラベル",       value: selectedRc.label },
           { label: "実装スコープ", value: selectedRc.implScope },
@@ -241,12 +241,15 @@ export default function ReportIndex() {
             >
               <div style={{ background: "#007aff", padding: "16px 20px", display: "flex", alignItems: "flex-start", gap: 10 }}>
                 <div style={{ flex: 1 }}>
-                  {proj && (
-                    <span style={{ fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: proj.color, color: proj.textColor, display: "inline-block", marginBottom: 6 }}>
-                      {proj.icon} {proj.name}
-                    </span>
-                  )}
-                  <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>{selectedRc.content}</p>
+                  {selectedRc.taskType === "その他"
+                    ? <span style={{ fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: "#f3f4f6", color: "#374151", display: "inline-block", marginBottom: 6 }}>その他</span>
+                    : proj && (
+                      <span style={{ fontSize: 14, fontWeight: 700, padding: "2px 8px", borderRadius: 99, background: proj.color, color: proj.textColor, display: "inline-block", marginBottom: 6 }}>
+                        {proj.icon} {proj.name}
+                      </span>
+                    )
+                  }
+                  <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0, lineHeight: 1.4 }}>{selectedRc.content}</p>
                 </div>
                 <button onClick={() => setSelectedRc(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.7)", padding: 0 }}>
                   <HiX style={{ width: 18, height: 18 }} />

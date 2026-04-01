@@ -51,7 +51,7 @@ export default function OvertimeReport() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 16, padding: "40px 36px", width: "60vw", maxWidth: "60vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
             <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
             <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
             <Link href={blockInfo.href} style={{ display: "inline-block" }}>
               <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
@@ -124,7 +124,7 @@ export default function OvertimeReport() {
                 </select>
               </div>
               {totalMin === 0 && (
-                <p style={{ fontSize: 13, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>0時間0分では提出できません</p>
+                <p style={{ fontSize: 14, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>0時間0分では提出できません</p>
               )}
             </div>
             <div>
@@ -138,7 +138,7 @@ export default function OvertimeReport() {
                 style={{ width: "100%", border: `1px solid ${content.trim() === "" ? "#ef4444" : "#e5e7eb"}`, borderRadius: 6, padding: "7px 10px", fontSize: 14, resize: "none" }}
               />
               {content.trim() === "" && (
-                <p style={{ fontSize: 13, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>残業内容を入力してください</p>
+                <p style={{ fontSize: 14, color: "#ef4444", margin: "4px 0 0", fontWeight: 600 }}>残業内容を入力してください</p>
               )}
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function OvertimeReport() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "#007aff", padding: "16px 20px" }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>残業報告の確認</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>残業報告の確認</p>
             </div>
             <div style={{ padding: "14px 20px" }}>
               {[

@@ -174,7 +174,7 @@ export default function EndReport() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 16, padding: "40px 36px", width: "60vw", maxWidth: "60vw", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.22)" }}>
             <div style={{ fontSize: 48 }}>{blockInfo.icon}</div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
+            <p style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e", textAlign: "center", margin: 0 }}>{blockInfo.title}</p>
             <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", margin: 0, lineHeight: 1.6 }}>{blockInfo.desc}</p>
             <Link href={blockInfo.href} style={{ display: "inline-block" }}>
               <button className="btn btn-primary" style={{ marginTop: 8 }}>{blockInfo.btnLabel}</button>
@@ -191,6 +191,19 @@ export default function EndReport() {
         <span style={{ marginLeft: "auto", fontSize: 14, color: "#6b7280" }}>
           総工数: {fmtDuration(totalMin)}
         </span>
+      </div>
+
+      {/* 注意書き */}
+      <div style={{
+        flexShrink: 0, padding: "6px 12px",
+        background: "#fffbeb", borderBottom: "1px solid #fde68a",
+        display: "flex", alignItems: "flex-start", gap: 6,
+      }}>
+        <span style={{ fontSize: 14, color: "#92400e", flexShrink: 0 }}>⚠️</span>
+        <div style={{ fontSize: 12, color: "#92400e", lineHeight: 1.6 }}>
+          始業時に報告したが行わなかったタスクは <strong>0分で提出</strong> してください。
+          完了したタスクは <strong>完了をクリック</strong> してから提出してください。
+        </div>
       </div>
 
       {/* メインエリア: RepoCa一覧 + 右サイドバー */}
@@ -426,9 +439,14 @@ export default function EndReport() {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-                      <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
-                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                    {rc.taskType === "その他"
+                      ? <span className="chip" style={{ fontSize: 14, marginBottom: 4, display: "inline-flex", background: "#f3f4f6", color: "#374151" }}>その他</span>
+                      : <span className="chip chip-indigo" style={{ fontSize: 14, marginBottom: 4, display: "inline-flex" }}>{proj?.icon} {proj?.name}</span>
+                    }
+                    <p style={{ fontSize: 14, margin: "0 0 4px", fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 14, color: "#9ca3af" }}>{rc.createdAt.slice(0, 10)}</span>
+                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
                           disabled={rc.isCompleted}
                           style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}>
@@ -441,8 +459,6 @@ export default function EndReport() {
                         </button>
                       </div>
                     </div>
-                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
-                    <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 2 }}>{rc.createdAt.slice(0, 10)}</div>
                   </div>
                 );
               })
@@ -461,9 +477,16 @@ export default function EndReport() {
                 const proj = projects.find((p) => p.id === rc.projectId);
                 return (
                   <div key={rc.id} className="repoca-card" style={{ marginBottom: 5, padding: "7px 8px" }} onClick={() => addToList(rc)}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
+                    <div style={{ display: "flex", gap: 4, marginBottom: 4, flexWrap: "wrap" }}>
                       <span className="chip chip-yellow" style={{ fontSize: 14 }}>⭐ お気に入り</span>
-                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      {rc.taskType === "その他"
+                        ? <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+                        : <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.icon} {proj?.name}</span>
+                      }
+                    </div>
+                    <p style={{ fontSize: 14, margin: "0 0 4px", fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <button onClick={(e) => { e.stopPropagation(); openEdit(rc); }}
                           disabled={rc.isCompleted}
                           style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", cursor: rc.isCompleted ? "not-allowed" : "pointer", color: rc.isCompleted ? "#d1d5db" : "#6b7280" }}>
@@ -476,8 +499,6 @@ export default function EndReport() {
                         </button>
                       </div>
                     </div>
-                    <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{rc.content}</p>
-                    <span style={{ fontSize: 14, color: "#9ca3af" }}>{proj?.name}</span>
                   </div>
                 );
               })
@@ -521,7 +542,7 @@ export default function EndReport() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ background: "#007aff", padding: "14px 18px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
+              <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>RepoCaを編集</p>
               <button onClick={() => setEditingRepoCa(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 18, lineHeight: 1 }}>×</button>
             </div>
             <div style={{ padding: "14px 18px", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -601,7 +622,7 @@ export default function EndReport() {
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ background: "#007aff", padding: "16px 20px" }}>
-                <p style={{ fontSize: 15, fontWeight: 800, color: "white", margin: 0 }}>終業報告の確認</p>
+                <p style={{ fontSize: 16, fontWeight: 800, color: "white", margin: 0 }}>終業報告の確認</p>
               </div>
               <div style={{ flex: 1, overflowY: "auto", padding: "14px 20px" }}>
                 {[
@@ -626,7 +647,10 @@ export default function EndReport() {
                   return (
                     <div key={projectId} style={{ marginBottom: 8 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 0 4px", borderBottom: "1px solid #e5e7eb" }}>
-                        <span className="chip" style={{ fontSize: 13, background: proj?.color, color: proj?.textColor }}>{proj?.name}</span>
+                        {proj
+                          ? <span className="chip" style={{ fontSize: 14, background: proj.color, color: proj.textColor }}>{proj.name}</span>
+                          : <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+                        }
                       </div>
                       {rcs.map((rc) => {
                         const done = completed[rc.id] ?? false;

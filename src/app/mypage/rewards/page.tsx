@@ -163,7 +163,7 @@ export default function RewardsPage() {
             >
               <div style={{ textAlign: "center", marginBottom: 16 }}>
                 <div style={{ fontSize: 40, marginBottom: 8 }}>{item.icon}</div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 4 }}>{item.name}</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: "#1a1a2e", marginBottom: 4 }}>{item.name}</div>
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 4 }}>
                   <HiStar style={{ width: 14, height: 14, color: "#f59e0b" }} />
                   <span style={{ fontWeight: 800, fontSize: 16, color: "#f59e0b" }}>{item.cost}</span>

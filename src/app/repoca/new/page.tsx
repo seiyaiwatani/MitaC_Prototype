@@ -29,20 +29,20 @@ function NewRepoCaContent() {
 
   const initDraft = (): DraftCard => ({
     id: Date.now().toString(),
-    projectId: projects[0]?.id ?? "",
-    taskType: "開発",
-    label: "新規作成",
+    projectId: "",
+    taskType: "その他",
+    label: "調査",
     implScope: "フロント",
     content: "",
     isFavorite: false,
   });
 
-  const [tab, setTab] = useState<Tab>("開発");
+  const [tab, setTab] = useState<Tab>("その他");
   const [draft, setDraft]     = useState<DraftCard>(() => initDraft());
   const [created, setCreated] = useState<DraftCard[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const isValid = draft.projectId && draft.label && (tab !== "開発" || draft.implScope) && draft.content.trim();
+  const isValid = (tab === "その他" || draft.projectId) && draft.label && (tab !== "開発" || draft.implScope) && draft.content.trim();
 
   const buildRepoCa = (d: DraftCard): import("@/types").RepoCa => ({
     ...d,
@@ -115,7 +115,10 @@ function NewRepoCaContent() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", gap: 4, marginBottom: 3 }}>
-                          <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                          {c.taskType === "その他"
+                            ? <span className="chip" style={{ fontSize: 14, background: "#f3f4f6", color: "#374151" }}>その他</span>
+                            : <span className="chip chip-indigo" style={{ fontSize: 14 }}>{proj?.name}</span>
+                          }
                           <span className="chip chip-gray" style={{ fontSize: 14 }}>{c.label}</span>
                         </div>
                         <p style={{ fontSize: 14, margin: 0, fontWeight: 500, color: "#1f2937" }}>{c.content}</p>
@@ -141,7 +144,7 @@ function NewRepoCaContent() {
                     </div>
                     {isOpen && (
                       <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #f3f4f6", fontSize: 14, color: "#6b7280", display: "flex", flexDirection: "column", gap: 2 }}>
-                        <span>PJ名: {proj?.name}</span>
+                        <span>PJ名: {c.taskType === "その他" ? "その他" : proj?.name}</span>
                         <span>ラベル: {c.label}</span>
                         <span>実装範囲: {c.implScope}</span>
                         <span>タスク種類: {c.taskType}</span>
@@ -167,6 +170,7 @@ function NewRepoCaContent() {
                     ...d,
                     taskType: t === "開発" ? "開発" : "その他",
                     label: t === "開発" ? "新規作成" : "調査",
+                    projectId: t === "その他" ? "" : (d.projectId || (projects[0]?.id ?? "")),
                   }));
                 }}
                   style={{
@@ -206,16 +210,19 @@ function NewRepoCaContent() {
               </select>
             </div>
 
-            {/* PJ名 */}
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
-                PJ名 <span style={{ color: "#ef4444" }}>*</span>
-              </label>
-              <select value={draft.projectId} onChange={(e) => setDraft((d) => ({ ...d, projectId: e.target.value }))}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
-              </select>
-            </div>
+            {/* PJ名（開発タブのみ） */}
+            {tab === "開発" && (
+              <div style={{ marginBottom: 8 }}>
+                <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
+                  PJ名 <span style={{ color: "#ef4444" }}>*</span>
+                </label>
+                <select value={draft.projectId} onChange={(e) => setDraft((d) => ({ ...d, projectId: e.target.value }))}
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
+                  <option value="">PJを選択してください</option>
+                  {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
+                </select>
+              </div>
+            )}
 
             {/* ラベル */}
             <div style={{ marginBottom: 8 }}>
@@ -226,7 +233,7 @@ function NewRepoCaContent() {
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                 {(tab === "開発"
                   ? ["新規作成", "修正", "調査", "レビュー", "その他"]
-                  : ["調査", "MTG", "外部対応", "その他"]
+                  : ["調査", "MTG", "外部対応", "1on1", "執務室対応", "ユニット活動", "その他"]
                 ).map((l) => (
                   <option key={l} value={l}>{l}</option>
                 ))}

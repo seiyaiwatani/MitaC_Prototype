@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/contexts/RoleContext";
 import {
@@ -28,7 +28,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Mission } from "@/types";
 
 /* ── 型定義 ── */
-type DailyTask   = { name: string; min: number };
+type DailyTask   = { name: string; min: number; fromStart?: boolean };
 type DailySeg    = { projectId: string; min: number; tasks: DailyTask[] };
 type TeamMember  = { id: string; name: string; reported: boolean; cohort: number };
 
@@ -105,42 +105,42 @@ const PROJ_DETAIL: Record<string, ProjectDetail> = {
 const DAILY_WORK_BY_DATE: Record<string, Record<string, DailySeg[]>> = {
   "2026-03-02": {
     m1: [
-      { projectId: "p1", min: 240, tasks: [{ name: "Contactページ作成", min: 150 }, { name: "デイリースクラム", min: 90 }] },
-      { projectId: "p2", min: 120, tasks: [{ name: "会社概要ページ修正", min: 90 }, { name: "定例MTG", min: 30 }] },
+      { projectId: "p1", min: 240, tasks: [{ name: "Contactページ作成", min: 150, fromStart: true }, { name: "デイリースクラム", min: 90 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "会社概要ページ修正", min: 90, fromStart: true }, { name: "定例MTG", min: 30 }] },
     ],
     m2: [
-      { projectId: "p1", min: 180, tasks: [{ name: "stg環境インフラ構築", min: 120 }, { name: "レビュー対応", min: 60 }] },
+      { projectId: "p1", min: 180, tasks: [{ name: "stg環境インフラ構築", min: 120, fromStart: true }, { name: "レビュー対応", min: 60 }] },
     ],
     m3: [
-      { projectId: "p2", min: 300, tasks: [{ name: "トップページデザイン実装", min: 180 }, { name: "画像最適化", min: 120 }] },
+      { projectId: "p2", min: 300, tasks: [{ name: "トップページデザイン実装", min: 180, fromStart: true }, { name: "画像最適化", min: 120 }] },
     ],
   },
   "2026-03-03": {
     m1: [
-      { projectId: "p1", min: 300, tasks: [{ name: "ヘッダーコンポーネント修正", min: 180 }, { name: "コードレビュー", min: 120 }] },
+      { projectId: "p1", min: 300, tasks: [{ name: "ヘッダーコンポーネント修正", min: 180, fromStart: true }, { name: "コードレビュー", min: 120 }] },
     ],
     m2: [
-      { projectId: "p3", min: 240, tasks: [{ name: "モバイルTOP画面作成", min: 180 }, { name: "リファインメント", min: 60 }] },
+      { projectId: "p3", min: 240, tasks: [{ name: "モバイルTOP画面作成", min: 180, fromStart: true }, { name: "リファインメント", min: 60 }] },
     ],
     m4: [
-      { projectId: "p4", min: 240, tasks: [{ name: "ETLパイプライン設計", min: 150 }, { name: "チームMTG", min: 90 }] },
+      { projectId: "p4", min: 240, tasks: [{ name: "ETLパイプライン設計", min: 150, fromStart: true }, { name: "チームMTG", min: 90 }] },
     ],
     m5: [
-      { projectId: "p1", min: 120, tasks: [{ name: "APIエンドポイント実装", min: 90 }, { name: "コードレビュー", min: 30 }] },
-      { projectId: "p2", min: 120, tasks: [{ name: "ブログ一覧ページ作成", min: 120 }] },
+      { projectId: "p1", min: 120, tasks: [{ name: "APIエンドポイント実装", min: 90, fromStart: true }, { name: "コードレビュー", min: 30 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "ブログ一覧ページ作成", min: 120, fromStart: true }] },
     ],
   },
   "2026-03-04": {
     m1: [
-      { projectId: "p1", min: 180, tasks: [{ name: "フォームバリデーション実装", min: 120 }, { name: "PR作成", min: 60 }] },
-      { projectId: "p2", min: 120, tasks: [{ name: "LP修正", min: 90 }, { name: "定例MTG", min: 30 }] },
+      { projectId: "p1", min: 180, tasks: [{ name: "フォームバリデーション実装", min: 120, fromStart: true }, { name: "PR作成", min: 60 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "LP修正", min: 90, fromStart: true }, { name: "定例MTG", min: 30 }] },
     ],
     m3: [
-      { projectId: "p2", min: 180, tasks: [{ name: "レスポンシブ対応", min: 120 }, { name: "クロスブラウザ確認", min: 60 }] },
-      { projectId: "p4", min: 120, tasks: [{ name: "DB設計レビュー", min: 120 }] },
+      { projectId: "p2", min: 180, tasks: [{ name: "レスポンシブ対応", min: 120, fromStart: true }, { name: "クロスブラウザ確認", min: 60 }] },
+      { projectId: "p4", min: 120, tasks: [{ name: "DB設計レビュー", min: 120, fromStart: true }] },
     ],
     m5: [
-      { projectId: "p2", min: 240, tasks: [{ name: "カテゴリーページ作成", min: 150 }, { name: "SEO対応", min: 90 }] },
+      { projectId: "p2", min: 240, tasks: [{ name: "カテゴリーページ作成", min: 150, fromStart: true }, { name: "SEO対応", min: 90 }] },
     ],
   },
   "2026-03-05": {
@@ -243,15 +243,149 @@ const DAILY_WORK_BY_DATE: Record<string, Record<string, DailySeg[]>> = {
       { projectId: "p3", min: 60,  tasks: [{ name: "サブリーダー1on1", min: 60 }] },
     ],
   },
+  "2026-03-23": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "通知機能実装", min: 150, fromStart: true }, { name: "コードレビュー", min: 90 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "採用ページ修正", min: 90, fromStart: true }, { name: "定例MTG", min: 30 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 300, tasks: [{ name: "カメラ機能実装", min: 180, fromStart: true }, { name: "テスト追加", min: 120 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 240, tasks: [{ name: "イベントページ作成", min: 150, fromStart: true }, { name: "レスポンシブ対応", min: 90 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 300, tasks: [{ name: "ダッシュボード設計", min: 180, fromStart: true }, { name: "データモデル定義", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 180, tasks: [{ name: "検索API実装", min: 120, fromStart: true }, { name: "デイリースクラム", min: 60 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "お問い合わせページ作成", min: 120, fromStart: true }] },
+    ],
+  },
+  "2026-03-24": {
+    m1: [
+      { projectId: "p1", min: 360, tasks: [{ name: "ユーザー管理画面実装", min: 240, fromStart: true }, { name: "PR作成", min: 120 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "Kubernetes設定", min: 120, fromStart: true }, { name: "レビュー対応", min: 60 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "位置情報機能実装", min: 120, fromStart: true }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "KPI集計クエリ作成", min: 150, fromStart: true }, { name: "チームMTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 180, tasks: [{ name: "プライバシーポリシーページ作成", min: 120, fromStart: true }, { name: "SEO対応", min: 60 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "通知画面UI実装", min: 120, fromStart: true }] },
+    ],
+  },
+  "2026-03-25": {
+    m1: [
+      { projectId: "p2", min: 240, tasks: [{ name: "FAQ作成", min: 150, fromStart: true }, { name: "コンテンツ修正", min: 90 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 300, tasks: [{ name: "決済機能実装", min: 180, fromStart: true }, { name: "セキュリティレビュー", min: 120 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 180, tasks: [{ name: "サービス紹介ページ作成", min: 120, fromStart: true }, { name: "画像最適化", min: 60 }] },
+      { projectId: "p4", min: 120, tasks: [{ name: "パフォーマンス計測", min: 120, fromStart: true }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 360, tasks: [{ name: "アラート機能実装", min: 210, fromStart: true }, { name: "バグ修正", min: 150 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 240, tasks: [{ name: "ファイルアップロードAPI実装", min: 150, fromStart: true }, { name: "ドキュメント作成", min: 90 }] },
+    ],
+  },
+  "2026-03-26": {
+    m1: [
+      { projectId: "p1", min: 180, tasks: [{ name: "権限管理実装", min: 120, fromStart: true }, { name: "コードレビュー", min: 60 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "採用ページ最終確認", min: 90, fromStart: true }, { name: "リファインメント", min: 30 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 240, tasks: [{ name: "監視ツール導入", min: 150, fromStart: true }, { name: "アラート設定", min: 90 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "月次レポート自動化", min: 150, fromStart: true }, { name: "定例MTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 300, tasks: [{ name: "ニュース一覧ページ実装", min: 180, fromStart: true }, { name: "ページネーション追加", min: 120 }] },
+    ],
+  },
+  "2026-03-27": {
+    m1: [
+      { projectId: "p1", min: 300, tasks: [{ name: "セッション管理修正", min: 180, fromStart: true }, { name: "PR対応", min: 120 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 240, tasks: [{ name: "アプリストア申請準備", min: 150, fromStart: true }, { name: "スクリーンショット作成", min: 90 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 180, tasks: [{ name: "導入事例ページ作成", min: 120, fromStart: true }, { name: "クロスブラウザ確認", min: 60 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 180, tasks: [{ name: "データパイプラインテスト", min: 120, fromStart: true }, { name: "チームMTG", min: 60 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 120, tasks: [{ name: "WebhookAPI実装", min: 90, fromStart: true }, { name: "デイリースクラム", min: 30 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "マイページ画面実装", min: 120, fromStart: true }] },
+    ],
+  },
+  "2026-03-30": {
+    m1: [
+      { projectId: "p2", min: 240, tasks: [{ name: "トップページリニューアル対応", min: 150, fromStart: true }, { name: "レビュー対応", min: 90 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 180, tasks: [{ name: "CDN設定", min: 120, fromStart: true }, { name: "負荷テスト", min: 60 }] },
+      { projectId: "p3", min: 120, tasks: [{ name: "アプリリリース対応", min: 120, fromStart: true }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 300, tasks: [{ name: "サービスページ修正", min: 180, fromStart: true }, { name: "アニメーション調整", min: 120 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "Q1レポート作成", min: 150, fromStart: true }, { name: "定例MTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p1", min: 240, tasks: [{ name: "バッチ処理API実装", min: 180, fromStart: true }, { name: "コードレビュー", min: 60 }] },
+    ],
+  },
+  "2026-03-31": {
+    m1: [
+      { projectId: "p1", min: 180, tasks: [{ name: "月末リリース対応", min: 120, fromStart: true }, { name: "デプロイ確認", min: 60 }] },
+      { projectId: "p2", min: 120, tasks: [{ name: "コンテンツ最終確認", min: 90, fromStart: true }, { name: "定例MTG", min: 30 }] },
+    ],
+    m2: [
+      { projectId: "p3", min: 300, tasks: [{ name: "バグ修正対応", min: 180, fromStart: true }, { name: "ユーザーテスト", min: 120 }] },
+    ],
+    m3: [
+      { projectId: "p2", min: 180, tasks: [{ name: "画像差し替え作業", min: 120, fromStart: true }, { name: "OGP確認", min: 60 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 300, tasks: [{ name: "Q1データ集計", min: 180, fromStart: true }, { name: "チームMTG", min: 120 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 180, tasks: [{ name: "ニュース詳細ページ実装", min: 120, fromStart: true }, { name: "SEO最終確認", min: 60 }] },
+      { projectId: "p1", min: 120, tasks: [{ name: "月末リリースQA", min: 120, fromStart: true }] },
+    ],
+  },
+  "2026-04-01": {
+    m1: [
+      { projectId: "p1", min: 240, tasks: [{ name: "4月スプリント計画", min: 90, fromStart: true }, { name: "新機能設計", min: 150 }] },
+    ],
+    m2: [
+      { projectId: "p1", min: 120, tasks: [{ name: "インフラ棚卸し", min: 90, fromStart: true }, { name: "リファインメント", min: 30 }] },
+      { projectId: "p3", min: 180, tasks: [{ name: "v2.0要件定義", min: 120, fromStart: true }, { name: "チームMTG", min: 60 }] },
+    ],
+    m4: [
+      { projectId: "p4", min: 240, tasks: [{ name: "Q2データ基盤設計", min: 150, fromStart: true }, { name: "定例MTG", min: 90 }] },
+    ],
+    m5: [
+      { projectId: "p2", min: 240, tasks: [{ name: "4月コンテンツ更新", min: 150, fromStart: true }, { name: "バナー差し替え", min: 90 }] },
+    ],
+  },
 };
 
-const MONTHLY_WORK: Record<string, Record<string, number>> = {
-  m1: { p1: 5760, p2: 1920 },
-  m2: { p1: 4320, p3: 3840 },
-  m3: { p2: 6720, p4: 960 },
-  m4: { p4: 5760 },
-  m5: { p1: 2880, p2: 2880, p3: 1440 },
-};
+const AVAILABLE_MONTHS = Array.from(
+  new Set(Object.keys(DAILY_WORK_BY_DATE).map((d) => d.slice(0, 7)))
+).sort();
 
 
 type View = "projects" | "daily" | "monthly" | "new-project" | "missions" | "news" | "members";
@@ -447,6 +581,24 @@ export default function AdminPage() {
   const [selectedDate, setSelectedDate]               = useState<string>("2026-03-18");
   const [showCalendar, setShowCalendar]               = useState(false);
   const [commentInput, setCommentInput]               = useState("");
+  const [selectedTaskDetail, setSelectedTaskDetail]   = useState<{ task: DailyTask; proj: ReturnType<typeof projects.find>; date: string } | null>(null);
+  const [selectedMonthlyDetail, setSelectedMonthlyDetail] = useState<{ member: TeamMember; projectId: string } | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>(AVAILABLE_MONTHS[AVAILABLE_MONTHS.length - 2] ?? AVAILABLE_MONTHS[0]);
+
+  const computedMonthlyWork = useMemo(() => {
+    const result: Record<string, Record<string, number>> = {};
+    Object.entries(DAILY_WORK_BY_DATE)
+      .filter(([date]) => date.startsWith(selectedMonth))
+      .forEach(([, byMember]) => {
+        Object.entries(byMember).forEach(([memberId, segs]) => {
+          if (!result[memberId]) result[memberId] = {};
+          segs.forEach((seg) => {
+            result[memberId][seg.projectId] = (result[memberId][seg.projectId] ?? 0) + seg.min;
+          });
+        });
+      });
+    return result;
+  }, [selectedMonth]);
   // key: "YYYY-MM-DD_memberId" → コメント一覧
   const [comments, setComments]                       = useState<Record<string, string[]>>({});
 
@@ -772,7 +924,7 @@ export default function AdminPage() {
                               {seg.tasks.map((task, i) => {
                                 const isZero = task.min === 0;
                                 return (
-                                  <div key={i} className="card" style={{
+                                  <div key={i} className="card" onClick={() => setSelectedTaskDetail({ task, proj, date: selectedDate })} style={{
                                     padding: "8px 10px",
                                     height: 72,
                                     position: "relative",
@@ -782,6 +934,7 @@ export default function AdminPage() {
                                     marginBottom: 4,
                                     flexShrink: 0,
                                     borderColor: isZero ? "#fca5a5" : undefined,
+                                    cursor: "pointer",
                                   }}>
                                     <span style={{
                                       position: "absolute", top: 6, right: 8,
@@ -789,7 +942,12 @@ export default function AdminPage() {
                                     }}>
                                       {isZero ? "0分" : `${(task.min / 60).toFixed(2)}h`}
                                     </span>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: isZero ? "#ef4444" : "#1f2937", width: "100%", padding: "0 4px" }}>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: isZero ? "#ef4444" : "#1f2937", width: "100%", padding: "0 4px", display: "flex", alignItems: "center", gap: 4 }}>
+                                      {task.fromStart && (
+                                        <span title="始業報告で追加" style={{ fontSize: 10, color: "#60a5fa", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "1px 3px", lineHeight: 1.3, fontWeight: 700, flexShrink: 0 }}>
+                                          始
+                                        </span>
+                                      )}
                                       {task.name}
                                     </div>
                                     <span style={{
@@ -924,7 +1082,19 @@ export default function AdminPage() {
           {/* ── 工数管理/月 ── */}
           {view === "monthly" && (
             <div style={{ background: "white", borderRadius: 12, padding: 16, height: "100%", overflowY: "auto", boxSizing: "border-box" }}>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>工数管理 / 月 — 2026年2月</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                <span style={{ fontWeight: 700, fontSize: 14 }}>工数管理 / 月</span>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  style={{ fontSize: 14, fontWeight: 600, border: "1.5px solid #b8c9e7", borderRadius: 6, padding: "2px 8px", color: "#007aff", background: "white", cursor: "pointer" }}
+                >
+                  {AVAILABLE_MONTHS.map((m) => {
+                    const [y, mo] = m.split("-");
+                    return <option key={m} value={m}>{y}年{Number(mo)}月</option>;
+                  })}
+                </select>
+              </div>
               <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 12 }}>
                 各メンバーの月合計工数をプロジェクト別に集計しています
               </div>
@@ -941,7 +1111,7 @@ export default function AdminPage() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {teamMembers.map((m) => {
-                  const pjMap    = MONTHLY_WORK[m.id] ?? {};
+                  const pjMap    = computedMonthlyWork[m.id] ?? {};
                   const segs     = Object.entries(pjMap).map(([pid, min]) => ({ projectId: pid, min }));
                   const totalMin = segs.reduce((s, x) => s + x.min, 0);
                   const totalH   = (totalMin / 60).toFixed(1);
@@ -1001,6 +1171,7 @@ export default function AdminPage() {
                               }}
                               onMouseMove={(e) => setTooltip((prev) => prev ? { ...prev, x: e.clientX, y: e.clientY } : null)}
                               onMouseLeave={() => { setHoveredKey(null); setTooltip(null); }}
+                              onClick={() => { setTooltip(null); setHoveredKey(null); setSelectedMonthlyDetail({ member: m, projectId: seg.projectId }); }}
                             >
                               <span style={{ fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.9)", whiteSpace: "nowrap", padding: "0 4px" }}>
                                 {(seg.min / 60).toFixed(0)}h
@@ -1571,7 +1742,7 @@ export default function AdminPage() {
 
             {/* ── 月別モーダル本体 ── */}
             {modal.mode === "monthly" && (() => {
-              const pjMap    = MONTHLY_WORK[modal.member.id] ?? {};
+              const pjMap    = computedMonthlyWork[modal.member.id] ?? {};
               const segs     = Object.entries(pjMap).map(([pid, min]) => ({ projectId: pid, min }));
               const totalMin = segs.reduce((s, x) => s + x.min, 0);
               const maxMin   = 9600;
@@ -1635,6 +1806,134 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* 月別PJ詳細モーダル（日ごとの積み上げ） */}
+      {selectedMonthlyDetail && (() => {
+        const { member, projectId } = selectedMonthlyDetail;
+        const proj = projects.find((p) => p.id === projectId);
+
+        // DAILY_WORK_BY_DATE から該当メンバー×PJの日別データを集計
+        const dailyRows = Object.entries(DAILY_WORK_BY_DATE)
+          .filter(([, byMember]) => byMember[member.id])
+          .map(([date, byMember]) => {
+            const segs = byMember[member.id] ?? [];
+            const seg  = segs.find((s) => s.projectId === projectId);
+            if (!seg) return null;
+            return { date, min: seg.min, tasks: seg.tasks };
+          })
+          .filter((r): r is { date: string; min: number; tasks: DailyTask[] } => r !== null)
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        const totalMin = dailyRows.reduce((s, r) => s + r.min, 0);
+        const maxMin   = Math.max(...dailyRows.map((r) => r.min), 1);
+
+        const fmtMin = (m: number) => m < 60 ? `${m}分` : `${Math.floor(m / 60)}時間${m % 60 > 0 ? `${m % 60}分` : ""}`;
+        const fmtDate = (d: string) => { const [, mo, dy] = d.split("-"); return `${Number(mo)}/${Number(dy)}`; };
+
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setSelectedMonthlyDetail(null)}
+          >
+            <div
+              style={{ background: "white", borderRadius: 16, width: 440, maxWidth: "94vw", maxHeight: "80vh", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* ヘッダー */}
+              <div style={{ background: proj?.color ?? "#f3f4f6", padding: "14px 18px", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                {proj && <span style={{ fontSize: 20 }}>{proj.icon}</span>}
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: proj?.textColor ?? "#6b7280", opacity: 0.8 }}>{member.name}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: proj?.textColor ?? "#1f2937" }}>{proj?.name ?? projectId}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 12, color: proj?.textColor ?? "#6b7280", opacity: 0.8 }}>月間合計</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: proj?.textColor ?? "#1f2937" }}>{fmtMin(totalMin)}</div>
+                </div>
+                <button onClick={() => setSelectedMonthlyDetail(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.4)", fontSize: 18, lineHeight: 1, padding: 0, flexShrink: 0, marginLeft: 4 }}>×</button>
+              </div>
+
+              {/* 日別リスト */}
+              <div style={{ flex: 1, overflowY: "auto", padding: "12px 18px" }}>
+                {dailyRows.length === 0 ? (
+                  <div style={{ textAlign: "center", color: "#9ca3af", fontSize: 14, padding: 24 }}>データなし</div>
+                ) : dailyRows.map((row) => {
+                  const barPct = (row.min / maxMin) * 100;
+                  return (
+                    <div key={row.date} style={{ marginBottom: 14 }}>
+                      {/* 日付 + 工数 */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>{fmtDate(row.date)}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1f2937" }}>{fmtMin(row.min)}</span>
+                      </div>
+                      {/* バー */}
+                      <div style={{ height: 8, background: "#f3f4f6", borderRadius: 4, overflow: "hidden", marginBottom: 5 }}>
+                        <div style={{ width: `${barPct}%`, height: "100%", background: PROJ_COLOR[projectId] ?? "#9ca3af", borderRadius: 4, transition: "width 0.3s" }} />
+                      </div>
+                      {/* タスクリスト */}
+                      {row.tasks.map((t, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 6px", fontSize: 13, color: "#6b7280" }}>
+                          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#d1d5db", flexShrink: 0 }} />
+                          {t.fromStart && (
+                            <span style={{ fontSize: 9, color: "#60a5fa", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "0px 3px", fontWeight: 700, flexShrink: 0 }}>始</span>
+                          )}
+                          <span style={{ flex: 1 }}>{t.name}</span>
+                          <span style={{ fontWeight: 600, color: "#374151", flexShrink: 0 }}>{fmtMin(t.min)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* タスク詳細モーダル */}
+      {selectedTaskDetail && (() => {
+        const { task, proj, date } = selectedTaskDetail;
+        const [y, m, d] = date.split("-").map(Number);
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setSelectedTaskDetail(null)}
+          >
+            <div
+              style={{ background: "white", borderRadius: 16, width: 320, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* ヘッダー */}
+              <div style={{ background: proj?.color ?? "#f3f4f6", padding: "14px 18px", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                    {proj && <span style={{ fontSize: 18 }}>{proj.icon}</span>}
+                    <span style={{ fontSize: 14, fontWeight: 700, color: proj?.textColor ?? "#374151" }}>{proj?.name ?? "その他"}</span>
+                    {task.fromStart && (
+                      <span style={{ fontSize: 10, color: "#60a5fa", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 3, padding: "1px 3px", lineHeight: 1.3, fontWeight: 700 }}>始</span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: proj?.textColor ?? "#1f2937", margin: 0, lineHeight: 1.4 }}>{task.name}</p>
+                </div>
+                <button onClick={() => setSelectedTaskDetail(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.4)", fontSize: 18, lineHeight: 1, padding: 0, flexShrink: 0 }}>×</button>
+              </div>
+              {/* 詳細行 */}
+              <div style={{ padding: "14px 20px 18px" }}>
+                {[
+                  { label: "日付",   value: `${y}年${m}月${d}日` },
+                  { label: "工数",   value: task.min === 0 ? "0分" : task.min < 60 ? `${task.min}分` : `${Math.floor(task.min / 60)}時間${task.min % 60 > 0 ? `${task.min % 60}分` : ""}` },
+                  { label: "種別",   value: task.fromStart ? "始業報告で追加" : "終業報告で追加" },
+                ].map((r) => (
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "7px 0", borderBottom: "1px solid #f3f4f6", fontSize: 14 }}>
+                    <span style={{ color: "#6b7280", fontWeight: 600 }}>{r.label}</span>
+                    <span style={{ color: "#1f2937", fontWeight: 500 }}>{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

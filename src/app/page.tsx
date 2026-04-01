@@ -562,6 +562,7 @@ export default function Home() {
   } = useRepoCa();
   const { missions } = useMission();
   const [showRewardModal, setShowRewardModal] = useState(false);
+  const [selectedMission, setSelectedMission] = useState<typeof missions[number] | null>(null);
   const [missionTab, setMissionTab] = useState<
     "daily" | "monthly" | "unlimited"
   >("daily");
@@ -737,6 +738,7 @@ export default function Home() {
               <div
                 style={{
                   background: "#007aff",
+                  borderRadius: "10px 10px 0 0",
                   padding: "10px 16px",
                   color: "white",
                   display: "flex",
@@ -1207,18 +1209,19 @@ export default function Home() {
                         setSelectedTask(rc);
                       }}
                       style={{
-                        background: "none",
-                        border: "none",
+                        background: "#f3f4f6",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: 6,
                         cursor: "pointer",
-                        color: "#6b7280",
-                        fontSize: 22,
+                        color: "#374151",
+                        fontSize: 11,
+                        fontWeight: 700,
                         lineHeight: 1,
-                        padding: "0 4px",
+                        padding: "3px 8px",
                         flexShrink: 0,
-                        letterSpacing: 1,
                       }}
                     >
-                      ···
+                      詳細
                     </button>
                   </div>
                 );
@@ -1830,7 +1833,7 @@ export default function Home() {
                 background: attendance === "idle" ? "#fef9c3" : "#f3f4f6",
                 color: attendance === "idle" ? "#78350f" : "#9ca3af",
                 fontWeight: 800,
-                fontSize: 15,
+                fontSize: 16,
                 letterSpacing: 0.5,
                 cursor: attendance === "idle" ? "pointer" : "not-allowed",
                 transition: "background 0.2s, color 0.2s",
@@ -1860,7 +1863,7 @@ export default function Home() {
                     ? "#1e40af"
                     : "#9ca3af",
                 fontWeight: 800,
-                fontSize: 15,
+                fontSize: 16,
                 letterSpacing: 0.5,
                 cursor:
                   attendance === "working" && hasEndReported
@@ -1941,7 +1944,7 @@ export default function Home() {
                         borderRadius: 99,
                         border: "none",
                         cursor: "pointer",
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: active ? 700 : 400,
                         background: active ? "#007aff" : "#f3f4f6",
                         color: active ? "white" : "#6b7280",
@@ -1954,7 +1957,7 @@ export default function Home() {
                 })}
                 <span
                   style={{
-                    fontSize: 13,
+                    fontSize: 14,
                     color: "#9ca3af",
                     alignSelf: "center",
                     marginLeft: 4,
@@ -1982,6 +1985,7 @@ export default function Home() {
                   return (
                     <div
                       key={m.id}
+                      onClick={() => setSelectedMission(m)}
                       style={{
                         opacity: done ? 0.72 : 1,
                         width: "100%",
@@ -1989,6 +1993,7 @@ export default function Home() {
                         borderRadius: 6,
                         padding: "4px 8px",
                         border: "1px solid #e5e7eb",
+                        cursor: "pointer",
                       }}
                     >
                       <div
@@ -2109,6 +2114,83 @@ export default function Home() {
           );
         })()}
       </div>
+
+      {/* ミッション詳細モーダル */}
+      {selectedMission && (() => {
+        const m = selectedMission;
+        const pct = Math.min(Math.round((m.progress / m.goal) * 100), 100);
+        const done = m.completed;
+        const accentColor = m.type === "daily" ? "#007aff" : m.type === "monthly" ? "#10b981" : "#f59e0b";
+        const typeLabel = m.type === "daily" ? "デイリー" : m.type === "monthly" ? "今月" : "無期限";
+        return (
+          <div
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 400, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setSelectedMission(null)}
+          >
+            <div
+              style={{ background: "white", borderRadius: 16, width: 340, maxWidth: "92vw", boxShadow: "0 12px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* ヘッダー */}
+              <div style={{ background: accentColor, padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.8)", marginBottom: 4 }}>{typeLabel}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "white", lineHeight: 1.3 }}>{m.title}</div>
+                </div>
+                <button
+                  onClick={() => setSelectedMission(null)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "white", fontSize: 20, lineHeight: 1, padding: 0, marginLeft: 10 }}
+                >×</button>
+              </div>
+              {/* ボディ */}
+              <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
+                {/* 達成条件 */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", marginBottom: 4 }}>達成条件</div>
+                  <p style={{ fontSize: 14, color: "#374151", margin: 0, lineHeight: 1.6 }}>{m.description}</p>
+                </div>
+                {/* 進捗 */}
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af" }}>進捗</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#10b981" : accentColor }}>
+                      {m.progress} / {m.goal}　{pct}%
+                    </div>
+                  </div>
+                  <div style={{ height: 8, background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{
+                      width: `${pct}%`, height: "100%", borderRadius: 4,
+                      background: done ? "linear-gradient(90deg,#10b981,#059669)" : `linear-gradient(90deg,${accentColor},${accentColor}cc)`,
+                      transition: "width 0.3s",
+                    }} />
+                  </div>
+                </div>
+                {/* 報酬 */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", marginBottom: 6 }}>報酬</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {m.reward > 0 && (
+                      <span style={{ fontSize: 14, fontWeight: 800, color: "#ea580c", background: "#fff7ed", padding: "4px 12px", borderRadius: 99 }}>
+                        +{m.reward} XP
+                      </span>
+                    )}
+                    {(m.passExpReward ?? 0) > 0 && (
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", background: "#eff6ff", padding: "4px 12px", borderRadius: 99 }}>
+                        +{m.passExpReward} パスEXP
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {done && (
+                  <div style={{ textAlign: "center", background: "#dcfce7", borderRadius: 10, padding: "8px 0", fontSize: 14, fontWeight: 700, color: "#065f46" }}>
+                    ✓ 達成済み
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* タスク詳細モーダル */}
       {selectedTask && (
@@ -2422,7 +2504,7 @@ function TaskDetailModal({
   onClose: () => void;
 }) {
   const rows = [
-    { label: "プロジェクト", value: proj?.name ?? "—" },
+    { label: "プロジェクト", value: rc.taskType === "その他" ? "その他" : (proj?.name ?? "—") },
     { label: "ラベル", value: rc.label },
     { label: "実装スコープ", value: rc.implScope },
     { label: "工数", value: rc.duration > 0 ? `${rc.duration}分` : "未記入" },
