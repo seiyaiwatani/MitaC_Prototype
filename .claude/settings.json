@@ -8,7 +8,8 @@
       "Bash(git remote:*)",
       "mcp__github__list_pull_requests",
       "mcp__github__list_commits",
-      "Bash(python3 -c \"import sys,json; data=json.loads\\(sys.stdin.read\\(\\)\\); commits=json.loads\\(data[0]['text']\\); [print\\(c['sha'][:7], c['commit']['message'][:80]\\) for c in commits[:5]]\")"
+      "Bash(python3 -c \"import sys,json; data=json.loads\\(sys.stdin.read\\(\\)\\); commits=json.loads\\(data[0]['text']\\); [print\\(c['sha'][:7], c['commit']['message'][:80]\\) for c in commits[:5]]\")",
+      "Bash(npx next:*)"
     ]
   }
 }

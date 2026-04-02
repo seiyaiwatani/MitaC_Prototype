@@ -895,25 +895,6 @@ export default function MyPage() {
                       )}
                     </div>
 
-                    {/* ボタン */}
-                    <div style={{ marginTop: "auto", paddingTop: 4 }}>
-                      <button
-                        onClick={() => setDetailUser(user)}
-                        style={{
-                          width: "100%",
-                          padding: "5px 0",
-                          borderRadius: 6,
-                          border: "1px solid #007aff",
-                          background: "white",
-                          color: "#007aff",
-                          fontSize: 11,
-                          fontWeight: 700,
-                          cursor: "pointer",
-                        }}
-                      >
-                        バッジ詳細
-                      </button>
-                    </div>
                   </div>
                 </div>
                     ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type Role = "admin" | "user" | null;
 
@@ -13,12 +13,12 @@ interface RoleContextValue {
 const RoleContext = createContext<RoleContextValue>({ role: null, setRole: () => {}, clearRole: () => {} });
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<Role>(() => {
-    if (typeof window === "undefined") return null;
+  const [role, setRoleState] = useState<Role>(null);
+
+  useEffect(() => {
     const saved = localStorage.getItem("mitac_role");
-    if (saved === "admin" || saved === "user") return saved;
-    return null;
-  });
+    if (saved === "admin" || saved === "user") setRoleState(saved);
+  }, []);
 
   const setRole = (r: "admin" | "user") => {
     localStorage.setItem("mitac_role", r);

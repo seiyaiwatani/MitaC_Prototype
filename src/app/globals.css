@@ -384,11 +384,11 @@ button:hover, a[href]:hover { opacity: 0.7; }
   display: inline-flex;
   gap: 40px;
   white-space: nowrap;
-  animation: ticker 30s linear infinite;
+  animation: ticker 15s linear infinite;
 }
 @keyframes ticker {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* 管理者サイドバー */
