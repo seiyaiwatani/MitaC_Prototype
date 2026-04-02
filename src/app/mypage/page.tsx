@@ -534,12 +534,11 @@ export default function MyPage() {
           {/* ===== 左: バッジグリッド ===== */}
           <div
             style={{
-              overflowY: "auto",
-              padding: "10px 12px",
+              padding: "10px 0 10px 12px",
               background: "white",
               borderRadius: 12,
               border: "1px solid #e5e7eb",
-              overflow: "clip",
+              overflow: "hidden",
             }}
           >
             <div style={{ overflowY: "auto", height: "100%" }}>
@@ -831,14 +830,26 @@ export default function MyPage() {
                     }}
                   >
                     {/* 扱える技術（バッジ・4件まで表示） */}
-                    <div
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        color: "#6b7280",
-                      }}
-                    >
-                      扱える技術
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", flexShrink: 0 }}>
+                        扱える技術
+                      </span>
+                      <button
+                        onClick={() => setDetailUser(user)}
+                        style={{
+                          padding: "2px 8px",
+                          borderRadius: 6,
+                          border: "1px solid #007aff",
+                          background: "white",
+                          color: "#007aff",
+                          fontSize: 10,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
+                        バッジ詳細
+                      </button>
                     </div>
                     <div style={{ display: "flex", flexWrap: "nowrap", gap: 6, overflow: "hidden" }}>
                       {user.badges.slice(0, 4).map((ub, i) => {

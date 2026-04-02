@@ -15,44 +15,67 @@ interface CostumeStyle {
 }
 
 const COSTUME_STYLES: Record<string, CostumeStyle> = {
-  crown:  { top: "-8%",  left: "50%", width: "56%", transform: "translateX(-50%)" },
-  medals: { top: "38%",  left: "50%", width: "52%", transform: "translateX(-50%)" },
-  tie:    { top: "46%",  left: "50%", width: "42%", transform: "translateX(-50%)" },
+  crown: {
+    top: "-8%",
+    left: "50%",
+    width: "56%",
+    transform: "translateX(-50%)",
+  },
+  medals: {
+    top: "38%",
+    left: "50%",
+    width: "52%",
+    transform: "translateX(-50%)",
+  },
+  tie: { top: "46%", left: "50%", width: "42%", transform: "translateX(-50%)" },
 };
 
 /** アバターごとの王冠位置オーバーライド */
 const AVATAR_CROWN_OVERRIDE: Record<string, Partial<CostumeStyle>> = {
-  fox:     { top: "-15%",  left: "54%", transform: "translateX(-50%)" },
-  cat:     { top: "-18%", left: "53%", transform: "translateX(-50%)" },
+  fox: { top: "-15%", left: "54%", transform: "translateX(-50%)" },
+  cat: { top: "-18%", left: "53%", transform: "translateX(-50%)" },
   doragon: { top: "-18%", left: "54%", transform: "translateX(-50%)" },
 };
 
 /** アバターごとの胴体パーツ位置オーバーライド */
 const AVATAR_BODY_OVERRIDE: Record<string, Partial<CostumeStyle>> = {
-  fox:     { left: "54%", transform: "translateX(-50%)" },
-  cat:     { left: "55%", transform: "translateX(-50%)" },
+  fox: { left: "54%", transform: "translateX(-50%)" },
+  cat: { left: "55%", transform: "translateX(-50%)" },
   doragon: { left: "58%", transform: "translateX(-50%)" },
 };
 
 function getAvatarKeyFromSrc(src: string): string {
-  if (src.includes("fox"))     return "fox";
-  if (src.includes("cat"))     return "cat";
+  if (src.includes("fox")) return "fox";
+  if (src.includes("cat")) return "cat";
   if (src.includes("doragon")) return "doragon";
   return "fox";
 }
 
 /** おまもりごとの効果 */
-export const OMAMORI_EFFECTS: Record<string, { label: string; color: string; emoji: string; name: string }> = {
-  omamori_lucky: { label: "EXP +15%", color: "#f59e0b", emoji: "🧧", name: "幸運のおまもり" },
-  omamori_study: { label: "EXP +10%", color: "#10b981", emoji: "🎴", name: "学業のおまもり" },
+export const OMAMORI_EFFECTS: Record<
+  string,
+  { label: string; color: string; emoji: string; name: string }
+> = {
+  omamori_lucky: {
+    label: "EXP +15%",
+    color: "#f59e0b",
+    emoji: "🧧",
+    name: "幸運のおまもり",
+  },
+  omamori_study: {
+    label: "EXP +10%",
+    color: "#10b981",
+    emoji: "🎴",
+    name: "学業のおまもり",
+  },
 };
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const COSTUME_SRC: Record<string, string> = {
-  crown:  `${BASE}/costumes/costume_crown.svg`,
+  crown: `${BASE}/costumes/costume_crown.svg`,
   medals: `${BASE}/costumes/costume_medals.svg`,
-  tie:    `${BASE}/costumes/costume_tie.svg`,
+  tie: `${BASE}/costumes/costume_tie.svg`,
 };
 
 interface Props {
@@ -78,7 +101,13 @@ export function AvatarWithCostume({
   return (
     <div
       className={animClass}
-      style={{ width: size, height: size, position: "relative", flexShrink: 0, ...style }}
+      style={{
+        width: size,
+        height: size,
+        position: "relative",
+        flexShrink: 0,
+        ...style,
+      }}
       onAnimationEnd={onAnimationEnd}
     >
       <Image
@@ -86,7 +115,12 @@ export function AvatarWithCostume({
         alt="アバター"
         width={size}
         height={size}
-        style={{ imageRendering: "pixelated", objectFit: "contain", width: "100%", height: "100%" }}
+        style={{
+          imageRendering: "pixelated",
+          objectFit: "contain",
+          width: "100%",
+          height: "100%",
+        }}
       />
       {headCostume && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -106,7 +140,12 @@ export function AvatarWithCostume({
         <img
           src={COSTUME_SRC[bodyCostume]}
           alt={bodyCostume}
-          style={{ position: "absolute", ...COSTUME_STYLES[bodyCostume], ...AVATAR_BODY_OVERRIDE[avatarKey], pointerEvents: "none" }}
+          style={{
+            position: "absolute",
+            ...COSTUME_STYLES[bodyCostume],
+            ...AVATAR_BODY_OVERRIDE[avatarKey],
+            pointerEvents: "none",
+          }}
         />
       )}
     </div>
