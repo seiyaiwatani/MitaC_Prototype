@@ -190,7 +190,7 @@ export default function StartReport() {
                   <div key={projId} className="pj-group" style={{ background: proj?.color ?? "#f3f4f6" }}>
                     <div className="pj-group-header" style={{ color: proj?.textColor ?? "#374151" }}>
                       <span>{proj?.icon}</span>
-                      <span>{proj?.name}</span>
+                      <span>{proj?.name ?? "その他"}</span>
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {cards.map((rc) => (
@@ -439,19 +439,21 @@ export default function StartReport() {
               </div>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
-              {/* プロジェクト */}
-              <div>
-                <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト</label>
-                <select
-                  value={editProjectId}
-                  onChange={(e) => setEditProjectId(e.target.value)}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
-                  ))}
-                </select>
-              </div>
+              {/* プロジェクト（開発タブのみ） */}
+              {editTab === "開発" && (
+                <div>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#6b7280", display: "block", marginBottom: 4 }}>プロジェクト</label>
+                  <select
+                    value={editProjectId}
+                    onChange={(e) => setEditProjectId(e.target.value)}
+                    style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "7px 10px", fontSize: 14 }}
+                  >
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>{p.icon} {p.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* ラベル */}
               <div>

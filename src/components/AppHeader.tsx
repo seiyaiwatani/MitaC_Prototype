@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiExclamation, HiLogout, HiCog } from "react-icons/hi";
@@ -27,7 +27,10 @@ export default function AppHeader() {
   const { role, clearRole } = useRole();
   const router = useRouter();
   const [showEditor, setShowEditor] = useState(false);
-  const isWorking = typeof window !== "undefined" && localStorage.getItem("mitac_attendance") === "working";
+  const [isWorking, setIsWorking] = useState(false);
+  useEffect(() => {
+    setIsWorking(localStorage.getItem("mitac_attendance") === "working");
+  }, []);
 
   const handleLogout = () => {
     resetDailyReports();

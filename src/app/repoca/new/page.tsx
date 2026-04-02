@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TaskType, TaskLabel, ImplScope } from "@/types";
@@ -25,7 +25,7 @@ function NewRepoCaContent() {
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("from") ?? "/repoca";
   const { projects } = useProjects();
-  const { allRepoCas, addRepoCa, addTodayRepoCa, addPendingRepoCaId } = useRepoCa();
+  const { allRepoCas, addRepoCa, addTodayRepoCa, addPendingRepoCaId, toggleFavorite } = useRepoCa();
 
   const initDraft = (): DraftCard => ({
     id: Date.now().toString(),
@@ -41,8 +41,30 @@ function NewRepoCaContent() {
   const [draft, setDraft]     = useState<DraftCard>(() => initDraft());
   const [created, setCreated] = useState<DraftCard[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [favDropOpen, setFavDropOpen] = useState(false);
+  const favDropRef = useRef<HTMLDivElement>(null);
+  const favLoaded = useRef<{ projectId: string; label: string; implScope: string; content: string } | null>(null);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (favDropRef.current && !favDropRef.current.contains(e.target as Node)) setFavDropOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const checkFavUnchanged = (patch: Partial<DraftCard>, current: DraftCard) => {
+    if (!favLoaded.current) return false;
+    const merged = { ...current, ...patch };
+    const f = favLoaded.current;
+    return merged.projectId === f.projectId && merged.label === f.label && merged.implScope === f.implScope && merged.content === f.content;
+  };
 
   const isValid = (tab === "その他" || draft.projectId) && draft.label && (tab !== "開発" || draft.implScope) && draft.content.trim();
+
+  const favRepoCas = [
+    ...allRepoCas.filter((r) => r.isFavorite),
+    ...created.filter((d) => d.isFavorite && !allRepoCas.some((r) => r.id === d.id)).map((d) => buildRepoCa(d)),
+  ];
 
   const buildRepoCa = (d: DraftCard): import("@/types").RepoCa => ({
     ...d,
@@ -69,6 +91,7 @@ function NewRepoCaContent() {
     all.forEach((d) => {
       const rc = buildRepoCa(d);
       addRepoCa(rc);
+      if (d.isFavorite) toggleFavorite(rc.id);
       addTodayRepoCa(rc);
       addPendingRepoCaId(rc.id);
     });
@@ -83,13 +106,10 @@ function NewRepoCaContent() {
     <div className="page-root">
       {/* サブヘッダー */}
       <div className="page-subheader">
-        <Link href="/repoca" style={{ color: "#007aff", textDecoration: "none", lineHeight: 1, display: "flex", alignItems: "center" }}>
+        <Link href={returnTo} style={{ color: "#007aff", textDecoration: "none", lineHeight: 1, display: "flex", alignItems: "center" }}>
           <HiArrowLeft style={{ width: 20, height: 20 }} />
         </Link>
         <span style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>RepoCa作成</span>
-        <span style={{ marginLeft: "auto", background: "#dcfce7", color: "#166534", fontSize: 14, fontWeight: 700, padding: "2px 10px", borderRadius: 99 }}>
-          +{xp} XP
-        </span>
       </div>
 
       {/* 2カラム: 作成済みリスト + 作成フォーム */}
@@ -196,18 +216,42 @@ function NewRepoCaContent() {
                   : <HiOutlineStar style={{ width: 16, height: 16, color: "#9ca3af" }} />}
                 <span style={{ color: draft.isFavorite ? "#d97706" : "#9ca3af", fontWeight: 600 }}>お気に入り登録</span>
               </button>
-              <select
-                onChange={(e) => {
-                  const fav = allRepoCas.find((r) => r.id === e.target.value);
-                  if (fav) setDraft((d) => ({ ...d, projectId: fav.projectId, label: fav.label, implScope: fav.implScope, content: fav.content }));
-                }}
-                style={{ fontSize: 14, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 6px", color: "#374151" }}
-              >
-                <option value="">お気に入りから選択 ▼</option>
-                {allRepoCas.filter((r) => r.isFavorite).map((r) => (
-                  <option key={r.id} value={r.id}>{r.content}</option>
-                ))}
-              </select>
+              <div ref={favDropRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => setFavDropOpen((o) => !o)}
+                  style={{ fontSize: 14, border: "1px solid #e5e7eb", borderRadius: 6, padding: "3px 10px", color: "#374151", background: "white", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  お気に入りから選択 <HiChevronDown style={{ width: 14, height: 14 }} />
+                </button>
+                {favDropOpen && (
+                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", background: "white", border: "1px solid #e5e7eb", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", zIndex: 100, minWidth: 260, maxHeight: 220, overflowY: "auto" }}>
+                    {favRepoCas.length === 0 && (
+                      <div style={{ padding: "10px 12px", fontSize: 13, color: "#9ca3af" }}>お気に入りがありません</div>
+                    )}
+                    {favRepoCas.map((r) => {
+                      const typeLabel = (r.taskType === "開発" || r.taskType === "実装") ? "開発" : "その他";
+                      return (
+                        <div
+                          key={r.id}
+                          onClick={() => {
+                            const newTab: Tab = typeLabel === "開発" ? "開発" : "その他";
+                            setTab(newTab);
+                            favLoaded.current = { projectId: r.projectId, label: r.label, implScope: r.implScope, content: r.content };
+                            setDraft((d) => ({ ...d, taskType: r.taskType, projectId: r.projectId, label: r.label, implScope: r.implScope, content: r.content, isFavorite: true }));
+                            setFavDropOpen(false);
+                          }}
+                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", cursor: "pointer", gap: 8, borderBottom: "1px solid #f3f4f6" }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+                        >
+                          <span style={{ fontSize: 13, color: "#1f2937", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.content}</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "#007aff", border: "1px solid #007aff", borderRadius: 4, padding: "1px 6px", flexShrink: 0 }}>{typeLabel}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* PJ名（開発タブのみ） */}
@@ -216,7 +260,7 @@ function NewRepoCaContent() {
                 <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                   PJ名 <span style={{ color: "#ef4444" }}>*</span>
                 </label>
-                <select value={draft.projectId} onChange={(e) => setDraft((d) => ({ ...d, projectId: e.target.value }))}
+                <select value={draft.projectId} onChange={(e) => { const patch = { projectId: e.target.value }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
                   style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                   <option value="">PJを選択してください</option>
                   {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
@@ -229,7 +273,7 @@ function NewRepoCaContent() {
               <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                 ラベル <span style={{ color: "#ef4444" }}>*</span>
               </label>
-              <select value={draft.label} onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value as TaskLabel }))}
+              <select value={draft.label} onChange={(e) => { const patch = { label: e.target.value as TaskLabel }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                 {(tab === "開発"
                   ? ["新規作成", "修正", "調査", "レビュー", "その他"]
@@ -246,7 +290,7 @@ function NewRepoCaContent() {
                 <label style={{ fontSize: 14, fontWeight: 700, color: "#6b7280", display: "block", marginBottom: 3 }}>
                   実装範囲 <span style={{ color: "#ef4444" }}>*</span>
                 </label>
-                <select value={draft.implScope} onChange={(e) => setDraft((d) => ({ ...d, implScope: e.target.value as ImplScope }))}
+                <select value={draft.implScope} onChange={(e) => { const patch = { implScope: e.target.value as ImplScope }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
                   style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
                   {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -262,7 +306,10 @@ function NewRepoCaContent() {
               </label>
               <textarea
                 value={draft.content}
-                onChange={(e) => setDraft((d) => ({ ...d, content: e.target.value }))}
+                onChange={(e) => {
+                  const patch = { content: e.target.value };
+                  setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false }));
+                }}
                 placeholder="例）Contactページ作成、デイリースクラム..."
                 rows={3}
                 style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, resize: "none", color: "#374151" }}
@@ -287,7 +334,7 @@ function NewRepoCaContent() {
 
       {/* 下部ボタン */}
       <div style={{ flexShrink: 0, padding: "8px 12px", borderTop: "1px solid #e5e7eb", display: "flex", gap: 8, background: "white" }}>
-        <Link href="/repoca" style={{ flex: 1 }}>
+        <Link href={returnTo} style={{ flex: 1 }}>
           <button className="btn btn-ghost" style={{ width: "100%" }}>もどる</button>
         </Link>
         <button

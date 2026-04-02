@@ -212,12 +212,12 @@ export default function EndReport() {
         {/* 左: PJグループRepoCa */}
         <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 0 }}>
           {Array.from(grouped.entries()).map(([projId, cards]) => {
-            const proj = projects.find((p) => p.id === projId)!;
+            const proj = projects.find((p) => p.id === projId);
             return (
-              <div key={projId} className="pj-group" style={{ background: proj.color ?? "#f3f4f6", marginBottom: 8 }}>
-                <div className="pj-group-header" style={{ color: proj.textColor }}>
-                  <span>{proj.icon}</span>
-                  <span>{proj.name}</span>
+              <div key={projId} className="pj-group" style={{ background: proj?.color ?? "#f3f4f6", marginBottom: 8 }}>
+                <div className="pj-group-header" style={{ color: proj?.textColor ?? "#374151" }}>
+                  <span>{proj?.icon}</span>
+                  <span>{proj?.name ?? "その他"}</span>
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {cards.map((rc) => {

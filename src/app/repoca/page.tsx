@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { RepoCa, TaskLabel, ImplScope } from "@/types";
 import { fmtDuration } from "@/lib/utils";
-import { HiCollection, HiSearch, HiViewGrid, HiTrash, HiCheck, HiPencilAlt } from "react-icons/hi";
+import { HiCollection, HiSearch, HiViewGrid, HiTrash, HiCheck, HiPencilAlt, HiStar, HiOutlineStar } from "react-icons/hi";
 import { useRepoCa } from "@/contexts/RepoCaContext";
 import { useProjects } from "@/contexts/ProjectContext";
 import { useAvatar } from "@/contexts/AvatarContext";
@@ -127,7 +127,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 ];
 
 export default function RepoCaList() {
-  const { allRepoCas, removeRepoCa, updateRepoCa } = useRepoCa();
+  const { allRepoCas, removeRepoCa, updateRepoCa, toggleFavorite } = useRepoCa();
   const { projects } = useProjects();
   const [mainTab, setMainTab]           = useState<"repoca" | "projects">("repoca");
   const [filter, setFilter]             = useState<"all" | "favorite" | "incomplete" | "completed">("all");
@@ -326,6 +326,7 @@ export default function RepoCaList() {
                       isSelected={selectedIds.has(rc.id)}
                       onEdit={() => openEdit(rc)}
                       onDelete={() => removeRepoCa(rc.id)}
+                      onToggleFavorite={() => { toggleFavorite(rc.id); updateRepoCa(rc.id, { isFavorite: !rc.isFavorite }); }}
                     />
                   ))
                 )}
@@ -544,13 +545,14 @@ export default function RepoCaList() {
 }
 
 // ---- RepoCaカード ----
-function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }: {
+function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete, onToggleFavorite }: {
   rc: RepoCa;
   onClick: () => void;
   selectionMode?: boolean;
   isSelected?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onToggleFavorite?: () => void;
 }) {
   const { projects } = useProjects();
   const proj = projects.find((p) => p.id === rc.projectId);
@@ -588,7 +590,14 @@ function RepoCaCard({ rc, onClick, selectionMode, isSelected, onEdit, onDelete }
           <span className="chip" style={{ fontSize: 14, background: SCOPE_COLOR[rc.implScope] + "22", color: SCOPE_COLOR[rc.implScope] }}>
             {rc.implScope}
           </span>
-          {rc.isFavorite && <span style={{ fontSize: 14 }}>⭐</span>}
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(); }}
+            style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", lineHeight: 1 }}
+          >
+            {rc.isFavorite
+              ? <HiStar style={{ width: 15, height: 15, color: "#d97706" }} />
+              : <HiOutlineStar style={{ width: 15, height: 15, color: "#d1d5db" }} />}
+          </button>
         </div>
         <p style={{ fontSize: 14, fontWeight: 500, color: "#1f2937", margin: 0 }}>{rc.content}</p>
         <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
