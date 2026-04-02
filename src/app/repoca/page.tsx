@@ -244,7 +244,7 @@ export default function RepoCaList() {
       </div>
 
       {/* ボディ */}
-      <div className="page-body" style={{ flexDirection: "column", padding: 8, gap: 8, overflow: "hidden" }}>
+      <div className="page-body" style={{ flexDirection: "column", padding: "16px 20px", gap: 16, overflow: "hidden" }}>
         {mainTab === "repoca" ? (
           <>
             {/* カードリスト + 右サイドコントロール */}

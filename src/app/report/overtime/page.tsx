@@ -68,7 +68,7 @@ export default function OvertimeReport() {
       </div>
 
       {/* ボディ */}
-      <div className="page-body" style={{ flexDirection: "column", padding: 12, gap: 10, overflowY: "auto" }}>
+      <div className="page-body" style={{ flexDirection: "column", padding: "16px 20px", gap: 16, overflowY: "auto" }}>
 
         {/* 残業有無 */}
         <div className="card" style={{ padding: 14, flexShrink: 0 }}>

@@ -53,7 +53,7 @@ export default function RewardsPage() {
       </div>
 
       {/* ボディ */}
-      <div className="page-body" style={{ flexDirection: "column", padding: 10, gap: 8, overflowY: "auto" }}>
+      <div className="page-body" style={{ flexDirection: "column", padding: "16px 20px", gap: 16, overflowY: "auto" }}>
 
         {/* カテゴリタブ */}
         <div style={{ display: "flex", gap: 5, flexShrink: 0, flexWrap: "wrap" }}>

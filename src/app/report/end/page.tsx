@@ -207,7 +207,7 @@ export default function EndReport() {
       </div>
 
       {/* メインエリア: RepoCa一覧 + 右サイドバー */}
-      <div className="page-body" style={{ padding: 8, gap: 8, overflow: "hidden" }}>
+      <div className="page-body" style={{ padding: "8px 20px", gap: 16, overflow: "hidden" }}>
 
         {/* 左: PJグループRepoCa */}
         <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 0 }}>
@@ -272,7 +272,7 @@ export default function EndReport() {
                           </div>
                         )}
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                          <span className="chip" style={{ fontSize: 14, background: proj.color, color: proj.textColor }}>{rc.taskType}</span>
+                          <span className="chip" style={{ fontSize: 14, background: proj?.color, color: proj?.textColor }}>{rc.taskType}</span>
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                             {manuallyAddedIds.has(rc.id) ? (
                               <button

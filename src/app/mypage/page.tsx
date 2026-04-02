@@ -539,7 +539,7 @@ export default function MyPage() {
               background: "white",
               borderRadius: 12,
               border: "1px solid #e5e7eb",
-              overflow: "hidden",
+              overflow: "clip",
             }}
           >
             <div style={{ overflowY: "auto", height: "100%" }}>
@@ -741,7 +741,7 @@ export default function MyPage() {
             .filter((u) => !badgeFilter || u.badges.some((b) => b.name === badgeFilter))
             .filter((u) => !userNameSearch || u.name.includes(userNameSearch));
           return (
-            <div style={{ flexShrink: 0, border: "1px solid #e5e7eb", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ flexShrink: 0, border: "1px solid #e5e7eb", background: "#fafafa", borderRadius: 12, overflow: "clip" }}>
               <div style={{ padding: "6px 20px 4px", display: "flex", alignItems: "center", gap: 8 }}>
                 {badgeFilter ? (
                   <>
@@ -796,7 +796,7 @@ export default function MyPage() {
                   <div
                     style={{
                       background: user.headerGradient,
-                      padding: "10px 12px 12px",
+                      padding: "6px 12px",
                       display: "flex",
                       alignItems: "center",
                       gap: 8,
@@ -814,7 +814,7 @@ export default function MyPage() {
                       }}
                     />
                     <div
-                      style={{ fontWeight: 800, fontSize: 14, color: "white" }}
+                      style={{ fontWeight: 800, fontSize: 12, color: "white" }}
                     >
                       {user.name}
                     </div>
@@ -840,7 +840,7 @@ export default function MyPage() {
                     >
                       扱える技術
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    <div style={{ display: "flex", flexWrap: "nowrap", gap: 6, overflow: "hidden" }}>
                       {user.badges.slice(0, 4).map((ub, i) => {
                         const ts = TIER_STYLE[ub.tier];
                         const iconInfo = BADGE_ICON_MAP[ub.name];

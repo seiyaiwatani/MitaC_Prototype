@@ -99,7 +99,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   border: 1px solid var(--border);
-  overflow: hidden;
+  overflow: clip;
   min-width: 0;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -267,7 +267,7 @@ button:hover, a[href]:hover { opacity: 0.7; }
 .split-col {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: clip;
   background: white;
   border-radius: 10px;
   border: 1px solid var(--border);

@@ -732,7 +732,7 @@ export default function Home() {
         );
         const showProgress = progressLineW > 0;
         return (
-          <div style={{ flexShrink: 0, padding: "8px 40px" }}>
+          <div style={{ flexShrink: 0, padding: "8px 20px" }}>
             <div className="card" style={{ overflow: "visible" }}>
               {/* バナー */}
               <div
@@ -1011,7 +1011,7 @@ export default function Home() {
           gridTemplateColumns: "1fr 340px 1fr",
           gridTemplateRows: "auto 1fr",
           gap: 20,
-          padding: "12px 40px 20px",
+          padding: "12px 20px 20px",
           overflow: "hidden",
           minHeight: 0,
         }}

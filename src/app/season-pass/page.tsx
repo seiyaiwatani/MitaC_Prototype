@@ -80,7 +80,7 @@ export default function SeasonPassPage() {
         <span style={{ marginLeft: "auto" }} />
       </div>
 
-      <div className="page-body" style={{ flexDirection: "column", overflowY: "auto", padding: "12px 0", gap: 12 }}>
+      <div className="page-body" style={{ flexDirection: "column", overflowY: "auto", padding: "16px 20px", gap: 16 }}>
 
         {/* ─── シーズンバナー ─── */}
         <div style={{

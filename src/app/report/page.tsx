@@ -40,7 +40,7 @@ export default function ReportIndex() {
       </div>
 
       {/* 2カラム */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, padding: 8, overflow: "hidden" }}>
+      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, padding: "8px 20px", overflow: "hidden" }}>
 
         {/* 左: 本日のタスク */}
         <div className="card" style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
