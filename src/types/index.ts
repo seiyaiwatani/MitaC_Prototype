@@ -72,6 +72,7 @@ export interface Mission {
   progress: number;
   goal: number;
   completed: boolean;
+  targetIds?: string[]; // 未設定 or 空 = 全員対象
 }
 
 export type SeasonRewardType = "avatar_costume" | "physical" | "currency" | "pass_exp";

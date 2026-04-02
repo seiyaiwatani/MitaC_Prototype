@@ -510,7 +510,7 @@ export default function AdminPage() {
     { color: "#fed7aa", textColor: "#7c2d12", label: "オレンジ" },
     { color: "#e0f2fe", textColor: "#0c4a6e", label: "スカイ" },
   ];
-  const { missions, toggleMission, addMission } = useMission();
+  const { missions, toggleMission, addMission, deleteMission } = useMission();
 
   // チームメンバー管理
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(INITIAL_TEAM_MEMBERS);
@@ -575,6 +575,7 @@ export default function AdminPage() {
   const [hoveredKey, setHoveredKey]                   = useState<string | null>(null);
   const [tooltip, setTooltip]                         = useState<TooltipState>(null);
   const [modal, setModal]                             = useState<ModalState>(null);
+  const [deletingMissionId, setDeletingMissionId]     = useState<string | null>(null);
   const [selectedDailyMemberId, setSelectedDailyMemberId] = useState<string>("m1");
   const [expandedCohorts, setExpandedCohorts]         = useState<number[]>([24]);
   const [teamExpanded, setTeamExpanded]               = useState(true);
@@ -1242,6 +1243,20 @@ export default function AdminPage() {
                                 {m.title}
                               </div>
                               <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 1 }}>{m.description}</div>
+                              {m.type === "unlimited" && (
+                                <div style={{ marginTop: 5, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                  {(!m.targetIds || m.targetIds.length === 0) ? (
+                                    <span style={{ fontSize: 11, background: "#f3f4f6", color: "#6b7280", borderRadius: 99, padding: "2px 8px", fontWeight: 600 }}>全員対象</span>
+                                  ) : m.targetIds.map((tid) => {
+                                    const member = teamMembers.find((tm) => tm.id === tid);
+                                    return member ? (
+                                      <span key={tid} style={{ fontSize: 11, background: "#e8f2ff", color: "#007aff", borderRadius: 99, padding: "2px 8px", fontWeight: 600 }}>
+                                        {member.name}
+                                      </span>
+                                    ) : null;
+                                  })}
+                                </div>
+                              )}
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
                               <span style={{ fontSize: 14, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
@@ -1249,6 +1264,13 @@ export default function AdminPage() {
                                 <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700 }}>+{m.passExpReward} PXP</span>
                               ) : null}
                             </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setDeletingMissionId(m.id); }}
+                              style={{ marginLeft: 6, background: "none", border: "none", cursor: "pointer", color: "#ef4444", padding: "2px 4px", flexShrink: 0, display: "flex", alignItems: "center" }}
+                              title="削除"
+                            >
+                              <HiTrash style={{ width: 16, height: 16 }} />
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -1274,7 +1296,7 @@ export default function AdminPage() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
-                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>アカウントXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>XP</label>
                         <input type="number" min={0} value={mReward} onChange={(e) => setMReward(Number(e.target.value))}
                           style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
@@ -1323,7 +1345,7 @@ export default function AdminPage() {
                     style={{ width: "100%", marginTop: 12, fontSize: 14 }}
                     disabled={!mTitle.trim()}
                     onClick={() => {
-                      addMission({ type: "unlimited", title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false });
+                      addMission({ type: "unlimited", title: mTitle.trim(), description: mDesc.trim(), reward: mReward, passExpReward: mPassExp, goal: mGoal, progress: 0, completed: false, targetIds: mTargetIds.length > 0 ? mTargetIds : undefined });
                       setMTitle(""); setMDesc(""); setMReward(30); setMPassExp(20); setMGoal(1); setMTargetIds([]);
                     }}
                   >
@@ -1633,6 +1655,54 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* ミッション削除確認モーダル */}
+      {deletingMissionId && (() => {
+        const target = missions.find((m) => m.id === deletingMissionId);
+        return (
+          <div
+            style={{
+              position: "fixed", inset: 0,
+              background: "rgba(0,0,0,0.45)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 10001,
+            }}
+            onClick={() => setDeletingMissionId(null)}
+          >
+            <div
+              style={{
+                background: "white", borderRadius: 12, padding: 24, width: 320,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <HiTrash style={{ width: 20, height: 20, color: "#ef4444", flexShrink: 0 }} />
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#1f2937" }}>ミッションを削除</div>
+              </div>
+              <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 20, lineHeight: 1.6 }}>
+                「<span style={{ fontWeight: 700, color: "#1f2937" }}>{target?.title}</span>」を本当に削除してもよろしいですか？この操作は元に戻せません。
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setDeletingMissionId(null)}
+                  style={{
+                    flex: 1, padding: "9px 0", borderRadius: 8, border: "1px solid #e5e7eb",
+                    background: "white", fontSize: 14, fontWeight: 600, color: "#374151", cursor: "pointer",
+                  }}
+                >キャンセル</button>
+                <button
+                  onClick={() => { deleteMission(deletingMissionId); setDeletingMissionId(null); }}
+                  style={{
+                    flex: 1, padding: "9px 0", borderRadius: 8, border: "none",
+                    background: "#ef4444", fontSize: 14, fontWeight: 600, color: "white", cursor: "pointer",
+                  }}
+                >削除する</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* モーダル */}
       {modal && (

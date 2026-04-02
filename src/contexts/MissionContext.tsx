@@ -8,12 +8,14 @@ interface MissionContextValue {
   missions: Mission[];
   toggleMission: (id: string) => void;
   addMission: (m: Omit<Mission, "id">) => void;
+  deleteMission: (id: string) => void;
 }
 
 const MissionContext = createContext<MissionContextValue>({
   missions: [],
   toggleMission: () => {},
   addMission: () => {},
+  deleteMission: () => {},
 });
 
 export function MissionProvider({ children }: { children: ReactNode }) {
@@ -30,8 +32,11 @@ export function MissionProvider({ children }: { children: ReactNode }) {
       { ...m, id: `m_${Date.now()}`, progress: 0, completed: false },
     ]);
 
+  const deleteMission = (id: string) =>
+    setMissions((prev) => prev.filter((m) => m.id !== id));
+
   return (
-    <MissionContext.Provider value={{ missions, toggleMission, addMission }}>
+    <MissionContext.Provider value={{ missions, toggleMission, addMission, deleteMission }}>
       {children}
     </MissionContext.Provider>
   );
