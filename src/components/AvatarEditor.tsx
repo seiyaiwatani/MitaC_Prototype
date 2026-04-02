@@ -87,12 +87,16 @@ export function AvatarEditor({
     >
       <div
         style={{
-          background: "white", borderRadius: 16, padding: "24px 30px",
+          background: "white", borderRadius: 16,
           width: 780, maxWidth: "94vw",
           boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
           maxHeight: "90vh", overflowY: "auto",
+          overflow: "hidden",
+          display: "flex", flexDirection: "column",
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}>
+      <div
+        style={{ padding: "24px 30px", overflowY: "auto", flex: 1 }}
       >
         {/* ヘッダー */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
@@ -301,6 +305,7 @@ export function AvatarEditor({
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

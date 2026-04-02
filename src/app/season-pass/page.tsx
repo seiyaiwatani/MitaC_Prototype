@@ -124,7 +124,7 @@ export default function SeasonPassPage() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-                <span style={{ fontSize: 14, opacity: 0.8 }}>パスEXP</span>
+                <span style={{ fontSize: 14, opacity: 0.8 }}>PXP</span>
                 <span style={{ fontSize: 14, opacity: 0.8 }}>{passExp} / {passExpToNext}</span>
               </div>
               <div style={{ height: 10, background: "rgba(255,255,255,0.3)", borderRadius: 5, overflow: "hidden" }}>

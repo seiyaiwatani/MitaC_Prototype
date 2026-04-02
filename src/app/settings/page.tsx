@@ -59,7 +59,7 @@ function NotifRow({ label, name, value, onChange, baseTime, baseLabel, minutes, 
           <select
             value={minutes}
             onChange={(e) => onMinutesChange(Number(e.target.value))}
-            style={{ fontSize: 13, border: "1px solid #9ca3af", borderRadius: 6, padding: "2px 6px", color: "#374151", background: "white" }}
+            style={{ fontSize: 13, border: "1px solid #9ca3af", borderRadius: 6, padding: "2px 6px", color: "#374151", background: "white", cursor: "pointer" }}
           >
             {NOTIF_MINUTES.map((m) => (
               <option key={m} value={m}>{m}分</option>

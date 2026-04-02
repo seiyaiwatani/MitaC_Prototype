@@ -817,7 +817,7 @@ export default function Home() {
                       marginBottom: 3,
                     }}
                   >
-                    <span style={{ fontSize: 14, opacity: 0.8 }}>パスEXP</span>
+                    <span style={{ fontSize: 14, opacity: 0.8 }}>PXP</span>
                     <span style={{ fontSize: 14, opacity: 0.8 }}>
                       {passExp} / {passExpToNext}
                     </span>
@@ -1484,18 +1484,6 @@ export default function Home() {
                   zIndex: 2,
                 }}
               >
-                <span
-                  style={{
-                    fontWeight: 800,
-                    fontSize: 14,
-                    color: "#1a1a2e",
-                    background: "rgba(255,255,255,0.75)",
-                    padding: "2px 8px",
-                    borderRadius: 6,
-                  }}
-                >
-                  {currentUser.name}
-                </span>
                 <button
                   onClick={() => setEditorOpen(true)}
                   style={{
@@ -1738,15 +1726,15 @@ export default function Home() {
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span
                     style={{
-                      fontWeight: 800,
+                      fontWeight: 700,
                       fontSize: 14,
-                      color: "#1a1a2e",
-                      background: "rgba(255,255,255,0.75)",
-                      padding: "2px 8px",
-                      borderRadius: 6,
+                      color: "white",
+                      background: "#10b981",
+                      padding: "2px 10px",
+                      borderRadius: 99,
                     }}
                   >
-                    {currentUser.name}
+                    🏃 出勤中
                   </span>
                   <button
                     onClick={() => setEditorOpen(true)}
@@ -1768,18 +1756,6 @@ export default function Home() {
                     編集
                   </button>
                 </div>
-                <span
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "white",
-                    background: "#10b981",
-                    padding: "2px 10px",
-                    borderRadius: 99,
-                  }}
-                >
-                  🏃 出勤中
-                </span>
               </div>
               <div
                 style={{
@@ -2052,7 +2028,7 @@ export default function Home() {
                                 whiteSpace: "nowrap",
                               }}
                             >
-                              +{m.passExpReward} PEXP
+                              +{m.passExpReward} PXP
                             </span>
                           )}
                         </div>
@@ -2176,7 +2152,7 @@ export default function Home() {
                     )}
                     {(m.passExpReward ?? 0) > 0 && (
                       <span style={{ fontSize: 14, fontWeight: 700, color: "#1e40af", background: "#eff6ff", padding: "4px 12px", borderRadius: 99 }}>
-                        +{m.passExpReward} パスEXP
+                        +{m.passExpReward} PXP
                       </span>
                     )}
                   </div>

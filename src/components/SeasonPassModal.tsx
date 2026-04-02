@@ -105,7 +105,7 @@ export function SeasonPassModal({ onClose }: Props) {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ fontSize: 14, opacity: 0.8 }}>パスEXP</span>
+                  <span style={{ fontSize: 14, opacity: 0.8 }}>PXP</span>
                   <span style={{ fontSize: 14, opacity: 0.8 }}>{passExp} / {passExpToNext}</span>
                 </div>
                 <div style={{ height: 8, background: "rgba(255,255,255,0.3)", borderRadius: 4, overflow: "hidden" }}>

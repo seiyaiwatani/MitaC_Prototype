@@ -100,7 +100,7 @@ function NewRepoCaContent() {
 
   const removeCreated = (id: string) => setCreated((prev) => prev.filter((c) => c.id !== id));
 
-  const xp = (tab === "開発" ? 50 : 20);
+
 
   return (
     <div className="page-root">
@@ -261,7 +261,7 @@ function NewRepoCaContent() {
                   PJ名 <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <select value={draft.projectId} onChange={(e) => { const patch = { projectId: e.target.value }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151", cursor: "pointer" }}>
                   <option value="">PJを選択してください</option>
                   {projects.map((p) => <option key={p.id} value={p.id}>{p.icon} {p.name}</option>)}
                 </select>
@@ -274,7 +274,7 @@ function NewRepoCaContent() {
                 ラベル <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <select value={draft.label} onChange={(e) => { const patch = { label: e.target.value as TaskLabel }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
-                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
+                style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151", cursor: "pointer" }}>
                 {(tab === "開発"
                   ? ["新規作成", "修正", "調査", "レビュー", "その他"]
                   : ["調査", "MTG", "外部対応", "1on1", "執務室対応", "ユニット活動", "その他"]
@@ -291,7 +291,7 @@ function NewRepoCaContent() {
                   実装範囲 <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <select value={draft.implScope} onChange={(e) => { const patch = { implScope: e.target.value as ImplScope }; setDraft((d) => ({ ...d, ...patch, isFavorite: checkFavUnchanged(patch, d) ? d.isFavorite : false })); }}
-                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151" }}>
+                  style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14, color: "#374151", cursor: "pointer" }}>
                   {(["フロント", "バック", "インフラ", "フルスタック", "その他"] as ImplScope[]).map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}

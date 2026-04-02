@@ -741,7 +741,7 @@ export default function MyPage() {
             .filter((u) => !badgeFilter || u.badges.some((b) => b.name === badgeFilter))
             .filter((u) => !userNameSearch || u.name.includes(userNameSearch));
           return (
-            <div style={{ flexShrink: 0, borderTop: "1px solid #e5e7eb", background: "#fafafa" }}>
+            <div style={{ flexShrink: 0, border: "1px solid #e5e7eb", background: "#fafafa", borderRadius: 12, overflow: "hidden" }}>
               <div style={{ padding: "6px 20px 4px", display: "flex", alignItems: "center", gap: 8 }}>
                 {badgeFilter ? (
                   <>
@@ -840,7 +840,7 @@ export default function MyPage() {
                     >
                       扱える技術
                     </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {user.badges.slice(0, 4).map((ub, i) => {
                         const ts = TIER_STYLE[ub.tier];
                         const iconInfo = BADGE_ICON_MAP[ub.name];
@@ -849,26 +849,23 @@ export default function MyPage() {
                             key={i}
                             style={{
                               display: "flex",
+                              flexDirection: "column",
                               alignItems: "center",
-                              gap: 3,
-                              background: ts.bg + "22",
-                              border: `1px solid ${ts.bg}`,
-                              borderRadius: 5,
-                              padding: "2px 6px",
+                              gap: 2,
                             }}
                           >
-                            {iconInfo && (
-                              <iconInfo.Icon
-                                style={{ width: 10, height: 10, color: ts.bg }}
-                              />
-                            )}
-                            <span
-                              style={{
-                                fontSize: 10,
-                                fontWeight: 600,
-                                color: ts.labelColor,
-                              }}
-                            >
+                            <div style={{
+                              width: 32, height: 32, borderRadius: "50%",
+                              background: ts.bg,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              flexShrink: 0,
+                            }}>
+                              {iconInfo
+                                ? <iconInfo.Icon style={{ width: 16, height: 16, color: "white" }} />
+                                : <span style={{ fontSize: 14 }}>🏅</span>
+                              }
+                            </div>
+                            <span style={{ fontSize: 9, fontWeight: 700, color: "#374151", textAlign: "center", lineHeight: 1.2 }}>
                               {ub.name}
                             </span>
                           </div>

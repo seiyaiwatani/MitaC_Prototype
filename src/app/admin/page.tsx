@@ -1246,7 +1246,7 @@ export default function AdminPage() {
                             <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end", flexShrink: 0 }}>
                               <span style={{ fontSize: 14, color: "#ea580c", fontWeight: 700 }}>+{m.reward} XP</span>
                               {m.passExpReward ? (
-                                <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700 }}>+{m.passExpReward} パスEXP</span>
+                                <span style={{ fontSize: 14, color: "#007aff", fontWeight: 700 }}>+{m.passExpReward} PXP</span>
                               ) : null}
                             </div>
                           </div>
@@ -1279,7 +1279,7 @@ export default function AdminPage() {
                           style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>パスEXP</label>
+                        <label style={{ fontSize: 14, fontWeight: 600, color: "#007aff", display: "block", marginBottom: 3 }}>PXP</label>
                         <input type="number" min={0} value={mPassExp} onChange={(e) => setMPassExp(Number(e.target.value))}
                           style={{ width: "100%", border: "1px solid #e5e7eb", borderRadius: 6, padding: "6px 8px", fontSize: 14 }} />
                       </div>

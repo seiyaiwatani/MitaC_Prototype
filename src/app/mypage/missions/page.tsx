@@ -134,7 +134,7 @@ export default function MissionsPage() {
                         padding: "2px 8px", borderRadius: 99,
                         whiteSpace: "nowrap",
                       }}>
-                        +{m.passExpReward} パスEXP
+                        +{m.passExpReward} PXP
                       </div>
                     )}
                   </div>
