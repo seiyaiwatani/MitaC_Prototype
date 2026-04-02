@@ -627,7 +627,7 @@ export default function AdminPage() {
             <button
               key={n.key}
               className={`admin-nav-item ${view === n.key ? "active" : ""}`}
-              style={{ width: "100%", border: "none", background: "transparent", textAlign: "left" }}
+              style={{ width: "100%", border: "none", textAlign: "left" }}
               onClick={() => setView(n.key)}
             >
               <n.Icon style={{ width: 15, height: 15, flexShrink: 0 }} />
