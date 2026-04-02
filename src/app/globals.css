@@ -256,6 +256,13 @@ button:hover, a[href]:hover { opacity: 0.7; }
   overflow: hidden;
   padding: 8px;
 }
+@media (max-width: 768px) {
+  .report-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    overflow-y: auto;
+  }
+}
 .split-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -271,6 +278,7 @@ button:hover, a[href]:hover { opacity: 0.7; }
   background: white;
   border-radius: 10px;
   border: 1px solid var(--border);
+  min-height: 0;
 }
 .split-col-header {
   padding: 8px 12px;
