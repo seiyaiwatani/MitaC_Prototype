@@ -292,6 +292,7 @@ export default function MyPage() {
   const [selectedBadge, setSelectedBadge] = useState<Badge>(badges[0]);
   const [selectedTier, setSelectedTier] = useState<BadgeTier | null>(null);
   const [badgeFilter, setBadgeFilter] = useState<string | null>(null);
+  const [userNameSearch, setUserNameSearch] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("standard");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -674,7 +675,7 @@ export default function MyPage() {
                 {sortedBadges.map((b) => {
                   const iconInfo = BADGE_ICON_MAP[b.name];
                   const ts = b.tier ? TIER_STYLE[b.tier] : null;
-                  const isSelected = selectedBadge.id === b.id;
+                  const isSelected = badgeFilter === b.name;
                   return (
                     <div
                       key={b.id}
@@ -736,9 +737,9 @@ export default function MyPage() {
 
         {/* ===== 他のユーザーのバッジ取得状況 ===== */}
         {(() => {
-          const displayUsers = badgeFilter
-            ? OTHER_USERS.filter((u) => u.badges.some((b) => b.name === badgeFilter))
-            : OTHER_USERS;
+          const displayUsers = OTHER_USERS
+            .filter((u) => !badgeFilter || u.badges.some((b) => b.name === badgeFilter))
+            .filter((u) => !userNameSearch || u.name.includes(userNameSearch));
           return (
             <div style={{ flexShrink: 0, borderTop: "1px solid #e5e7eb", background: "#fafafa" }}>
               <div style={{ padding: "6px 20px 4px", display: "flex", alignItems: "center", gap: 8 }}>
@@ -754,7 +755,7 @@ export default function MyPage() {
                       onClick={() => setBadgeFilter(null)}
                       style={{ marginLeft: 4, fontSize: 11, color: "#dc2626", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 99, padding: "2px 10px", cursor: "pointer", fontWeight: 700 }}
                     >
-                      ✕ 解除
+                      ✕ 選択解除
                     </button>
                   </>
                 ) : (
@@ -762,14 +763,21 @@ export default function MyPage() {
                     他のユーザーのバッジ取得状況
                   </span>
                 )}
+                <input
+                  type="text"
+                  placeholder="名前で検索..."
+                  value={userNameSearch}
+                  onChange={(e) => setUserNameSearch(e.target.value)}
+                  style={{ marginLeft: "auto", fontSize: 11, padding: "3px 10px", borderRadius: 99, border: "1px solid #9ca3af", outline: "none", width: 140 }}
+                />
               </div>
-              <div style={{ overflowX: "auto", padding: "0 10px 8px", scrollbarWidth: "thin" }}>
+              <div style={{ overflowX: "auto", padding: "0 10px 8px", scrollbarWidth: "thin", minHeight: 160 }}>
                 {badgeFilter && displayUsers.length === 0 ? (
                   <div style={{ padding: "12px 10px", fontSize: 13, color: "#9ca3af" }}>
                     このバッジを持つユーザーはいません
                   </div>
                 ) : (
-                  <div style={{ display: "flex", gap: 10, width: "max-content", margin: "0 auto" }}>
+                  <div style={{ display: "flex", gap: 10, width: "max-content" }}>
                     {displayUsers.map((user) => (
                 <div
                   key={user.id}
