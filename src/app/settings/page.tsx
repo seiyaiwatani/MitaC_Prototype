@@ -16,7 +16,14 @@ function subtractMinutes(time: string, minutes: number): string {
   return `${hh}:${mm}`;
 }
 
-function NotifRow({ label, name, value, onChange, baseTime, baseLabel, minutes, onMinutesChange }: {
+async function sendTestNotif(message: string) {
+  const permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    new Notification("Mita=C", { body: message });
+  }
+}
+
+function NotifRow({ label, name, value, onChange, baseTime, baseLabel, minutes, onMinutesChange, testMessage }: {
   label: string;
   name: string;
   value: "on" | "off";
@@ -25,6 +32,7 @@ function NotifRow({ label, name, value, onChange, baseTime, baseLabel, minutes, 
   baseLabel: string;
   minutes: number;
   onMinutesChange: (v: number) => void;
+  testMessage: string;
 }) {
   const notifTime = subtractMinutes(baseTime, minutes);
   return (
@@ -58,6 +66,12 @@ function NotifRow({ label, name, value, onChange, baseTime, baseLabel, minutes, 
             ))}
           </select>
           <span>前 {notifTime} に通知を出します</span>
+          <button
+            onClick={() => sendTestNotif(testMessage)}
+            style={{ fontSize: 11, padding: "3px 10px", borderRadius: 6, border: "1px solid #9ca3af", background: "white", color: "#374151", cursor: "pointer" }}
+          >
+            テスト
+          </button>
         </div>
       )}
     </div>
@@ -83,6 +97,7 @@ function AccountTab({ startTime, endTime }: { startTime: string; endTime: string
           baseLabel="始業時刻"
           minutes={startMinutes}
           onMinutesChange={setStartMinutes}
+          testMessage="始業報告を行ってください"
         />
         <NotifRow
           label="残業通知"
@@ -93,6 +108,7 @@ function AccountTab({ startTime, endTime }: { startTime: string; endTime: string
           baseLabel="終業時刻"
           minutes={overtimeMinutes}
           onMinutesChange={setOvertimeMinutes}
+          testMessage="残業報告を行ってください"
         />
       </div>
 
@@ -121,6 +137,26 @@ function AccountTab({ startTime, endTime }: { startTime: string; endTime: string
   );
 }
 
+function TimeSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [h, m] = value.split(":").map(Number);
+  const selectStyle = { fontSize: 14, border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 6px", color: "#374151", background: "white" };
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <select value={h} onChange={(e) => onChange(`${e.target.value.padStart(2, "0")}:${m.toString().padStart(2, "0")}`)} style={selectStyle}>
+        {Array.from({ length: 25 }, (_, i) => (
+          <option key={i} value={i}>{i.toString().padStart(2, "0")}</option>
+        ))}
+      </select>
+      <span style={{ color: "#374151" }}>:</span>
+      <select value={m} onChange={(e) => onChange(`${h.toString().padStart(2, "0")}:${e.target.value.padStart(2, "0")}`)} style={selectStyle}>
+        {[0, 15, 30, 45].map((i) => (
+          <option key={i} value={i}>{i.toString().padStart(2, "0")}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function FlexTab({ startTime, setStartTime, endTime, setEndTime }: {
   startTime: string;
   setStartTime: (v: string) => void;
@@ -131,26 +167,16 @@ function FlexTab({ startTime, setStartTime, endTime, setEndTime }: {
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ background: "white", borderRadius: 8, padding: "14px 16px" }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 12 }}>
-          勤務時間タイム設定
+          勤務時間設定
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "#374151" }}>
             <span style={{ width: 80 }}>始業時刻</span>
-            <input
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 14 }}
-            />
+            <TimeSelect value={startTime} onChange={setStartTime} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 14, color: "#374151" }}>
             <span style={{ width: 80 }}>終業時刻</span>
-            <input
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              style={{ border: "1px solid #d1d5db", borderRadius: 6, padding: "4px 8px", fontSize: 14 }}
-            />
+            <TimeSelect value={endTime} onChange={setEndTime} />
           </div>
         </div>
       </div>
